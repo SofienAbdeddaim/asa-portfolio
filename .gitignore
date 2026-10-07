@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+.angular/
+.nx/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+playwright-report/
+test-results/
+.lighthouseci/
