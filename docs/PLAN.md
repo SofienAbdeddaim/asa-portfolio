@@ -4,7 +4,7 @@ Status legend: [x] done, [~] in progress, [ ] todo.
 
 - [x] **Phase 0** – repo foundations, tooling, conventions, ADRs, CI skeleton, concepts
 - [x] **Phase 1** – API core: NestJS modules, Mongoose schemas, auth + TOTP 2FA, CRUD, OpenAPI, tests, fake seed, Docker Compose
-- [ ] **Phase 2** – Angular foundations: routing, Transloco, RTL, tokens, layout, theme, shared components
+- [x] **Phase 2** – Angular foundations: routing, Transloco, RTL, tokens, layout, theme, shared components
 - [ ] **Phase 3** – public pages implementing the chosen concept
 - [ ] **Phase 4** – back-office: auth screens, 2FA enrollment, CRUD, ordering, uploads, Markdown editor
 - [ ] **Phase 5** – CV route/PDF, blog, content snapshot, prerendering, SEO

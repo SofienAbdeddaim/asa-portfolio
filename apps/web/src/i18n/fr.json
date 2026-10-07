@@ -1,0 +1,74 @@
+{
+  "app": {
+    "brand": "ASA",
+    "skipToContent": "Aller au contenu principal"
+  },
+  "nav": {
+    "label": "Navigation principale",
+    "home": "Accueil"
+  },
+  "language": {
+    "label": "Langue",
+    "switchTo": "Passer la langue en {{language}}",
+    "names": {
+      "fr": "Français",
+      "en": "Anglais",
+      "ar": "Arabe"
+    }
+  },
+  "theme": {
+    "label": "Thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système",
+    "current": "Thème : {{theme}}. Activer pour changer."
+  },
+  "palette": {
+    "open": "Ouvrir la palette de commandes",
+    "title": "Palette de commandes",
+    "placeholder": "Saisissez une commande ou recherchez…",
+    "empty": "Aucune commande correspondante",
+    "hint": "↑ ↓ pour naviguer, Entrée pour choisir, Échap pour fermer",
+    "results": "{{count}} résultats"
+  },
+  "commands": {
+    "group": {
+      "navigate": "Navigation",
+      "language": "Langue",
+      "appearance": "Apparence"
+    },
+    "goHome": "Aller à l’accueil",
+    "toggleTheme": "Changer le thème"
+  },
+  "status": {
+    "stale": "Contenu enregistré affiché. Les données en direct se réveillent."
+  },
+  "home": {
+    "title": "Fondations",
+    "eyebrow": "Aperçu de la phase 2",
+    "heading": "Les fondations d’un portfolio en forme de frise",
+    "lead": "Le routage, les traductions, la mise en page de droite à gauche, les tokens de design et les composants partagés sont en place. La frise arrive à la phase suivante.",
+    "direction": "Sens du texte",
+    "dirLtr": "De gauche à droite",
+    "dirRtl": "De droite à gauche",
+    "formatting": "Formats selon la langue",
+    "dateSample": "Date",
+    "numberSample": "Nombre",
+    "loading": "États de chargement",
+    "primary": "Action principale",
+    "secondary": "Action secondaire",
+    "next": "Suivant"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "body": "La page que vous cherchez n’existe pas ou a été déplacée.",
+    "back": "Retour à l’accueil"
+  },
+  "admin": {
+    "title": "Back-office",
+    "body": "Le back-office privé est construit dans une phase ultérieure."
+  },
+  "footer": {
+    "note": "Construit avec Angular. Lecture libre, aucun suivi."
+  }
+}

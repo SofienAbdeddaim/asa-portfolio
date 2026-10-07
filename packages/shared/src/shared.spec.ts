@@ -44,3 +44,13 @@ describe('localized strings', () => {
     expect(hasDefaultLocale({ fr: 'x' })).toBe(false);
   });
 });
+
+describe('intl tags', () => {
+  it('maps every locale to a tag Intl accepts', async () => {
+    const { INTL_TAGS, LOCALES } = await import('./index.js');
+    for (const locale of LOCALES) {
+      expect(() => new Intl.DateTimeFormat(INTL_TAGS[locale])).not.toThrow();
+    }
+    expect(new Intl.NumberFormat(INTL_TAGS.ar).format(2026)).toBe('2,026');
+  });
+});

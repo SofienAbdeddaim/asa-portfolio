@@ -12,3 +12,10 @@ export function isLocale(value: unknown): value is Locale {
 export function getDirection(locale: Locale): 'rtl' | 'ltr' {
   return RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
 }
+
+/** BCP 47 tag used for `Intl`. Arabic keeps Latin digits so mixed Arabic/English text reads cleanly. */
+export const INTL_TAGS: Record<Locale, string> = {
+  fr: 'fr-FR',
+  en: 'en-GB',
+  ar: 'ar-u-nu-latn',
+};

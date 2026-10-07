@@ -1,0 +1,171 @@
+/* Self-hosted fonts (npm packages, no external CDN). Only the subsets we render are bundled. */
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import '@fontsource/ibm-plex-sans-arabic/arabic-400.css';
+@import '@fontsource/ibm-plex-sans-arabic/arabic-500.css';
+@import '@fontsource/ibm-plex-sans-arabic/arabic-600.css';
+
+@import 'tailwindcss';
+
+/* `dark:` follows the data-theme attribute set by ThemeService / index.html, not only the OS. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ---- Design tokens -------------------------------------------------------------------------
+   Semantic colors are CSS variables so a theme switch is one attribute change. Contrast targets
+   (WCAG 2.2 AA): text >= 4.5:1, large text and UI >= 3:1 against its background. */
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --surface-2: #efece4;
+  --fg: #1b1a17;
+  --muted: #5b5a55;
+  --border: #d9d5c9;
+  --accent: #0f766e;
+  --accent-fg: #ffffff;
+  --danger: #b42318;
+  --ring: #0f766e;
+  --dir-sign: 1;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: #0f1412;
+  --surface: #161d1a;
+  --surface-2: #1d2622;
+  --fg: #ecebe6;
+  --muted: #a3a39b;
+  --border: #2b3732;
+  --accent: #5eead4;
+  --accent-fg: #06201c;
+  --danger: #ff8a80;
+  --ring: #5eead4;
+  color-scheme: dark;
+}
+
+/* Animations read this sign so slides and reveals travel toward the reading direction. */
+[dir='rtl'] {
+  --dir-sign: -1;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-danger: var(--danger);
+
+  --font-sans: 'IBM Plex Sans', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
+
+  --radius-card: 1rem;
+  --container-page: 72rem;
+}
+
+/* ---- Base ---------------------------------------------------------------------------------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Arabic needs more leading and a touch more size to match Latin color and legibility. */
+  :lang(ar) body {
+    line-height: 1.9;
+    font-size: 1.0625rem;
+  }
+
+  :lang(ar) h1,
+  :lang(ar) h2,
+  :lang(ar) h3 {
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+    border-radius: 0.25rem;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  /* Code and Latin product names stay left-to-right inside right-to-left text. */
+  code,
+  kbd,
+  .ltr-island {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  dialog::backdrop {
+    background: color-mix(in srgb, black 45%, transparent);
+    backdrop-filter: blur(2px);
+  }
+}
+
+/* ---- Utilities ----------------------------------------------------------------------------- */
+@utility container-page {
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: 1rem;
+
+  @media (min-width: 40rem) {
+    padding-inline: 1.5rem;
+  }
+}
+
+/* Direction-aware reveal: slides in from the inline-end side, disabled for reduced motion. */
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--dir-sign) * 1.25rem));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility reveal {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: reveal-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

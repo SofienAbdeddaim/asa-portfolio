@@ -10,6 +10,7 @@ Personal portfolio monorepo (FR/EN/AR, true RTL) with a private back-office. Own
 ## Commands
 
 - `pnpm install`, `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+- Web: `pnpm --filter @asa/web start` (proxies /api to :3000), tests with `pnpm --filter @asa/web test`.
 - API: `docker compose up -d mongo`, `pnpm --filter @asa/api dev|seed:admin|seed:demo` (see `apps/api/README.md`).
 - Requires Node `^22.22.3 || >=24.15` (see `.nvmrc`) and pnpm via `packageManager`.
 
@@ -17,7 +18,8 @@ Personal portfolio monorepo (FR/EN/AR, true RTL) with a private back-office. Own
 
 - English only (code, comments, commits, docs). Conventional Commits (commitlint enforced).
 - TypeScript strict; no `any` without a justified disable comment. No abandoned dependencies.
-- Layout uses logical properties only (`ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`, `rtl:`), never hardcoded left/right.
+- Layout uses logical properties only (`ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`, `rtl:`), never hardcoded left/right. `pnpm lint` enforces it (`scripts/logical-props.mjs`, escape hatch: `rtl-ok`).
+- Web: standalone components, signals, OnPush, `app-` selectors; user-visible text goes through Transloco keys in all three `src/i18n/*.json` files.
 - Translatable fields are `{ fr, en, ar }`; English is required and is the fallback.
 - API: no reliance on `emitDecoratorMetadata` (explicit `@Inject`, `ValidBody(Dto)`; ADR 7).
 - Tokens never in localStorage (httpOnly cookie). No secrets or default credentials committed; use `.env` (see `.env.example`).
