@@ -2,7 +2,7 @@
 
 Status legend: [x] done, [~] in progress, [ ] todo.
 
-- [~] **Phase 0** – repo foundations, tooling, conventions, ADRs, CI skeleton, concepts (awaiting concept choice and "go")
+- [~] **Phase 0** – repo foundations, tooling, conventions, ADRs, CI skeleton, concepts (done, awaiting "go")
 - [ ] **Phase 1** – API core: NestJS modules, Mongoose schemas, auth + TOTP 2FA, CRUD, OpenAPI, tests, fake seed, Docker Compose
 - [ ] **Phase 2** – Angular foundations: routing, Transloco, RTL, tokens, layout, theme, shared components
 - [ ] **Phase 3** – public pages implementing the chosen concept
@@ -13,5 +13,5 @@ Status legend: [x] done, [~] in progress, [ ] todo.
 
 ## Decisions pending
 
-- Creative concept (A/B/C, see `CONCEPTS.md`) before Phase 3.
+- ~~Creative concept~~ chosen: B, Living Timeline (ADR 6).
 - CV PDF: print-CSS baseline; server-side PDF only if Arabic shaping and memory are verified (ADR in Phase 5).
