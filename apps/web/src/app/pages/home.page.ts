@@ -14,6 +14,7 @@ import { About } from '../sections/about';
 import { Contact } from '../sections/contact';
 import { Experience } from '../sections/experience';
 import { Hero } from '../sections/hero';
+import { Playground } from '../sections/playground';
 import { Projects } from '../sections/projects';
 import { Skills } from '../sections/skills';
 import { Testimonials } from '../sections/testimonials';
@@ -31,6 +32,7 @@ import { Skeleton } from '../shared/ui/skeleton';
     Experience,
     Skills,
     Projects,
+    Playground,
     Testimonials,
     Contact,
   ],
@@ -61,6 +63,7 @@ import { Skeleton } from '../shared/ui/skeleton';
       @if (c.projects.length) {
         <app-projects [projects]="c.projects" [locale]="locale.locale()" />
       }
+      <app-playground [names]="playNames()" />
       @if (c.testimonials.length) {
         <app-testimonials [items]="c.testimonials" [locale]="locale.locale()" />
       }
@@ -84,6 +87,8 @@ export class HomePage implements OnDestroy {
   protected readonly tags = computed(() => [
     ...new Set((this.content()?.skills ?? []).flatMap((group) => group.items.map((i) => i.name))),
   ]);
+
+  protected readonly playNames = computed(() => this.tags().slice(0, 12));
 
   constructor() {
     void this.store.load();

@@ -21,4 +21,4 @@ pnpm --filter @asa/web build     # static output in dist/web/browser (prerenders
 | `src/i18n`                     | `en.json`, `fr.json`, `ar.json`: keep the three files in sync                      |
 | `public/content-snapshot.json` | Build-time content used when the API is asleep (generated later)                   |
 
-See ADR 10 (architecture), ADR 11 (RTL rules) and ADR 12 (visual identity).
+See ADR 10 (architecture), ADR 11 (RTL rules), ADR 12 (visual identity) and ADR 13 (playground).

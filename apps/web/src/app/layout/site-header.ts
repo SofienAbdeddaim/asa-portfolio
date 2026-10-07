@@ -30,7 +30,7 @@ import { ThemeToggle } from './theme-toggle';
           {{ 'app.brand' | transloco }}
         </a>
 
-        <nav class="hidden lg:block" [attr.aria-label]="'nav.label' | transloco">
+        <nav class="hidden xl:block" [attr.aria-label]="'nav.label' | transloco">
           <ul class="flex items-center gap-1">
             @for (section of sections; track section.id) {
               <li>
@@ -65,7 +65,7 @@ import { ThemeToggle } from './theme-toggle';
           <app-theme-toggle />
           <button
             type="button"
-            class="btn size-12 min-h-12 px-0 lg:hidden"
+            class="btn size-12 min-h-12 px-0 xl:hidden"
             style="--btn-bg: var(--c-coral)"
             popovertarget="mobile-menu"
             [attr.aria-label]="'nav.menu' | transloco"

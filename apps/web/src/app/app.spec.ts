@@ -111,7 +111,7 @@ describe('shell', () => {
     expect(el.querySelector('a[href="#main"]')?.textContent).toContain('Skip to main content');
     expect(el.querySelector('main#main')).not.toBeNull();
     // The section links appear in both the desktop bar and the mobile menu.
-    expect(el.querySelectorAll('nav[aria-label="Main navigation"] a')).toHaveLength(12);
+    expect(el.querySelectorAll('nav[aria-label="Main navigation"] a')).toHaveLength(14);
   });
 
   it('opens and closes the command palette with Ctrl+K', async () => {
@@ -138,6 +138,7 @@ describe('shell', () => {
       'go-experience',
       'go-skills',
       'go-projects',
+      'go-play',
       'go-kind',
       'go-contact',
       'lang-fr',

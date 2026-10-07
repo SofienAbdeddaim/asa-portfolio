@@ -8,7 +8,8 @@ export const SECTIONS = [
   { id: 'experience', color: 'var(--c-mint)' },
   { id: 'skills', color: 'var(--c-sky)' },
   { id: 'projects', color: 'var(--c-pink)' },
-  { id: 'kind', color: 'var(--c-lilac)' },
+  { id: 'play', color: 'var(--c-lilac)' },
+  { id: 'kind', color: 'var(--c-sun)' },
   { id: 'contact', color: 'var(--c-coral)' },
 ] as const;
 

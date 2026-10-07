@@ -13,12 +13,17 @@
     "kind": "Kind words",
     "contact": "Contact",
     "menu": "Menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "play": "Play"
   },
   "language": {
     "label": "Language",
     "switchTo": "Switch language to {{language}}",
-    "names": { "fr": "French", "en": "English", "ar": "Arabic" }
+    "names": {
+      "fr": "French",
+      "en": "English",
+      "ar": "Arabic"
+    }
   },
   "theme": {
     "label": "Theme",
@@ -91,11 +96,11 @@
     "demoFor": "Live demo of {{name}}"
   },
   "kind": {
-    "eyebrow": "05 · Kind words",
+    "eyebrow": "06 · Kind words",
     "title": "What people say"
   },
   "contact": {
-    "eyebrow": "06 · Contact",
+    "eyebrow": "07 · Contact",
     "title": "Let's make something fun",
     "lead": "Got an idea, a role, or just a hello? My inbox is open.",
     "copy": "Copy email",
@@ -117,5 +122,31 @@
   "footer": {
     "note": "Made with Angular, a lot of cream paper and no tracking.",
     "top": "Back to top"
+  },
+  "play": {
+    "eyebrow": "05 · Play",
+    "title": "Playground",
+    "lead": "Drag the stickers around, then try to draw a perfect circle.",
+    "boardHint": "Drag a sticker, or focus it and use the arrow keys (Shift moves further).",
+    "boardLabel": "Sticker board",
+    "moveLabel": "Move the {{name}} sticker",
+    "shuffle": "Shuffle",
+    "gameTitle": "Draw a perfect circle",
+    "gameHint": "Press and draw one full circle in a single stroke, with a mouse, finger or pen.",
+    "pointerOnly": "This game needs a pointer, so it is entirely optional.",
+    "canvasLabel": "Drawing area for the circle game",
+    "start": "Draw here",
+    "again": "Try again",
+    "score": "{{score}} % round.",
+    "best": "Best: {{score}} %",
+    "tooShort": "That was too short. Draw a full circle.",
+    "open": "Almost! Go all the way around.",
+    "tier": {
+      "perfect": "Unbelievably round!",
+      "great": "Seriously round.",
+      "good": "Nice, a little wobbly.",
+      "ok": "That is more of a potato.",
+      "low": "Was that a circle?"
+    }
   }
 }

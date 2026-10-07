@@ -13,12 +13,17 @@
     "kind": "Avis",
     "contact": "Contact",
     "menu": "Menu",
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "play": "Jeux"
   },
   "language": {
     "label": "Langue",
     "switchTo": "Passer la langue en {{language}}",
-    "names": { "fr": "Français", "en": "Anglais", "ar": "Arabe" }
+    "names": {
+      "fr": "Français",
+      "en": "Anglais",
+      "ar": "Arabe"
+    }
   },
   "theme": {
     "label": "Thème",
@@ -91,11 +96,11 @@
     "demoFor": "Démo en ligne de {{name}}"
   },
   "kind": {
-    "eyebrow": "05 · Avis",
+    "eyebrow": "06 · Avis",
     "title": "Ce qu'on en dit"
   },
   "contact": {
-    "eyebrow": "06 · Contact",
+    "eyebrow": "07 · Contact",
     "title": "Créons quelque chose de chouette",
     "lead": "Une idée, un poste, ou juste un bonjour ? Ma boîte mail est ouverte.",
     "copy": "Copier l'e-mail",
@@ -117,5 +122,31 @@
   "footer": {
     "note": "Fait avec Angular, beaucoup de papier crème et aucun suivi.",
     "top": "Retour en haut"
+  },
+  "play": {
+    "eyebrow": "05 · Jeux",
+    "title": "Terrain de jeu",
+    "lead": "Déplacez les autocollants, puis essayez de dessiner un cercle parfait.",
+    "boardHint": "Faites glisser un autocollant, ou donnez-lui le focus et utilisez les flèches (Maj va plus loin).",
+    "boardLabel": "Tableau d’autocollants",
+    "moveLabel": "Déplacer l’autocollant {{name}}",
+    "shuffle": "Mélanger",
+    "gameTitle": "Dessinez un cercle parfait",
+    "gameHint": "Appuyez et dessinez un cercle complet d’un seul trait, à la souris, au doigt ou au stylet.",
+    "pointerOnly": "Ce jeu demande un pointeur, il est donc entièrement facultatif.",
+    "canvasLabel": "Zone de dessin du jeu du cercle",
+    "start": "Dessinez ici",
+    "again": "Réessayer",
+    "score": "{{score}} % rond.",
+    "best": "Meilleur : {{score}} %",
+    "tooShort": "C’était trop court. Dessinez un cercle complet.",
+    "open": "Presque ! Faites le tour complet.",
+    "tier": {
+      "perfect": "Incroyablement rond !",
+      "great": "Vraiment rond.",
+      "good": "Joli, un peu tremblant.",
+      "ok": "Plutôt une patate.",
+      "low": "C’était un cercle ?"
+    }
   }
 }
