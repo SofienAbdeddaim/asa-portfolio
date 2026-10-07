@@ -1,14 +1,16 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Router, provideRouter, withComponentInputBinding, TitleStrategy } from '@angular/router';
 import { Title } from '@angular/platform-browser';
+import { Router, TitleStrategy, provideRouter, withComponentInputBinding } from '@angular/router';
+import { CONTENT_FIXTURE } from '../testing/content.fixture';
 import { App } from './app';
 import { routes } from './app.routes';
 import { CommandService } from './core/command.service';
+import { ContentStore } from './core/content.store';
 import { provideI18n } from './core/i18n';
-import { PageTitleStrategy } from './core/page-title.strategy';
 import { LocaleService } from './core/locale.service';
+import { PageTitleStrategy } from './core/page-title.strategy';
 
 // jsdom lacks modal <dialog> and scrollIntoView; real browsers provide both.
 beforeAll(() => {
@@ -32,6 +34,7 @@ async function setup(url: string) {
       { provide: TitleStrategy, useClass: PageTitleStrategy },
     ],
   });
+  TestBed.inject(ContentStore).seed(CONTENT_FIXTURE);
   const fixture = TestBed.createComponent(App);
   const router = TestBed.inject(Router);
   const go = async (target: string) => {
@@ -56,14 +59,16 @@ describe('locale routing', () => {
     const { el } = await setup('/ar');
     expect(document.documentElement.lang).toBe('ar');
     expect(document.documentElement.dir).toBe('rtl');
-    expect(TestBed.inject(Title).getTitle()).toBe('الأساسيات · ASA');
-    expect(el.querySelector('h1')?.textContent).toContain('خط زمني');
+    expect(TestBed.inject(Title).getTitle()).toBe('معرض الأعمال · ASA');
+    expect(el.querySelector('#hero-title')?.textContent).toContain('مرحبًا');
+    expect(el.querySelector('#about-title')?.textContent).toContain('قليل عني');
   });
 
   it('renders French with ltr direction', async () => {
-    await setup('/fr');
+    const { el } = await setup('/fr');
     expect(document.documentElement.dir).toBe('ltr');
-    expect(TestBed.inject(Title).getTitle()).toBe('Fondations · ASA');
+    expect(TestBed.inject(Title).getTitle()).toBe('Portfolio · ASA');
+    expect(el.querySelector('#experience-title')?.textContent).toContain("D'où je viens");
   });
 
   it('sends unknown locales to the default locale 404', async () => {
@@ -82,10 +87,11 @@ describe('language switcher', () => {
   it('renders real links to the same page in each language, marking the current one', async () => {
     const { el } = await setup('/fr/nope');
     const links = [...el.querySelectorAll<HTMLAnchorElement>('app-language-switcher a')];
-    expect(links.map((a) => a.getAttribute('href'))).toEqual(['/fr/nope', '/en/nope', '/ar/nope']);
-    expect(links.map((a) => a.getAttribute('hreflang'))).toEqual(['fr', 'en', 'ar']);
-    expect(links.filter((a) => a.getAttribute('aria-current') === 'true')).toHaveLength(1);
-    expect(links[0]?.getAttribute('aria-current')).toBe('true');
+    const unique = links.slice(0, 3);
+    expect(unique.map((a) => a.getAttribute('href'))).toEqual(['/fr/nope', '/en/nope', '/ar/nope']);
+    expect(unique.map((a) => a.getAttribute('hreflang'))).toEqual(['fr', 'en', 'ar']);
+    expect(unique.filter((a) => a.getAttribute('aria-current') === 'true')).toHaveLength(1);
+    expect(unique[0]?.getAttribute('aria-current')).toBe('true');
   });
 
   it('switches language on the same page without rebuilding it', async () => {
@@ -100,10 +106,12 @@ describe('language switcher', () => {
 });
 
 describe('shell', () => {
-  it('has a skip link and a labelled main landmark', async () => {
+  it('has a skip link, a main landmark and a navigation to every section', async () => {
     const { el } = await setup('/en');
     expect(el.querySelector('a[href="#main"]')?.textContent).toContain('Skip to main content');
     expect(el.querySelector('main#main')).not.toBeNull();
+    // The section links appear in both the desktop bar and the mobile menu.
+    expect(el.querySelectorAll('nav[aria-label="Main navigation"] a')).toHaveLength(12);
   });
 
   it('opens and closes the command palette with Ctrl+K', async () => {
@@ -121,11 +129,25 @@ describe('shell', () => {
     expect(commands.open()).toBe(false);
   });
 
-  it('registers translated commands that follow the active language', async () => {
+  it('registers translated commands: sections, languages, theme and fun', async () => {
     await setup('/en');
     const commands = TestBed.inject(CommandService);
-    expect(commands.commands().map((c) => c.id)).toEqual(['home', 'lang-fr', 'lang-ar', 'theme']);
-    expect(commands.commands()[1]?.label).toBe('Switch language to Français');
+    expect(commands.commands().map((c) => c.id)).toEqual([
+      'home',
+      'go-about',
+      'go-experience',
+      'go-skills',
+      'go-projects',
+      'go-kind',
+      'go-contact',
+      'lang-fr',
+      'lang-ar',
+      'theme',
+      'confetti',
+    ]);
+    const label = (id: string) => commands.commands().find((c) => c.id === id)?.label;
+    expect(label('lang-fr')).toBe('Switch language to Français');
+    expect(label('go-experience')).toBe('Go to Journey');
   });
 
   it('filters, navigates with the keyboard and runs the selected command', async () => {
@@ -150,6 +172,18 @@ describe('shell', () => {
     expect(document.documentElement.dir).toBe('rtl');
   });
 
+  it('jumps to a section from the palette', async () => {
+    const { fixture } = await setup('/en');
+    const target = document.getElementById('skills')!;
+    const spy = vi.spyOn(target, 'scrollIntoView');
+    TestBed.inject(CommandService)
+      .commands()
+      .find((c) => c.id === 'go-skills')!
+      .run();
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalled();
+  });
+
   it('moves the active option with arrow keys and wraps around', async () => {
     const { fixture, el } = await setup('/en');
     TestBed.inject(CommandService).show();
@@ -160,11 +194,11 @@ describe('shell', () => {
       fixture.detectChanges();
     };
     press('ArrowUp');
-    expect(input.getAttribute('aria-activedescendant')).toBe('command-theme');
+    expect(input.getAttribute('aria-activedescendant')).toBe('command-confetti');
     press('ArrowDown');
     expect(input.getAttribute('aria-activedescendant')).toBe('command-home');
     press('End');
-    expect(input.getAttribute('aria-activedescendant')).toBe('command-theme');
+    expect(input.getAttribute('aria-activedescendant')).toBe('command-confetti');
     press('Home');
     expect(input.getAttribute('aria-activedescendant')).toBe('command-home');
   });

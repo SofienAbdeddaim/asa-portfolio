@@ -5,16 +5,20 @@
   },
   "nav": {
     "label": "Navigation principale",
-    "home": "Accueil"
+    "home": "Accueil",
+    "about": "À propos",
+    "experience": "Parcours",
+    "skills": "Outils",
+    "projects": "Projets",
+    "kind": "Avis",
+    "contact": "Contact",
+    "menu": "Menu",
+    "closeMenu": "Fermer le menu"
   },
   "language": {
     "label": "Langue",
     "switchTo": "Passer la langue en {{language}}",
-    "names": {
-      "fr": "Français",
-      "en": "Anglais",
-      "ar": "Arabe"
-    }
+    "names": { "fr": "Français", "en": "Anglais", "ar": "Arabe" }
   },
   "theme": {
     "label": "Thème",
@@ -35,40 +39,83 @@
     "group": {
       "navigate": "Navigation",
       "language": "Langue",
-      "appearance": "Apparence"
+      "appearance": "Apparence",
+      "fun": "Pour le plaisir"
     },
-    "goHome": "Aller à l’accueil",
-    "toggleTheme": "Changer le thème"
+    "goHome": "Retour en haut",
+    "goTo": "Aller à : {{section}}",
+    "toggleTheme": "Changer le thème",
+    "confetti": "Lancer des confettis"
   },
   "status": {
     "stale": "Contenu enregistré affiché. Les données en direct se réveillent."
   },
   "home": {
-    "title": "Fondations",
-    "eyebrow": "Aperçu de la phase 2",
-    "heading": "Les fondations d’un portfolio en forme de frise",
-    "lead": "Le routage, les traductions, la mise en page de droite à gauche, les tokens de design et les composants partagés sont en place. La frise arrive à la phase suivante.",
-    "direction": "Sens du texte",
-    "dirLtr": "De gauche à droite",
-    "dirRtl": "De droite à gauche",
-    "formatting": "Formats selon la langue",
-    "dateSample": "Date",
-    "numberSample": "Nombre",
-    "loading": "États de chargement",
-    "primary": "Action principale",
-    "secondary": "Action secondaire",
-    "next": "Suivant"
+    "title": "Portfolio"
+  },
+  "hero": {
+    "greeting": "Salut, moi c'est",
+    "available": "Ouvert à de nouveaux projets",
+    "limited": "Disponibilité limitée",
+    "closed": "Indisponible pour l'instant",
+    "work": "Voir mon travail",
+    "hello": "Dire bonjour",
+    "scroll": "Défiler pour explorer"
+  },
+  "about": {
+    "eyebrow": "01 · À propos",
+    "title": "Un peu sur moi",
+    "basedIn": "Basé à",
+    "education": "Formation",
+    "certificates": "Certifications",
+    "issuedBy": "par {{issuer}}"
+  },
+  "experience": {
+    "eyebrow": "02 · Parcours",
+    "title": "D'où je viens",
+    "present": "Aujourd'hui",
+    "at": "{{role}} chez {{company}}"
+  },
+  "skills": {
+    "eyebrow": "03 · Outils",
+    "title": "Avec quoi je travaille",
+    "level": "{{level}} sur 5"
+  },
+  "projects": {
+    "eyebrow": "04 · Projets",
+    "title": "Ce que j'ai construit",
+    "featured": "À la une",
+    "code": "Code",
+    "demo": "Démo en ligne",
+    "codeFor": "Code source de {{name}}",
+    "demoFor": "Démo en ligne de {{name}}"
+  },
+  "kind": {
+    "eyebrow": "05 · Avis",
+    "title": "Ce qu'on en dit"
+  },
+  "contact": {
+    "eyebrow": "06 · Contact",
+    "title": "Créons quelque chose de chouette",
+    "lead": "Une idée, un poste, ou juste un bonjour ? Ma boîte mail est ouverte.",
+    "copy": "Copier l'e-mail",
+    "copied": "E-mail copié",
+    "elsewhere": "Me retrouver ailleurs"
+  },
+  "common": {
+    "newTab": "s'ouvre dans un nouvel onglet"
   },
   "notFound": {
     "title": "Page introuvable",
-    "body": "La page que vous cherchez n’existe pas ou a été déplacée.",
-    "back": "Retour à l’accueil"
+    "body": "La page que vous cherchez n'existe pas ou a été déplacée.",
+    "back": "Retour à l'accueil"
   },
   "admin": {
     "title": "Back-office",
     "body": "Le back-office privé est construit dans une phase ultérieure."
   },
   "footer": {
-    "note": "Construit avec Angular. Lecture libre, aucun suivi."
+    "note": "Fait avec Angular, beaucoup de papier crème et aucun suivi.",
+    "top": "Retour en haut"
   }
 }

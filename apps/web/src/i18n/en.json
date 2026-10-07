@@ -5,16 +5,20 @@
   },
   "nav": {
     "label": "Main navigation",
-    "home": "Home"
+    "home": "Home",
+    "about": "About",
+    "experience": "Journey",
+    "skills": "Toolbox",
+    "projects": "Projects",
+    "kind": "Kind words",
+    "contact": "Contact",
+    "menu": "Menu",
+    "closeMenu": "Close menu"
   },
   "language": {
     "label": "Language",
     "switchTo": "Switch language to {{language}}",
-    "names": {
-      "fr": "French",
-      "en": "English",
-      "ar": "Arabic"
-    }
+    "names": { "fr": "French", "en": "English", "ar": "Arabic" }
   },
   "theme": {
     "label": "Theme",
@@ -35,29 +39,71 @@
     "group": {
       "navigate": "Navigate",
       "language": "Language",
-      "appearance": "Appearance"
+      "appearance": "Appearance",
+      "fun": "Just for fun"
     },
-    "goHome": "Go to home",
-    "toggleTheme": "Change theme"
+    "goHome": "Back to top",
+    "goTo": "Go to {{section}}",
+    "toggleTheme": "Change theme",
+    "confetti": "Throw confetti"
   },
   "status": {
     "stale": "Showing saved content. Live data is waking up."
   },
   "home": {
-    "title": "Foundations",
-    "eyebrow": "Phase 2 preview",
-    "heading": "The groundwork for a timeline-shaped portfolio",
-    "lead": "Routing, translations, right-to-left layout, design tokens and shared components are in place. The timeline itself arrives in the next phase.",
-    "direction": "Text direction",
-    "dirLtr": "Left to right",
-    "dirRtl": "Right to left",
-    "formatting": "Locale-aware formatting",
-    "dateSample": "Date",
-    "numberSample": "Number",
-    "loading": "Loading states",
-    "primary": "Primary action",
-    "secondary": "Secondary action",
-    "next": "Next"
+    "title": "Portfolio"
+  },
+  "hero": {
+    "greeting": "Hi, I'm",
+    "available": "Open to new projects",
+    "limited": "Limited availability",
+    "closed": "Not available right now",
+    "work": "See my work",
+    "hello": "Say hello",
+    "scroll": "Scroll to explore"
+  },
+  "about": {
+    "eyebrow": "01 · About",
+    "title": "A little about me",
+    "basedIn": "Based in",
+    "education": "School",
+    "certificates": "Certificates",
+    "issuedBy": "by {{issuer}}"
+  },
+  "experience": {
+    "eyebrow": "02 · Journey",
+    "title": "Where I've been",
+    "present": "Present",
+    "at": "{{role}} at {{company}}"
+  },
+  "skills": {
+    "eyebrow": "03 · Toolbox",
+    "title": "What I work with",
+    "level": "{{level}} out of 5"
+  },
+  "projects": {
+    "eyebrow": "04 · Projects",
+    "title": "Things I've built",
+    "featured": "Featured",
+    "code": "Code",
+    "demo": "Live demo",
+    "codeFor": "Source code of {{name}}",
+    "demoFor": "Live demo of {{name}}"
+  },
+  "kind": {
+    "eyebrow": "05 · Kind words",
+    "title": "What people say"
+  },
+  "contact": {
+    "eyebrow": "06 · Contact",
+    "title": "Let's make something fun",
+    "lead": "Got an idea, a role, or just a hello? My inbox is open.",
+    "copy": "Copy email",
+    "copied": "Email copied",
+    "elsewhere": "Find me elsewhere"
+  },
+  "common": {
+    "newTab": "opens in a new tab"
   },
   "notFound": {
     "title": "Page not found",
@@ -69,6 +115,7 @@
     "body": "The private back-office is built in a later phase."
   },
   "footer": {
-    "note": "Built with Angular. Free to read, no tracking."
+    "note": "Made with Angular, a lot of cream paper and no tracking.",
+    "top": "Back to top"
   }
 }

@@ -21,7 +21,7 @@ export const LANGUAGE_NAMES: Record<Locale, string> = {
   imports: [RouterLink, TranslocoPipe],
   template: `
     <nav [attr.aria-label]="'language.label' | transloco">
-      <ul class="flex items-center gap-1">
+      <ul class="flex items-center gap-1 rounded-full border-[3px] border-ink bg-surface p-1">
         @for (code of locales; track code) {
           <li>
             <a
@@ -30,7 +30,7 @@ export const LANGUAGE_NAMES: Record<Locale, string> = {
               [attr.lang]="code"
               [attr.aria-label]="'language.switchTo' | transloco: { language: names[code] }"
               [attr.aria-current]="code === localeService.locale() ? 'true' : null"
-              class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg px-2 text-sm font-medium uppercase hover:bg-surface-2 aria-[current=true]:bg-accent aria-[current=true]:text-accent-fg"
+              class="inline-flex min-h-9 min-w-10 items-center justify-center rounded-full px-2 text-sm font-bold uppercase transition-colors hover:bg-surface-2 aria-[current=true]:bg-coral aria-[current=true]:text-on-color"
               >{{ code }}</a
             >
           </li>

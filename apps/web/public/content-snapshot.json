@@ -1,11 +1,457 @@
 {
-  "generatedAt": "1970-01-01T00:00:00.000Z",
-  "profile": null,
-  "experiences": [],
-  "skills": [],
-  "projects": [],
-  "education": [],
-  "certificates": [],
-  "testimonials": [],
-  "posts": []
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "profile": {
+    "id": "profile",
+    "fullName": "Alex Placeholder",
+    "headline": {
+      "en": "Senior Software Engineer",
+      "fr": "Ingénieur logiciel senior",
+      "ar": "مهندس برمجيات أول"
+    },
+    "bio": {
+      "en": "This is placeholder text. I build fast, accessible interfaces and the services behind them, and I like teams that ship small and learn quickly.\n\nReplace this biography from the back-office.",
+      "fr": "Ceci est un texte fictif. Je construis des interfaces rapides et accessibles, et les services qui les alimentent, et j'aime les équipes qui livrent petit et apprennent vite.\n\nRemplacez cette biographie depuis le back-office.",
+      "ar": "هذا نص تجريبي. أبني واجهات سريعة وسهلة الوصول والخدمات التي تقف خلفها، وأحب الفرق التي تُنجز بخطوات صغيرة وتتعلم بسرعة.\n\nاستبدل هذه النبذة من لوحة الإدارة."
+    },
+    "location": {
+      "en": "Nowhere City",
+      "fr": "Ville Imaginaire",
+      "ar": "مدينة وهمية"
+    },
+    "email": "hello@example.com",
+    "availability": {
+      "status": "open",
+      "note": {
+        "en": "Open to examples",
+        "fr": "Ouvert aux exemples",
+        "ar": "متاح للأمثلة"
+      }
+    },
+    "socials": [
+      {
+        "kind": "github",
+        "url": "https://github.com/example"
+      },
+      {
+        "kind": "linkedin",
+        "url": "https://www.linkedin.com/in/example"
+      }
+    ]
+  },
+  "experiences": [
+    {
+      "id": "exp-1",
+      "order": 0,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": ["TypeScript", "Angular", "Tailwind CSS"],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "company": "Example Corp",
+      "role": {
+        "en": "Lead Frontend Engineer",
+        "fr": "Ingénieur frontend référent",
+        "ar": "مهندس واجهات رئيسي"
+      },
+      "location": {
+        "en": "Remote",
+        "fr": "À distance",
+        "ar": "عن بُعد"
+      },
+      "startDate": "2021-01-01",
+      "current": true,
+      "summary": {
+        "en": "Fake role used to preview the timeline: leads a design system and a team of five.",
+        "fr": "Poste fictif pour la frise : pilote un design system et une équipe de cinq personnes.",
+        "ar": "دور وهمي لمعاينة الخط الزمني: يقود نظام تصميم وفريقًا من خمسة أشخاص."
+      },
+      "highlights": {
+        "en": "- Cut page weight by 40% with lazy loading\n- Introduced accessibility checks in CI",
+        "fr": "- Poids des pages réduit de 40 % grâce au lazy loading\n- Contrôles d’accessibilité ajoutés à la CI",
+        "ar": "- خفض حجم الصفحات بنسبة 40٪ عبر التحميل الكسول\n- إضافة فحوصات إتاحة إلى التكامل المستمر"
+      }
+    },
+    {
+      "id": "exp-2",
+      "order": 1,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": ["Node.js", "MongoDB"],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "company": "Sample Ltd",
+      "role": {
+        "en": "Full-stack Engineer",
+        "fr": "Ingénieur full-stack",
+        "ar": "مهندس متكامل"
+      },
+      "location": {
+        "en": "Nowhere City",
+        "fr": "Ville Imaginaire",
+        "ar": "مدينة وهمية"
+      },
+      "startDate": "2018-03-01",
+      "endDate": "2020-12-31",
+      "summary": {
+        "en": "Another fake role: built internal tools and an events API.",
+        "fr": "Un autre poste fictif : outils internes et API d'événements.",
+        "ar": "دور وهمي آخر: بناء أدوات داخلية وواجهة برمجية للأحداث."
+      }
+    },
+    {
+      "id": "exp-3",
+      "order": 2,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": ["JavaScript", "CSS"],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "company": "Demo Studio",
+      "role": {
+        "en": "Junior Developer",
+        "fr": "Développeur junior",
+        "ar": "مطوّر مبتدئ"
+      },
+      "startDate": "2016-09-01",
+      "endDate": "2018-02-28",
+      "summary": {
+        "en": "Fake first job: shipped marketing sites and learned to review code.",
+        "fr": "Faux premier emploi : sites vitrines et apprentissage de la revue de code.",
+        "ar": "أول وظيفة وهمية: مواقع تسويقية وتعلّم مراجعة الشيفرة."
+      }
+    }
+  ],
+  "skills": [
+    {
+      "id": "skill-1",
+      "order": 0,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": [],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "category": {
+        "en": "Frontend",
+        "fr": "Frontend",
+        "ar": "الواجهة الأمامية"
+      },
+      "items": [
+        {
+          "name": "Angular",
+          "level": 5
+        },
+        {
+          "name": "TypeScript",
+          "level": 5
+        },
+        {
+          "name": "CSS",
+          "level": 4
+        },
+        {
+          "name": "Accessibility",
+          "level": 4
+        }
+      ]
+    },
+    {
+      "id": "skill-2",
+      "order": 1,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": [],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "category": {
+        "en": "Backend",
+        "fr": "Backend",
+        "ar": "الخلفية"
+      },
+      "items": [
+        {
+          "name": "Node.js",
+          "level": 4
+        },
+        {
+          "name": "NestJS",
+          "level": 4
+        },
+        {
+          "name": "MongoDB",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "skill-3",
+      "order": 2,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": [],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "category": {
+        "en": "Tooling",
+        "fr": "Outillage",
+        "ar": "الأدوات"
+      },
+      "items": [
+        {
+          "name": "Git",
+          "level": 5
+        },
+        {
+          "name": "Docker",
+          "level": 3
+        },
+        {
+          "name": "CI/CD",
+          "level": 4
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-1",
+      "order": 0,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": ["Angular", "Storybook", "Playwright"],
+      "images": [],
+      "featured": true,
+      "tags": [],
+      "slug": "example-design-system",
+      "title": {
+        "en": "Example design system",
+        "fr": "Design system exemple",
+        "ar": "نظام تصميم تجريبي"
+      },
+      "summary": {
+        "en": "A fake component library with tokens, docs and visual tests.",
+        "fr": "Une fausse bibliothèque de composants avec tokens, documentation et tests visuels.",
+        "ar": "مكتبة مكوّنات وهمية بعناصر تصميم وتوثيق واختبارات مرئية."
+      },
+      "repoUrl": "https://github.com/example/design-system",
+      "demoUrl": "https://example.com/design-system"
+    },
+    {
+      "id": "proj-2",
+      "order": 1,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": ["NestJS", "MongoDB", "Docker"],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "slug": "example-api",
+      "title": {
+        "en": "Example events API",
+        "fr": "API d'événements exemple",
+        "ar": "واجهة أحداث تجريبية"
+      },
+      "summary": {
+        "en": "A placeholder REST API with auth, rate limiting and OpenAPI docs.",
+        "fr": "Une API REST fictive avec authentification, limitation de débit et documentation OpenAPI.",
+        "ar": "واجهة REST وهمية مع مصادقة وتحديد للمعدل وتوثيق OpenAPI."
+      },
+      "repoUrl": "https://github.com/example/events-api"
+    },
+    {
+      "id": "proj-3",
+      "order": 2,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": ["TypeScript", "D3", "Signals"],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "slug": "example-dashboard",
+      "title": {
+        "en": "Example dashboard",
+        "fr": "Tableau de bord exemple",
+        "ar": "لوحة معلومات تجريبية"
+      },
+      "summary": {
+        "en": "A made-up analytics dashboard with live charts and keyboard shortcuts.",
+        "fr": "Un tableau de bord fictif avec graphiques en direct et raccourcis clavier.",
+        "ar": "لوحة تحليلات متخيَّلة برسوم مباشرة واختصارات لوحة المفاتيح."
+      },
+      "demoUrl": "https://example.com/dashboard"
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-1",
+      "order": 0,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": [],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "institution": "Example University",
+      "degree": {
+        "en": "Master of Examples",
+        "fr": "Master en exemples",
+        "ar": "ماجستير الأمثلة"
+      },
+      "startDate": "2012-09-01",
+      "endDate": "2016-06-30"
+    }
+  ],
+  "certificates": [
+    {
+      "id": "cert-1",
+      "order": 0,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": [],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "name": {
+        "en": "Certified Example Builder",
+        "fr": "Constructeur d'exemples certifié",
+        "ar": "منشئ أمثلة معتمد"
+      },
+      "issuer": "Example Institute",
+      "issuedAt": "2022-05-01"
+    },
+    {
+      "id": "cert-2",
+      "order": 1,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": [],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "name": {
+        "en": "Accessibility Fundamentals",
+        "fr": "Fondamentaux de l'accessibilité",
+        "ar": "أساسيات الإتاحة"
+      },
+      "issuer": "Sample Academy",
+      "issuedAt": "2023-02-01"
+    }
+  ],
+  "testimonials": [
+    {
+      "id": "quote-1",
+      "order": 0,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": [],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "authorName": "Jane Placeholder",
+      "authorRole": {
+        "en": "Fictional manager",
+        "fr": "Manager fictive",
+        "ar": "مديرة وهمية"
+      },
+      "authorCompany": "Example Corp",
+      "quote": {
+        "en": "A fake testimonial that praises shipping small and often.",
+        "fr": "Un faux témoignage qui loue les livraisons petites et fréquentes.",
+        "ar": "شهادة وهمية تثني على الإنجاز بخطوات صغيرة ومتكررة."
+      }
+    },
+    {
+      "id": "quote-2",
+      "order": 1,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": [],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "authorName": "Sam Sample",
+      "authorRole": {
+        "en": "Imaginary designer",
+        "fr": "Designer imaginaire",
+        "ar": "مصمم متخيَّل"
+      },
+      "authorCompany": "Demo Studio",
+      "quote": {
+        "en": "Another made-up quote about pixel-perfect handoffs.",
+        "fr": "Une autre citation inventée sur des intégrations au pixel près.",
+        "ar": "اقتباس متخيَّل آخر عن تسليم دقيق حتى البكسل."
+      }
+    },
+    {
+      "id": "quote-3",
+      "order": 2,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": [],
+      "images": [],
+      "featured": false,
+      "tags": [],
+      "authorName": "Robin Mock",
+      "authorRole": {
+        "en": "Pretend CTO",
+        "fr": "CTO pour de faux",
+        "ar": "مدير تقني افتراضي"
+      },
+      "authorCompany": "Sample Ltd",
+      "quote": {
+        "en": "A third pretend review, short and sweet.",
+        "fr": "Un troisième avis fictif, court et gentil.",
+        "ar": "مراجعة وهمية ثالثة، قصيرة ولطيفة."
+      }
+    }
+  ],
+  "posts": [
+    {
+      "id": "post-1",
+      "order": 0,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": [],
+      "images": [],
+      "featured": false,
+      "tags": ["example"],
+      "slug": "hello-world",
+      "title": {
+        "en": "Hello, world",
+        "fr": "Bonjour le monde",
+        "ar": "مرحبا بالعالم"
+      },
+      "excerpt": {
+        "en": "A placeholder post.",
+        "fr": "Un article fictif.",
+        "ar": "مقال وهمي."
+      },
+      "body": {
+        "en": "# Hello\n\nPlaceholder **markdown**.",
+        "fr": "# Bonjour\n\nMarkdown **fictif**.",
+        "ar": "# مرحبا\n\nنص **تجريبي**."
+      }
+    }
+  ]
 }

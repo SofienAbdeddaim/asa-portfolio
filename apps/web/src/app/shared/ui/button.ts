@@ -1,23 +1,18 @@
 import { Directive, computed, input } from '@angular/core';
 
-export type ButtonVariant = 'primary' | 'outline' | 'ghost';
+export type StickerColor = 'sun' | 'coral' | 'mint' | 'sky' | 'lilac' | 'pink' | 'paper';
 
-const BASE =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium ' +
-  'transition-colors disabled:pointer-events-none disabled:opacity-50';
-
-const VARIANTS: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-accent-fg hover:opacity-90',
-  outline: 'border border-border bg-surface text-fg hover:bg-surface-2',
-  ghost: 'text-fg hover:bg-surface-2',
-};
-
-/** Styles a native `<button>` or `<a>` as a button, so semantics stay native. */
+/** Styles a native `<button>` or `<a>` as a sticker button, so semantics stay native. */
 @Directive({
   selector: 'button[appButton], a[appButton]',
-  host: { '[class]': 'classes()' },
+  host: { class: 'btn', '[style.--btn-bg]': 'background()', '[style.--btn-fg]': 'foreground()' },
 })
 export class Button {
-  readonly variant = input<ButtonVariant>('primary');
-  protected readonly classes = computed(() => `${BASE} ${VARIANTS[this.variant()]}`);
+  readonly color = input<StickerColor>('sun');
+  protected readonly foreground = computed(() =>
+    this.color() === 'paper' ? 'var(--fg)' : 'var(--on-color)',
+  );
+  protected readonly background = computed(() =>
+    this.color() === 'paper' ? 'var(--surface)' : `var(--c-${this.color()})`,
+  );
 }

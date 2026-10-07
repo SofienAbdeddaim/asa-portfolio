@@ -1,6 +1,13 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import {
+  Injectable,
+  PLATFORM_ID,
+  TransferState,
+  inject,
+  makeStateKey,
+  signal,
+} from '@angular/core';
 import type { ContentSnapshot } from '@asa/shared';
 import { firstValueFrom, timeout } from 'rxjs';
 
@@ -10,15 +17,20 @@ export type ContentSource = 'empty' | 'snapshot' | 'live' | 'stale';
 export const SNAPSHOT_URL = '/content-snapshot.json';
 export const LIVE_URL = '/api/content';
 const LIVE_TIMEOUT_MS = 5000;
+const SNAPSHOT_KEY = makeStateKey<ContentSnapshot>('content-snapshot');
 
 /**
  * Public content. It always renders from the build-time snapshot first, then upgrades to live data
  * when the API answers. A sleeping free-tier API therefore never blocks or blanks the page.
+ *
+ * At prerender time the snapshot is read from disk (see `app.config.server.ts`), rendered into the
+ * HTML and handed to the browser through TransferState, so hydration needs no extra request.
  */
 @Injectable({ providedIn: 'root' })
 export class ContentStore {
   private readonly http = inject(HttpClient);
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly transfer = inject(TransferState);
 
   private readonly _content = signal<ContentSnapshot | null>(null);
   private readonly _source = signal<ContentSource>('empty');
@@ -27,15 +39,33 @@ export class ContentStore {
 
   private started = false;
 
+  constructor() {
+    const transferred = this.transfer.get(SNAPSHOT_KEY, null);
+    if (transferred) {
+      this.transfer.remove(SNAPSHOT_KEY);
+      this._content.set(transferred);
+      this._source.set('snapshot');
+    }
+  }
+
+  /** Server only: installs the snapshot read at build time and passes it on to the browser. */
+  seed(snapshot: ContentSnapshot): void {
+    this._content.set(snapshot);
+    this._source.set('snapshot');
+    this.transfer.set(SNAPSHOT_KEY, snapshot);
+  }
+
   async load(): Promise<void> {
     if (this.started) return;
     this.started = true;
 
-    try {
-      this._content.set(await firstValueFrom(this.http.get<ContentSnapshot>(SNAPSHOT_URL)));
-      this._source.set('snapshot');
-    } catch {
-      // No snapshot (e.g. first local run): fall through to the live request.
+    if (!this._content()) {
+      try {
+        this._content.set(await firstValueFrom(this.http.get<ContentSnapshot>(SNAPSHOT_URL)));
+        this._source.set('snapshot');
+      } catch {
+        // No snapshot (e.g. first local run): fall through to the live request.
+      }
     }
     if (!this.browser) return; // prerendering must not depend on the API being awake
 

@@ -24,14 +24,15 @@ import { Icon } from '../shared/ui/icon';
     <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- backdrop click is a mouse shortcut; Esc closes by keyboard -->
     <dialog
       #dialog
-      class="m-auto mt-[12vh] w-[min(36rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border bg-surface p-0 text-fg shadow-2xl"
+      class="sticker m-auto mt-[12vh] w-[min(38rem,calc(100vw-2rem))] overflow-hidden p-0 text-fg"
+      style="--shadow: 10px"
       aria-labelledby="palette-title"
       (close)="commands.hide()"
       (click)="onDialogClick($event)"
     >
       <h2 id="palette-title" class="sr-only">{{ 'palette.title' | transloco }}</h2>
-      <div class="flex items-center gap-3 border-b border-border px-4">
-        <app-icon name="search" class="text-muted" />
+      <div class="flex items-center gap-3 border-b-[3px] border-ink px-4">
+        <app-icon name="search" />
         <input
           #field
           type="text"
@@ -57,12 +58,12 @@ import { Icon } from '../shared/ui/icon';
             role="option"
             [id]="'command-' + command.id"
             [attr.aria-selected]="index === active()"
-            class="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-lg px-3 py-2 aria-selected:bg-accent aria-selected:text-accent-fg"
+            class="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-xl px-3 py-2 font-medium aria-selected:bg-sun aria-selected:text-on-color"
             (click)="run(command)"
             (mousemove)="active.set(index)"
           >
             <span>{{ command.label }}</span>
-            <span class="text-xs opacity-70">{{ command.group }}</span>
+            <span class="text-xs font-semibold opacity-80">{{ command.group }}</span>
           </li>
         } @empty {
           <li role="presentation" class="px-3 py-6 text-center text-muted">
@@ -71,7 +72,7 @@ import { Icon } from '../shared/ui/icon';
         }
       </ul>
 
-      <p class="border-t border-border px-4 py-2 text-xs text-muted">
+      <p class="border-t-[3px] border-ink bg-surface-2 px-4 py-2 text-xs font-medium">
         {{ 'palette.hint' | transloco }}
       </p>
       <p class="sr-only" role="status" aria-live="polite">

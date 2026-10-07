@@ -1,89 +1,96 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  afterNextRender,
+  computed,
+  inject,
+} from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ContentStore } from '../core/content.store';
-import { formatDate, formatNumber } from '../core/locale';
 import { LocaleService } from '../core/locale.service';
-import { Button } from '../shared/ui/button';
-import { Icon } from '../shared/ui/icon';
+import { ScrollSpy } from '../core/sections';
+import { About } from '../sections/about';
+import { Contact } from '../sections/contact';
+import { Experience } from '../sections/experience';
+import { Hero } from '../sections/hero';
+import { Projects } from '../sections/projects';
+import { Skills } from '../sections/skills';
+import { Testimonials } from '../sections/testimonials';
 import { Skeleton } from '../shared/ui/skeleton';
 
-/** Foundations preview. The timeline-shaped home page replaces this in the next phase. */
+/** The whole portfolio: one scrolling timeline of sections, rendered from the content store. */
 @Component({
   selector: 'app-home-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslocoPipe, Button, Icon, Skeleton],
+  imports: [
+    TranslocoPipe,
+    Skeleton,
+    Hero,
+    About,
+    Experience,
+    Skills,
+    Projects,
+    Testimonials,
+    Contact,
+  ],
   template: `
     @if (store.source() === 'stale') {
       <p
         role="status"
-        class="mb-8 rounded-lg border border-border bg-surface-2 px-4 py-3 text-sm text-muted"
+        class="container-page mt-4 rounded-xl border-[3px] border-ink bg-sun px-4 py-3 text-sm font-semibold text-on-color"
       >
         {{ 'status.stale' | transloco }}
       </p>
     }
 
-    <section class="reveal max-w-3xl">
-      <p class="text-sm font-medium text-accent">{{ 'home.eyebrow' | transloco }}</p>
-      <h1 class="mt-3 text-4xl sm:text-5xl">{{ 'home.heading' | transloco }}</h1>
-      <p class="mt-6 text-lg text-muted">{{ 'home.lead' | transloco }}</p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <button type="button" appButton>
-          {{ 'home.primary' | transloco }}
-          <app-icon name="arrow" [mirror]="true" />
-        </button>
-        <button type="button" appButton variant="outline">
-          {{ 'home.secondary' | transloco }}
-        </button>
+    @if (content(); as c) {
+      <app-hero [profile]="c.profile" [locale]="locale.locale()" [tags]="tags()" />
+      <app-about
+        [profile]="c.profile"
+        [education]="c.education"
+        [certificates]="c.certificates"
+        [locale]="locale.locale()"
+      />
+      @if (c.experiences.length) {
+        <app-experience [items]="c.experiences" [locale]="locale.locale()" />
+      }
+      @if (c.skills.length) {
+        <app-skills [groups]="c.skills" [locale]="locale.locale()" />
+      }
+      @if (c.projects.length) {
+        <app-projects [projects]="c.projects" [locale]="locale.locale()" />
+      }
+      @if (c.testimonials.length) {
+        <app-testimonials [items]="c.testimonials" [locale]="locale.locale()" />
+      }
+      <app-contact [profile]="c.profile" />
+    } @else {
+      <div class="container-page space-y-6 pt-16" aria-busy="true">
+        <div appSkeleton class="h-10 w-48"></div>
+        <div appSkeleton class="h-40 w-full max-w-2xl"></div>
+        <div appSkeleton class="h-6 w-full max-w-xl"></div>
+        <div appSkeleton class="h-6 w-2/3 max-w-lg"></div>
       </div>
-    </section>
-
-    <section class="mt-16 grid gap-6 md:grid-cols-3">
-      <article class="rounded-card border border-border bg-surface p-6">
-        <h2 class="text-lg">{{ 'home.direction' | transloco }}</h2>
-        <p class="mt-3 text-muted">
-          {{ (locale.direction() === 'rtl' ? 'home.dirRtl' : 'home.dirLtr') | transloco }}
-        </p>
-        <p class="mt-2 font-mono text-sm text-muted">
-          <code>dir="{{ locale.direction() }}"</code>
-        </p>
-      </article>
-
-      <article class="rounded-card border border-border bg-surface p-6">
-        <h2 class="text-lg">{{ 'home.formatting' | transloco }}</h2>
-        <dl class="mt-3 space-y-1 text-muted">
-          <div class="flex justify-between gap-4">
-            <dt>{{ 'home.dateSample' | transloco }}</dt>
-            <dd>{{ sampleDate() }}</dd>
-          </div>
-          <div class="flex justify-between gap-4">
-            <dt>{{ 'home.numberSample' | transloco }}</dt>
-            <dd>{{ sampleNumber() }}</dd>
-          </div>
-        </dl>
-      </article>
-
-      <article class="rounded-card border border-border bg-surface p-6">
-        <h2 class="text-lg">{{ 'home.loading' | transloco }}</h2>
-        <div class="mt-4 space-y-3">
-          <div appSkeleton class="h-4 w-3/4"></div>
-          <div appSkeleton class="h-4 w-full"></div>
-          <div appSkeleton class="h-4 w-1/2"></div>
-        </div>
-      </article>
-    </section>
+    }
   `,
 })
-export class HomePage {
-  protected readonly locale = inject(LocaleService);
+export class HomePage implements OnDestroy {
   protected readonly store = inject(ContentStore);
+  protected readonly locale = inject(LocaleService);
+  private readonly spy = inject(ScrollSpy);
 
-  private readonly sample = signal(new Date(Date.UTC(2026, 2, 14)));
-  protected readonly sampleDate = computed(() =>
-    formatDate(this.sample(), this.locale.locale(), { dateStyle: 'long' }),
-  );
-  protected readonly sampleNumber = computed(() => formatNumber(1234567.89, this.locale.locale()));
+  protected readonly content = this.store.content;
+  protected readonly tags = computed(() => [
+    ...new Set((this.content()?.skills ?? []).flatMap((group) => group.items.map((i) => i.name))),
+  ]);
 
   constructor() {
     void this.store.load();
+    afterNextRender(() => this.spy.observe());
+  }
+
+  ngOnDestroy(): void {
+    this.spy.stop();
   }
 }

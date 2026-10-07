@@ -1,4 +1,7 @@
-/* Self-hosted fonts (npm packages, no external CDN). Only the subsets we render are bundled. */
+/* Self-hosted fonts (npm packages, no external CDN); only the subsets we render are bundled.
+   Display: Bricolage Grotesque (Latin) + Lalezar (Arabic). Body: IBM Plex Sans + Plex Sans Arabic. */
+@import '@fontsource-variable/bricolage-grotesque/wght.css';
+@import '@fontsource/lalezar/arabic-400.css';
 @import '@fontsource/ibm-plex-sans/latin-400.css';
 @import '@fontsource/ibm-plex-sans/latin-500.css';
 @import '@fontsource/ibm-plex-sans/latin-600.css';
@@ -12,40 +15,47 @@
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /* ---- Design tokens -------------------------------------------------------------------------
-   Semantic colors are CSS variables so a theme switch is one attribute change. Contrast targets
-   (WCAG 2.2 AA): text >= 4.5:1, large text and UI >= 3:1 against its background. */
+   "Sticker book": cream paper, thick ink outlines, hard offset shadows, saturated stickers.
+   Every sticker color carries dark ink text (>= 6.9:1), so the text color never depends on the
+   theme. Page text and muted text meet WCAG 2.2 AA in both themes. */
 :root {
-  --bg: #f7f5f0;
+  --bg: #fff4e0;
   --surface: #ffffff;
-  --surface-2: #efece4;
-  --fg: #1b1a17;
-  --muted: #5b5a55;
-  --border: #d9d5c9;
-  --accent: #0f766e;
-  --accent-fg: #ffffff;
-  --danger: #b42318;
-  --ring: #0f766e;
+  --surface-2: #ffe9c2;
+  --fg: #17120f;
+  --muted: #5a4f45;
+  --ink: #17120f;
+  --accent: #ff5a36;
+  --link: #b32d0f;
+  --on-color: #17120f;
+
+  --c-coral: #ff5a36;
+  --c-sun: #ffd23f;
+  --c-mint: #3ee0a5;
+  --c-sky: #6cc4ff;
+  --c-lilac: #b79cff;
+  --c-pink: #ff8fc7;
+
   --dir-sign: 1;
+  --origin: left;
   color-scheme: light;
 }
 
 [data-theme='dark'] {
-  --bg: #0f1412;
-  --surface: #161d1a;
-  --surface-2: #1d2622;
-  --fg: #ecebe6;
-  --muted: #a3a39b;
-  --border: #2b3732;
-  --accent: #5eead4;
-  --accent-fg: #06201c;
-  --danger: #ff8a80;
-  --ring: #5eead4;
+  --bg: #15101f;
+  --surface: #221a33;
+  --surface-2: #2d2342;
+  --fg: #fff4e0;
+  --muted: #c9bfd9;
+  --ink: #fff4e0;
+  --link: #ff9b82;
   color-scheme: dark;
 }
 
-/* Animations read this sign so slides and reveals travel toward the reading direction. */
+/* Animations and shadows read this sign so they travel and fall toward the reading direction. */
 [dir='rtl'] {
   --dir-sign: -1;
+  --origin: right;
 }
 
 @theme inline {
@@ -54,62 +64,85 @@
   --color-surface-2: var(--surface-2);
   --color-fg: var(--fg);
   --color-muted: var(--muted);
-  --color-border: var(--border);
+  --color-ink: var(--ink);
   --color-accent: var(--accent);
-  --color-accent-fg: var(--accent-fg);
-  --color-danger: var(--danger);
+  --color-link: var(--link);
+  --color-on-color: var(--on-color);
+  --color-coral: var(--c-coral);
+  --color-sun: var(--c-sun);
+  --color-mint: var(--c-mint);
+  --color-sky: var(--c-sky);
+  --color-lilac: var(--c-lilac);
+  --color-pink: var(--c-pink);
 
   --font-sans: 'IBM Plex Sans', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    'Bricolage Grotesque Variable', 'Lalezar', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui,
+    sans-serif;
   --font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
 
-  --radius-card: 1rem;
-  --container-page: 72rem;
+  --container-page: 76rem;
 }
 
 /* ---- Base ---------------------------------------------------------------------------------- */
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
     -webkit-text-size-adjust: 100%;
   }
 
   body {
     background: var(--bg);
+    background-image: radial-gradient(
+      color-mix(in srgb, var(--ink) 14%, transparent) 1.2px,
+      transparent 1.4px
+    );
+    background-size: 22px 22px;
     color: var(--fg);
     font-family: var(--font-sans);
-    line-height: 1.6;
+    line-height: 1.65;
     text-rendering: optimizeLegibility;
+    overflow-x: clip;
   }
 
-  /* Arabic needs more leading and a touch more size to match Latin color and legibility. */
+  /* Arabic needs more leading and a touch more size to match the color of Latin text. */
   :lang(ar) body {
-    line-height: 1.9;
+    line-height: 1.95;
     font-size: 1.0625rem;
-  }
-
-  :lang(ar) h1,
-  :lang(ar) h2,
-  :lang(ar) h3 {
-    line-height: 1.5;
-    letter-spacing: 0;
   }
 
   h1,
   h2,
   h3 {
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
     text-wrap: balance;
+    line-height: 1.05;
+  }
+
+  /* Lalezar has a single weight: never fake a bold, and give Arabic headings room. */
+  :lang(ar) h1,
+  :lang(ar) h2,
+  :lang(ar) h3,
+  :lang(ar) .font-display {
+    font-synthesis: none;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.3;
   }
 
   :focus-visible {
-    outline: 2px solid var(--ring);
+    outline: 3px solid var(--ink);
     outline-offset: 3px;
-    border-radius: 0.25rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0 6px var(--c-sun);
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--accent) 30%, transparent);
+    background: var(--c-sun);
+    color: var(--ink);
   }
 
   /* Code and Latin product names stay left-to-right inside right-to-left text. */
@@ -121,8 +154,106 @@
   }
 
   dialog::backdrop {
-    background: color-mix(in srgb, black 45%, transparent);
-    backdrop-filter: blur(2px);
+    background: color-mix(in srgb, var(--ink) 55%, transparent);
+  }
+}
+
+/* ---- Components ---------------------------------------------------------------------------- */
+@layer components {
+  /* A thick-outlined card with a hard shadow that falls toward the reading direction. */
+  .sticker {
+    --shadow: 6px;
+    background: var(--sticker-bg, var(--surface));
+    color: var(--sticker-fg, var(--fg));
+    border: 3px solid var(--ink);
+    border-radius: 1.25rem;
+    box-shadow: calc(var(--dir-sign) * var(--shadow)) var(--shadow) 0 0 var(--ink);
+    rotate: calc(var(--dir-sign) * var(--tilt, 0deg));
+    transition:
+      translate 0.2s cubic-bezier(0.3, 1.6, 0.5, 1),
+      box-shadow 0.2s ease,
+      rotate 0.2s ease;
+  }
+
+  .sticker-color {
+    --sticker-fg: var(--on-color);
+  }
+
+  .sticker-lift:hover,
+  .sticker-lift:focus-within {
+    --shadow: 10px;
+    translate: calc(var(--dir-sign) * -3px) -3px;
+    rotate: 0deg;
+  }
+
+  .btn {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-inline: 1.25rem;
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    background: var(--btn-bg, var(--c-sun));
+    color: var(--btn-fg, var(--on-color));
+    font-weight: 600;
+    box-shadow: calc(var(--dir-sign) * 4px) 4px 0 0 var(--ink);
+    transition:
+      translate 0.15s cubic-bezier(0.3, 1.6, 0.5, 1),
+      box-shadow 0.15s ease;
+  }
+
+  .btn:hover {
+    translate: calc(var(--dir-sign) * -2px) -2px;
+    box-shadow: calc(var(--dir-sign) * 7px) 7px 0 0 var(--ink);
+  }
+
+  .btn:active {
+    translate: calc(var(--dir-sign) * 4px) 4px;
+    box-shadow: 0 0 0 0 var(--ink);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0.75rem;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: var(--chip-bg, var(--surface));
+    color: var(--chip-fg, var(--fg));
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  :lang(ar) .eyebrow {
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .section-title {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+  }
+
+  .highlight {
+    background: linear-gradient(transparent 58%, var(--hl, var(--c-sun)) 58% 92%, transparent 92%);
+    color: var(--on-color);
+    padding-inline: 0.15em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
 }
 
@@ -134,31 +265,185 @@
   padding-inline: 1rem;
 
   @media (min-width: 40rem) {
-    padding-inline: 1.5rem;
+    padding-inline: 2rem;
   }
 }
 
-/* Direction-aware reveal: slides in from the inline-end side, disabled for reduced motion. */
-@keyframes reveal-in {
-  from {
+/* ---- Motion --------------------------------------------------------------------------------
+   Everything below is decorative and sits behind prefers-reduced-motion. Slides and wobbles read
+   --dir-sign so they travel toward the reading direction in RTL. */
+@keyframes pop-in {
+  0% {
     opacity: 0;
-    transform: translateX(calc(var(--dir-sign) * 1.25rem));
+    transform: translate(calc(var(--dir-sign) * -1.5rem), 2rem) scale(0.9)
+      rotate(calc(var(--dir-sign) * -4deg));
   }
-  to {
+  60% {
+    opacity: 1;
+    transform: translate(0, -0.35rem) scale(1.02);
+  }
+  100% {
     opacity: 1;
     transform: none;
   }
 }
 
-@utility reveal {
-  @media (prefers-reduced-motion: no-preference) {
-    animation: reveal-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+@keyframes letter-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(70%) rotate(calc(var(--dir-sign) * 12deg)) scale(0.6);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-8%) rotate(calc(var(--dir-sign) * -3deg)) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
   }
 }
 
+@keyframes wobble {
+  0%,
+  100% {
+    transform: rotate(calc(var(--dir-sign) * -6deg));
+  }
+  50% {
+    transform: rotate(calc(var(--dir-sign) * 6deg)) translateY(-0.4rem);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.75rem);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(calc(var(--dir-sign) * 360deg));
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(calc(var(--dir-sign) * -50%));
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ink) 55%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0.9rem transparent;
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .anim-wobble {
+    animation: wobble 3.2s ease-in-out infinite;
+  }
+
+  .anim-float {
+    animation: float 4.5s ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .anim-spin {
+    animation: spin var(--spin-time, 18s) linear infinite;
+  }
+
+  .anim-pulse {
+    animation: pulse-ring 1.6s ease-out infinite;
+  }
+
+  .anim-letter {
+    display: inline-block;
+    animation: letter-pop 0.7s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+    animation-delay: calc(var(--i, 0) * 45ms + 150ms);
+  }
+
+  .marquee-track {
+    animation: marquee var(--marquee-time, 38s) linear infinite;
+  }
+
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+
+  /* Elements below the fold are marked pending by RevealDirective, then popped in. */
+  [data-reveal='pending'] {
+    opacity: 0;
+  }
+
+  [data-reveal='in'] {
+    animation: pop-in 0.7s cubic-bezier(0.3, 1.3, 0.5, 1) both;
+    animation-delay: var(--reveal-delay, 0s);
+  }
+
+  /* Scroll-driven effects: progressive enhancement, absent browsers simply skip them. */
+  @supports (animation-timeline: view()) {
+    .scroll-draw {
+      stroke-dasharray: 1;
+      animation: draw linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 70%;
+    }
+
+    .scroll-spin {
+      animation: spin linear both;
+      animation-timeline: scroll(root);
+    }
+
+    .scroll-progress {
+      transform-origin: var(--origin);
+      animation: grow-x linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+
+/* The marquee degrades to a wrapped, static list when motion is reduced. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .marquee {
+    overflow: visible;
+  }
+
+  .marquee-track {
+    flex-wrap: wrap;
+    width: auto !important;
+  }
+
+  .marquee-track [data-clone] {
+    display: none;
   }
 
   *,
@@ -167,5 +452,27 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Theme change as a circle that grows from the toggle (View Transitions, where supported). */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-new(root) {
+    animation: theme-reveal 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  @keyframes theme-reveal {
+    from {
+      clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 0%));
+    }
+    to {
+      clip-path: circle(150vmax at var(--vt-x, 50%) var(--vt-y, 0%));
+    }
   }
 }

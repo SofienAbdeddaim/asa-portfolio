@@ -5,7 +5,7 @@ import { Directive } from '@angular/core';
   selector: '[appSkeleton]',
   host: {
     'aria-hidden': 'true',
-    class: 'block rounded-md bg-surface-2 motion-safe:animate-pulse',
+    class: 'block rounded-xl border-2 border-ink/30 bg-surface-2 motion-safe:animate-pulse',
   },
 })
 export class Skeleton {}

@@ -1,7 +1,7 @@
 import { DEFAULT_LOCALE, LOCALES, type Locale } from './locales.js';
 
-/** A translatable field. Only the default locale is required; the others may be empty. */
-export type LocalizedString = Record<Locale, string>;
+/** A translatable field. Only the default locale (English) is required; the others are optional. */
+export type LocalizedString = { en: string } & Partial<Record<Exclude<Locale, 'en'>, string>>;
 
 const isFilled = (value: string | undefined): value is string =>
   typeof value === 'string' && value.trim().length > 0;
