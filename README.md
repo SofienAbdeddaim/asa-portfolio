@@ -2,7 +2,7 @@
 
 Trilingual (French, English, Arabic with true RTL) personal portfolio with a private back-office, built as a showcase of architecture, security and CI/CD.
 
-> Status: Phase 0 (foundations). See [docs/PLAN.md](docs/PLAN.md).
+> Status: Phase 1 (API core done, see [apps/api](apps/api/README.md)). See [docs/PLAN.md](docs/PLAN.md).
 
 ## Tech stack
 

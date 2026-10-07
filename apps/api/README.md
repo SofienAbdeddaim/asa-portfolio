@@ -1,3 +1,34 @@
-# apps/api
+# @asa/api
 
-Placeholder, scaffolded in Phase 1.
+NestJS 12 + Mongoose API for the portfolio: public content, private back-office, password + TOTP authentication.
+
+## Run locally
+
+```bash
+cp .env.example .env     # from the repo root, then fill JWT_SECRET and TOTP_ENCRYPTION_KEY
+docker compose up -d mongo
+pnpm --filter @asa/api seed:admin      # creates the first admin from SEED_ADMIN_* (2FA is enrolled at first login)
+pnpm --filter @asa/api seed:demo       # clearly fake demo content (add `-- --reset` to wipe first)
+pnpm --filter @asa/api dev             # http://localhost:3000, Swagger at /api/docs
+```
+
+Everything in Docker: `docker compose up --build` (API on `127.0.0.1:3000`).
+
+## Scripts
+
+| Command           | What it does                                            |
+| ----------------- | ------------------------------------------------------- |
+| `pnpm test`       | Vitest with coverage (threshold 70%)                    |
+| `pnpm typecheck`  | `tsc --noEmit`                                          |
+| `pnpm build`      | `tsc` to `dist/`                                        |
+| `pnpm smoke`      | End-to-end check of a running API (fresh local DB only) |
+| `pnpm seed:admin` | Create the first admin (idempotent)                     |
+| `pnpm seed:demo`  | Load fake demo content into empty collections           |
+
+## Endpoints
+
+- Public: `GET /api/profile`, `/api/content` (snapshot), `/api/<resource>`, `/api/<resource>/slug/:slug`, `/api/health`
+- Auth: `POST /api/auth/login`, `2fa/setup`, `2fa/enable`, `2fa/verify`, `refresh`, `logout`, `GET /me`
+- Admin (cookie required): `/api/admin/<resource>` CRUD, `PUT /api/admin/<resource>/reorder`, `PUT /api/admin/profile`
+
+Resources: `experiences`, `skills`, `projects`, `education`, `certificates`, `testimonials`, `posts`. See ADR 7 to 9 for the design.

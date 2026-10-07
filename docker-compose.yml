@@ -1,0 +1,32 @@
+# Local development: MongoDB + API. Copy .env.example to .env first.
+services:
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: mongodb://mongo:27017/portfolio
+    ports:
+      - '127.0.0.1:3000:3000'
+
+volumes:
+  mongo-data:

@@ -14,8 +14,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm --filter @asa/shared build && pnpm -r --if-present typecheck",
+    "test": "pnpm --filter @asa/shared build && pnpm -r --if-present test",
     "build": "pnpm -r --if-present build",
     "audit:prod": "pnpm audit --prod --audit-level high"
   },

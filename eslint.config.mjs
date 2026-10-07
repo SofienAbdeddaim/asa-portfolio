@@ -6,6 +6,12 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    files: ['**/*.mjs'],
+    languageOptions: {
+      globals: { process: 'readonly', fetch: 'readonly', console: 'readonly', URL: 'readonly' },
+    },
+  },
+  {
     rules: {
       // `any` is forbidden unless a disable comment carries a justification.
       '@typescript-eslint/no-explicit-any': 'error',
