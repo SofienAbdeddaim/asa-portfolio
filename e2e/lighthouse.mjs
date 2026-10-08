@@ -12,6 +12,24 @@ import * as chromeLauncher from 'chrome-launcher';
 import lighthouse from 'lighthouse';
 
 const here = (path) => fileURLToPath(new URL(path, import.meta.url));
+
+/**
+ * On GitHub Actions, an annotation shows up on the run and the pull request, and can be read
+ * without opening (or being allowed to open) the logs. Elsewhere it prints nothing.
+ */
+function annotate(level, title, message) {
+  if (!process.env['GITHUB_ACTIONS']) return;
+  const text = String(message).replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
+  console.log(`::${level} title=${title}::${text}`);
+}
+for (const event of ['uncaughtException', 'unhandledRejection']) {
+  process.on(event, (error) => {
+    console.error(error);
+    annotate('error', 'Lighthouse could not run', error instanceof Error ? error.message : error);
+    process.exit(1);
+  });
+}
+
 const budgets = JSON.parse(await readFile(here('lighthouse-budgets.json'), 'utf8'));
 const option = (name) =>
   process.argv.includes(name) ? process.argv[process.argv.indexOf(name) + 1] : undefined;
@@ -153,6 +171,19 @@ const table = [
 ].join('\n');
 
 console.log(`\nLighthouse (mobile, median of ${budgets.runs} runs)\n\n${table}\n`);
+for (const { path, categories, metrics } of rows) {
+  annotate(
+    'notice',
+    `Lighthouse ${path}`,
+    [
+      ...Object.keys(budgets.scores).map((id) => `${id} ${pct(categories[id])}`),
+      `LCP ${Math.round(metrics['largest-contentful-paint'])} ms`,
+      `CLS ${Math.round(metrics['cumulative-layout-shift'] * 1000) / 1000}`,
+      `TBT ${Math.round(metrics['total-blocking-time'])} ms`,
+    ].join(' · '),
+  );
+}
+for (const failure of failures) annotate('error', 'Lighthouse budget missed', failure);
 if (process.env['GITHUB_STEP_SUMMARY']) {
   await appendFile(
     process.env['GITHUB_STEP_SUMMARY'],
