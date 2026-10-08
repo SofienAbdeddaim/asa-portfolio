@@ -146,6 +146,28 @@ try {
         );
     }
     rows.push({ path, categories, metrics });
+
+    // A layout shift that does not show up on a developer machine still counts in CI, so say which
+    // elements moved (and what Lighthouse thinks caused it) in the worst run of the page.
+    if (metrics['cumulative-layout-shift'] > 0.02) {
+      const cls = (run) => metric(run, 'cumulative-layout-shift');
+      const worst = [...runs].sort((a, b) => cls(b) - cls(a))[0];
+      const shifts = worst.lhr.audits['layout-shifts']?.details?.items ?? [];
+      annotate(
+        'warning',
+        `Layout shifts ${path}`,
+        [
+          `worst run: CLS ${cls(worst).toFixed(3)}`,
+          ...shifts
+            .slice(0, 6)
+            .map(
+              (item) =>
+                `${item.node?.selector ?? item.node?.nodeLabel ?? '(element gone)'} ${Number(item.score).toFixed(3)}`,
+            ),
+          `causes: ${JSON.stringify(worst.lhr.audits['cls-culprits-insight']?.details ?? null).slice(0, 700)}`,
+        ].join('\n'),
+      );
+    }
   }
 } finally {
   await chrome.kill();
