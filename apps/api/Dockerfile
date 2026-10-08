@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Build context: repository root (see docker-compose.yml).
 
-FROM node:24-slim AS base
+FROM node:25-slim AS base
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH
 RUN npm install -g pnpm@12.10.1
 WORKDIR /repo
@@ -17,7 +17,7 @@ COPY apps/api apps/api
 RUN pnpm --filter @asa/shared build && pnpm --filter @asa/api build
 RUN pnpm --filter @asa/api --prod deploy --legacy /out
 
-FROM node:24-slim AS runtime
+FROM node:25-slim AS runtime
 ENV NODE_ENV=production
 # Take the Debian security fixes published since the base image was built, and drop what a running
 # API never uses: npm, corepack and yarn bring their own dependencies (and vulnerabilities) along.
