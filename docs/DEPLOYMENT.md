@@ -43,7 +43,7 @@ Checked in October 2026 against the providers' documentation. Limits change; re-
 
 ## Public or private repository
 
-The project was designed as a public repository, and everything works either way, but GitHub's free plan gives less to a private one (checked in October 2026 against GitHub's documentation):
+This repository is public, the project was designed that way, and everything also works on a private one, but GitHub's free plan gives less to a private one (checked in October 2026 against GitHub's documentation):
 
 |                                | Public          | Private (free plan)                                                    |
 | ------------------------------ | --------------- | ---------------------------------------------------------------------- |
@@ -176,6 +176,8 @@ Third-party actions are pinned to a commit and kept current by Dependabot.
 
 ## Troubleshooting
 
+- **`release` fails with "GitHub Actions is not permitted to create or approve pull requests".** Turn on **Settings → Actions → General → Workflow permissions → Allow GitHub Actions to create and approve pull requests**, then re-run the workflow. Until then no release pull request is opened.
+- **A failed run and no way to read why.** GitHub shows job logs only to signed-in users, and the public API does not return them. The failing step is on the run page, Playwright and Lighthouse also write their failures as annotations on the run, and the Playwright report and Lighthouse reports are attached as artifacts.
 - **`deploy` says "Not configured yet".** A secret or variable from step 5 is missing; the notice lists which.
 - **"The profile is empty: fill it in the back-office first".** The API has no profile. Run `seed:demo` (step 4) or create the profile in the back-office, then run `deploy` again.
 - **"The API did not serve … within 20 minutes".** The Render build failed or is queued. Open the service's **Events** and logs. The site is not touched when this happens.

@@ -14,7 +14,7 @@ permissions: {}
 jobs:
   ping:
     if: vars.KEEP_WARM == 'true' && vars.API_URL != '' && github.event.repository.private != true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
       - name: Ping the API

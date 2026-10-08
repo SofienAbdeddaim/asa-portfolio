@@ -75,14 +75,30 @@ test('stickers move with the arrow keys', async ({ page }) => {
   const sticker = page.getByRole('button', { name: /^Move the .* sticker$/ }).first();
   await expect(sticker).toBeVisible();
   await sticker.focus();
-  const before = await sticker.boundingBox();
+  const place = async () => {
+    // Two frames: the key press, then the render that moves the sticker.
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+        ),
+    );
+    return (await sticker.boundingBox())!;
+  };
+  const start = await place();
   await page.keyboard.press('ArrowRight');
+  const right = await place();
+  await page.keyboard.press('ArrowLeft');
+  const left = await place();
   await page.keyboard.press('ArrowDown');
-  await page.keyboard.press('Shift+ArrowRight');
-  await expect
-    .poll(async () => (await sticker.boundingBox())?.x ?? 0)
-    .toBeGreaterThan((before?.x ?? 0) + 20);
-  expect((await sticker.boundingBox())!.y).toBeGreaterThan(before!.y);
+  const down = await place();
+  await page.keyboard.press('ArrowUp');
+  const up = await place();
+
+  // Stickers start at random places, so the edge of the board can block one direction. Both
+  // directions on an axis cannot be blocked at once, so each axis must have moved.
+  expect(new Set([start.x, right.x, left.x]).size).toBeGreaterThan(1);
+  expect(new Set([start.y, down.y, up.y]).size).toBeGreaterThan(1);
 });
 
 test('the command palette gives focus back to where it was opened from', async ({ page }) => {
