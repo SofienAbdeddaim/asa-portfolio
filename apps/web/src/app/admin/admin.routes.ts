@@ -1,25 +1,44 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { type Routes } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { LocaleService } from '../core/locale.service';
+import type { Routes } from '@angular/router';
+import { adminGuard, guestGuard, unsavedChangesGuard } from './guards';
 
-/** Placeholder for the private back-office (built in a later phase). Lazy-loaded, never indexed. */
-@Component({
-  selector: 'app-admin-placeholder',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslocoPipe],
-  template: `
-    <h1 class="text-3xl">{{ 'admin.title' | transloco }}</h1>
-    <p class="mt-4 text-muted">{{ 'admin.body' | transloco }}</p>
-  `,
-})
-export class AdminPlaceholder {
-  constructor() {
-    // The admin lives outside the locale-prefixed public site but still needs translations.
-    void inject(LocaleService).activate('en');
-  }
-}
-
+/** The private back-office. Everything is lazy-loaded; only `login` is reachable when signed out. */
 export const ADMIN_ROUTES: Routes = [
-  { path: '', component: AdminPlaceholder, data: { titleKey: 'admin.title' } },
+  {
+    path: 'login',
+    title: 'Sign in',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./login.page').then((m) => m.LoginPage),
+  },
+  {
+    path: '',
+    canActivate: [adminGuard],
+    loadComponent: () => import('./shell').then((m) => m.AdminShell),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'profile' },
+      {
+        path: 'profile',
+        title: 'Profile',
+        data: { resource: 'profile' },
+        canDeactivate: [unsavedChangesGuard],
+        loadComponent: () => import('./resource-edit.page').then((m) => m.ResourceEditPage),
+      },
+      {
+        path: ':resource',
+        title: 'Content',
+        loadComponent: () => import('./resource-list.page').then((m) => m.ResourceListPage),
+      },
+      {
+        path: ':resource/new',
+        title: 'New entry',
+        canDeactivate: [unsavedChangesGuard],
+        loadComponent: () => import('./resource-edit.page').then((m) => m.ResourceEditPage),
+      },
+      {
+        path: ':resource/:id',
+        title: 'Edit entry',
+        canDeactivate: [unsavedChangesGuard],
+        loadComponent: () => import('./resource-edit.page').then((m) => m.ResourceEditPage),
+      },
+    ],
+  },
 ];

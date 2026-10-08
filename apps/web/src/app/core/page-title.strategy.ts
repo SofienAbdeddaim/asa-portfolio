@@ -3,16 +3,24 @@ import { Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy, type ActivatedRouteSnapshot } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 
-/** Sets the document title from the route's `titleKey`, translated in the active language. */
+/**
+ * Sets the document title. Public pages use a translated `titleKey` route datum; other routes (the
+ * English-only back-office) use the plain `title` of the route.
+ */
 @Injectable({ providedIn: 'root' })
 export class PageTitleStrategy extends TitleStrategy {
   private readonly title = inject(Title);
   private readonly transloco = inject(TranslocoService);
 
   override updateTitle(snapshot: RouterStateSnapshot): void {
-    const key = this.titleKey(snapshot.root);
     const brand = this.transloco.translate('app.brand');
-    this.title.setTitle(key ? `${this.transloco.translate(key)} · ${brand}` : brand);
+    const key = this.titleKey(snapshot.root);
+    if (key) {
+      this.title.setTitle(`${this.transloco.translate(key)} · ${brand}`);
+      return;
+    }
+    const plain = this.buildTitle(snapshot);
+    this.title.setTitle(plain ? `${plain} · ${brand}` : brand);
   }
 
   private titleKey(route: ActivatedRouteSnapshot): string | undefined {

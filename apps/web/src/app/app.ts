@@ -1,6 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter, map } from 'rxjs';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LOCALES } from '@asa/shared';
 import { CommandService, type Command } from './core/command.service';
@@ -18,36 +20,47 @@ import { SiteHeader } from './layout/site-header';
   imports: [RouterOutlet, TranslocoPipe, SiteHeader, CommandPalette],
   host: { '(document:keydown)': 'onKeydown($event)' },
   template: `
-    <a
-      href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-xl focus:border-[3px] focus:border-ink focus:bg-sun focus:px-4 focus:py-2 focus:font-bold focus:text-on-color"
-      >{{ 'app.skipToContent' | transloco }}</a
-    >
-
-    <div
-      class="scroll-progress pointer-events-none fixed inset-x-0 top-0 z-50 h-1.5 bg-coral"
-      style="transform: scaleX(0)"
-      aria-hidden="true"
-    ></div>
-
-    <app-site-header />
-
-    <main id="main" tabindex="-1" class="pb-10 outline-none">
-      <router-outlet />
-    </main>
-
-    <footer class="mt-10 border-t-[3px] border-ink bg-surface py-8">
-      <div
-        class="container-page flex flex-wrap items-center justify-between gap-4 text-sm font-medium"
+    @if (!admin()) {
+      <a
+        href="#main"
+        class="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-xl focus:border-[3px] focus:border-ink focus:bg-sun focus:px-4 focus:py-2 focus:font-bold focus:text-on-color"
+        >{{ 'app.skipToContent' | transloco }}</a
       >
-        <p>{{ 'footer.note' | transloco }}</p>
-        <a href="#main" class="btn min-h-11 text-sm" style="--btn-bg: var(--c-sun)">{{
-          'footer.top' | transloco
-        }}</a>
-      </div>
-    </footer>
 
-    <app-command-palette />
+      <div
+        class="scroll-progress pointer-events-none fixed inset-x-0 top-0 z-50 h-1.5 bg-coral"
+        style="transform: scaleX(0)"
+        aria-hidden="true"
+      ></div>
+
+      <app-site-header />
+    }
+
+    <!-- One outlet for both areas. The back-office pages bring their own landmarks. -->
+    <div
+      [class.pb-10]="!admin()"
+      [attr.role]="admin() ? null : 'main'"
+      [attr.id]="admin() ? null : 'main'"
+      [attr.tabindex]="admin() ? null : -1"
+      class="outline-none"
+    >
+      <router-outlet />
+    </div>
+
+    @if (!admin()) {
+      <footer class="mt-10 border-t-[3px] border-ink bg-surface py-8">
+        <div
+          class="container-page flex flex-wrap items-center justify-between gap-4 text-sm font-medium"
+        >
+          <p>{{ 'footer.note' | transloco }}</p>
+          <a href="#main" class="btn min-h-11 text-sm" style="--btn-bg: var(--c-sun)">{{
+            'footer.top' | transloco
+          }}</a>
+        </div>
+      </footer>
+
+      <app-command-palette />
+    }
   `,
 })
 export class App {
@@ -55,6 +68,15 @@ export class App {
   protected readonly commands = inject(CommandService);
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
+
+  /** The back-office runs without the public header, footer and palette. */
+  protected readonly admin = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map((event) => event.urlAfterRedirects.startsWith('/admin')),
+    ),
+    { initialValue: this.router.url.startsWith('/admin') },
+  );
   private readonly transloco = inject(TranslocoService);
   private readonly theme = inject(ThemeService);
 
@@ -122,7 +144,7 @@ export class App {
   }
 
   protected onKeydown(event: KeyboardEvent): void {
-    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+    if (!this.admin() && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
       event.preventDefault();
       this.commands.toggle();
     }

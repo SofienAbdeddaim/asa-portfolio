@@ -12,13 +12,14 @@ pnpm --filter @asa/web build     # static output in dist/web/browser (prerenders
 
 ## Layout
 
-| Path                           | Purpose                                                                            |
-| ------------------------------ | ---------------------------------------------------------------------------------- |
-| `src/app/core`                 | Locale and RTL, i18n loader, theme, title strategy, content store, API interceptor |
-| `src/app/layout`               | Language switcher, theme toggle, Ctrl+K command palette                            |
-| `src/app/shared/ui`            | Button, icon (with RTL mirroring), skeleton                                        |
-| `src/app/pages`                | Route pages (a foundations preview until the timeline lands)                       |
-| `src/i18n`                     | `en.json`, `fr.json`, `ar.json`: keep the three files in sync                      |
-| `public/content-snapshot.json` | Build-time content used when the API is asleep (generated later)                   |
+| Path                           | Purpose                                                                                                        |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `src/app/core`                 | Locale and RTL, i18n loader, theme, title strategy, content store, API interceptor                             |
+| `src/app/layout`               | Language switcher, theme toggle, Ctrl+K command palette                                                        |
+| `src/app/shared/ui`            | Button, icon (with RTL mirroring), skeleton                                                                    |
+| `src/app/admin`                | The private back-office (lazy, client-only): sign-in, content editor, field components. See docs/BACKOFFICE.md |
+| `src/app/pages`                | Route pages (a foundations preview until the timeline lands)                                                   |
+| `src/i18n`                     | `en.json`, `fr.json`, `ar.json`: keep the three files in sync                                                  |
+| `public/content-snapshot.json` | Build-time content used when the API is asleep (generated later)                                               |
 
-See ADR 10 (architecture), ADR 11 (RTL rules), ADR 12 (visual identity) and ADR 13 (playground).
+See ADR 10 (architecture), ADR 11 (RTL rules), ADR 12 (visual identity) ADR 13 (playground) and ADR 14 (back-office).

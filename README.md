@@ -2,7 +2,7 @@
 
 Trilingual (French, English, Arabic with true RTL) personal portfolio with a private back-office, built as a showcase of architecture, security and CI/CD.
 
-> Status: Phase 3 done (public portfolio pages). See [docs/PLAN.md](docs/PLAN.md), [apps/api](apps/api/README.md) and [apps/web](apps/web/README.md).
+> Status: Phase 4 done (public site, API and back-office). See [docs/PLAN.md](docs/PLAN.md), [docs/BACKOFFICE.md](docs/BACKOFFICE.md), [apps/api](apps/api/README.md) and [apps/web](apps/web/README.md).
 
 ## Tech stack
 

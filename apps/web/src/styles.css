@@ -28,6 +28,7 @@
   --accent: #ff5a36;
   --link: #b32d0f;
   --on-color: #17120f;
+  --danger: #b42318;
 
   --c-coral: #ff5a36;
   --c-sun: #ffd23f;
@@ -49,6 +50,7 @@
   --muted: #c9bfd9;
   --ink: #fff4e0;
   --link: #ff9b82;
+  --danger: #ff8a80;
   color-scheme: dark;
 }
 
@@ -68,6 +70,7 @@
   --color-accent: var(--accent);
   --color-link: var(--link);
   --color-on-color: var(--on-color);
+  --color-danger: var(--danger);
   --color-coral: var(--c-coral);
   --color-sun: var(--c-sun);
   --color-mint: var(--c-mint);
@@ -474,5 +477,204 @@
     to {
       clip-path: circle(150vmax at var(--vt-x, 50%) var(--vt-y, 0%));
     }
+  }
+}
+
+/* ---- Back-office ---------------------------------------------------------------------------
+   Same tokens as the public site, calmer: forms need clarity more than personality. */
+@layer components {
+  .a-input {
+    display: block;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--ink);
+    border-radius: 0.6rem;
+    background: var(--surface);
+    color: var(--fg);
+    font: inherit;
+  }
+
+  textarea.a-input {
+    min-height: 6rem;
+    resize: vertical;
+  }
+
+  .a-input:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 1px;
+    box-shadow: 0 0 0 6px var(--c-sun);
+  }
+
+  .a-input[aria-invalid='true'] {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 2px var(--danger);
+  }
+
+  .a-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+  }
+
+  .a-help {
+    margin-top: 0.25rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .a-error {
+    margin-top: 0.25rem;
+    color: var(--danger);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .a-card {
+    border: 3px solid var(--ink);
+    border-radius: 1rem;
+    background: var(--surface);
+  }
+
+  .a-btn {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-inline: 1rem;
+    border: 2px solid var(--ink);
+    border-radius: 0.6rem;
+    background: var(--btn-bg, var(--surface));
+    color: var(--btn-fg, var(--fg));
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .a-btn:hover:not(:disabled) {
+    background: var(--btn-hover, var(--surface-2));
+  }
+
+  .a-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .a-btn-primary {
+    --btn-bg: var(--c-sun);
+    --btn-fg: var(--on-color);
+    --btn-hover: #ffc61a;
+  }
+
+  .a-btn-danger {
+    --btn-fg: var(--danger);
+  }
+
+  .a-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.05rem 0.6rem;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    background: var(--surface-2);
+  }
+
+  .a-chip[data-state='ok'] {
+    background: var(--c-mint);
+    color: var(--on-color);
+  }
+
+  .a-chip[data-state='warn'] {
+    background: var(--c-sun);
+    color: var(--on-color);
+  }
+}
+
+/* ---- Rendered Markdown --------------------------------------------------------------------
+   Used by the editor preview and, later, public blog posts. Logical properties only. */
+@layer components {
+  .prose-preview > * + * {
+    margin-block-start: 1em;
+  }
+
+  .prose-preview h1,
+  .prose-preview h2,
+  .prose-preview h3 {
+    margin-block-start: 1.4em;
+    line-height: 1.2;
+  }
+
+  .prose-preview h1 {
+    font-size: 1.75rem;
+  }
+
+  .prose-preview h2 {
+    font-size: 1.4rem;
+  }
+
+  .prose-preview h3 {
+    font-size: 1.15rem;
+  }
+
+  .prose-preview ul {
+    padding-inline-start: 1.5rem;
+    list-style: disc;
+  }
+
+  .prose-preview ol {
+    padding-inline-start: 1.5rem;
+    list-style: decimal;
+  }
+
+  .prose-preview li + li {
+    margin-block-start: 0.35em;
+  }
+
+  .prose-preview a {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .prose-preview code {
+    padding: 0.1em 0.35em;
+    border-radius: 0.3em;
+    background: var(--surface-2);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  .prose-preview pre {
+    overflow: auto;
+    padding: 1rem;
+    border: 2px solid var(--ink);
+    border-radius: 0.6rem;
+    background: var(--surface-2);
+    direction: ltr;
+  }
+
+  .prose-preview pre code {
+    padding: 0;
+    background: none;
+  }
+
+  .prose-preview blockquote {
+    padding-inline-start: 1rem;
+    border-inline-start: 4px solid var(--ink);
+    color: var(--muted);
+  }
+
+  .prose-preview img {
+    max-width: 100%;
+    height: auto;
+    border: 2px solid var(--ink);
+    border-radius: 0.6rem;
+  }
+
+  .prose-preview hr {
+    border: 0;
+    border-block-start: 2px solid var(--ink);
   }
 }

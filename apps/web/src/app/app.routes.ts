@@ -1,11 +1,16 @@
 import type { Routes } from '@angular/router';
 import { DEFAULT_LOCALE } from '@asa/shared';
+import { adminAreaGuard } from './admin/guards';
 import { localeGuard } from './core/locale.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: DEFAULT_LOCALE },
-  // Private back-office: outside the locale-prefixed public site, lazy-loaded.
-  { path: 'admin', loadChildren: () => import('./admin/admin.routes').then((m) => m.ADMIN_ROUTES) },
+  // Private back-office: outside the locale-prefixed public site, lazy-loaded, never indexed.
+  {
+    path: 'admin',
+    canActivate: [adminAreaGuard],
+    loadChildren: () => import('./admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+  },
   {
     path: ':lang',
     canActivate: [localeGuard],

@@ -1,9 +1,12 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import type { Provider } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { Router, TitleStrategy, provideRouter, withComponentInputBinding } from '@angular/router';
+import { fakeAdminApi, httpError } from '../testing/admin-helpers';
 import { CONTENT_FIXTURE } from '../testing/content.fixture';
+import { AdminApi } from './admin/admin-api';
 import { App } from './app';
 import { routes } from './app.routes';
 import { CommandService } from './core/command.service';
@@ -24,7 +27,7 @@ beforeAll(() => {
   };
 });
 
-async function setup(url: string) {
+async function setup(url: string, extra: Provider[] = []) {
   TestBed.configureTestingModule({
     providers: [
       provideRouter(routes, withComponentInputBinding()),
@@ -32,6 +35,7 @@ async function setup(url: string) {
       provideHttpClientTesting(),
       provideI18n(),
       { provide: TitleStrategy, useClass: PageTitleStrategy },
+      ...extra,
     ],
   });
   TestBed.inject(ContentStore).seed(CONTENT_FIXTURE);
@@ -109,7 +113,7 @@ describe('shell', () => {
   it('has a skip link, a main landmark and a navigation to every section', async () => {
     const { el } = await setup('/en');
     expect(el.querySelector('a[href="#main"]')?.textContent).toContain('Skip to main content');
-    expect(el.querySelector('main#main')).not.toBeNull();
+    expect(el.querySelector('[role="main"]#main')).not.toBeNull();
     // The section links appear in both the desktop bar and the mobile menu.
     expect(el.querySelectorAll('nav[aria-label="Main navigation"] a')).toHaveLength(14);
   });
@@ -226,5 +230,53 @@ describe('shell', () => {
     button.click();
     fixture.detectChanges();
     expect(button.getAttribute('aria-label')).not.toBe(before);
+  });
+});
+
+describe('back-office area', () => {
+  async function admin() {
+    const api = fakeAdminApi();
+    api['me']!.mockRejectedValue(httpError(401));
+    api['refresh']!.mockRejectedValue(httpError(401));
+    return setup('/admin/login', [{ provide: AdminApi, useValue: api }]);
+  }
+
+  it('runs without the public header, footer and palette, and has a single main region', async () => {
+    const { el } = await admin();
+    expect(TestBed.inject(Router).url).toBe('/admin/login');
+    expect(el.querySelector('app-site-header')).toBeNull();
+    expect(el.querySelector('footer')).toBeNull();
+    expect(el.querySelector('app-command-palette')).toBeNull();
+    expect(el.querySelector('[role="main"]')).toBeNull();
+    expect(el.querySelectorAll('main')).toHaveLength(1);
+    expect(el.querySelector('h1')?.textContent).toBe('Sign in');
+    expect(TestBed.inject(Title).getTitle()).toBe('Sign in · ASA');
+    expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe(
+      'noindex, nofollow',
+    );
+  });
+
+  it('does not open the public command palette with Ctrl+K', async () => {
+    await admin();
+    const commands = TestBed.inject(CommandService);
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, cancelable: true }),
+    );
+    expect(commands.open()).toBe(false);
+  });
+
+  it('sends visitors who are not signed in from /admin to the sign-in page', async () => {
+    const api = fakeAdminApi();
+    api['me']!.mockRejectedValue(httpError(401));
+    api['refresh']!.mockRejectedValue(httpError(401));
+    await setup('/admin/profile', [{ provide: AdminApi, useValue: api }]);
+    expect(TestBed.inject(Router).url).toBe('/admin/login');
+  });
+
+  it('removes the noindex tag again on public pages', async () => {
+    const { go } = await admin();
+    await go('/en');
+    expect(document.querySelector('meta[name="robots"]')).toBeNull();
+    expect(document.querySelector('header')).not.toBeNull();
   });
 });

@@ -10,6 +10,7 @@ import { ConfigModule } from './config/config.module.js';
 import { ENV, type Env } from './config/env.js';
 import { ContentModule } from './content/content.module.js';
 import { HealthController } from './health/health.controller.js';
+import { MediaModule } from './media/media.module.js';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { HealthController } from './health/health.controller.js';
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
     AuthModule,
     ContentModule,
+    MediaModule,
   ],
   controllers: [HealthController],
   providers: [

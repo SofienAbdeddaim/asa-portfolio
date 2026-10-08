@@ -1,6 +1,7 @@
 import { provideHttpClient, withInterceptors, HttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { authRefreshInterceptor } from './auth-refresh.interceptor';
 import { CommandService } from './command.service';
 import { ContentStore, LIVE_URL, SNAPSHOT_URL } from './content.store';
@@ -183,12 +184,14 @@ describe('authRefreshInterceptor', () => {
     http.expectOne('/api/admin/b').flush([]);
   });
 
-  it('gives up when the refresh itself fails', () => {
+  it('gives up when the refresh itself fails, and sends the user to sign in', () => {
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
     let status = 0;
     client.get('/api/admin/projects').subscribe({ error: (error) => (status = error.status) });
     http.expectOne('/api/admin/projects').flush(null, { status: 401, statusText: 'Unauthorized' });
     http.expectOne('/api/auth/refresh').flush(null, { status: 401, statusText: 'Unauthorized' });
     expect(status).toBe(401);
+    expect(navigate).toHaveBeenCalledWith('/admin/login');
   });
 
   it('never retries auth endpoints, non-401 errors or non-API calls', () => {
