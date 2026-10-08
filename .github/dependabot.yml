@@ -1,0 +1,78 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Europe/Paris
+    open-pull-requests-limit: 6
+    commit-message:
+      prefix: 'chore(deps)'
+      prefix-development: 'chore(deps-dev)'
+    groups:
+      angular:
+        patterns:
+          ['@angular/*', '@angular-devkit/*', 'angular-eslint', '@jsverse/*', 'zone.js', 'rxjs']
+      nestjs:
+        patterns: ['@nestjs/*', 'nestjs-*']
+      lint-and-format:
+        patterns:
+          [
+            'eslint',
+            '@eslint/*',
+            'typescript-eslint',
+            'prettier',
+            'prettier-*',
+            'husky',
+            'lint-staged',
+            '@commitlint/*',
+          ]
+      testing:
+        patterns:
+          [
+            'vitest',
+            '@vitest/*',
+            'jsdom',
+            'supertest',
+            '@playwright/*',
+            'lighthouse',
+            'chrome-launcher',
+          ]
+      production:
+        dependency-type: production
+        update-types: [minor, patch]
+      development:
+        dependency-type: development
+        update-types: [minor, patch]
+    ignore:
+      # Angular supports a narrow TypeScript range and pins it (ADR 2): move it with Angular.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+
+  - package-ecosystem: github-actions
+    directories:
+      - /
+      - /.github/actions/setup
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Europe/Paris
+    commit-message:
+      prefix: 'ci(deps)'
+    groups:
+      actions:
+        patterns: ['*']
+
+  - package-ecosystem: docker
+    directory: /apps/api
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Europe/Paris
+    commit-message:
+      prefix: 'build(deps)'

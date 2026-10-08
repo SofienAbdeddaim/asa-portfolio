@@ -1,0 +1,5 @@
+/* Arabic faces: Lalezar for display, IBM Plex Sans Arabic for text. Loaded by <app-arabic-fonts>. */
+@import '@fontsource/lalezar/arabic-400.css';
+@import '@fontsource/ibm-plex-sans-arabic/arabic-400.css';
+@import '@fontsource/ibm-plex-sans-arabic/arabic-500.css';
+@import '@fontsource/ibm-plex-sans-arabic/arabic-600.css';

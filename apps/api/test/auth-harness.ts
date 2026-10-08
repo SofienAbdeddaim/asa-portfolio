@@ -28,6 +28,7 @@ export const TEST_ENV: Env = {
   CORS_ORIGIN: 'http://localhost:4200',
   COOKIE_SECURE: false,
   SWAGGER_ENABLED: false,
+  TRUST_PROXY_HOPS: 1,
   LOG_LEVEL: 'silent',
 };
 

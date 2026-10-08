@@ -18,9 +18,9 @@ pnpm --filter @asa/web build     # static output in dist/web/browser (prerenders
 | `src/app/layout`               | Language switcher, theme toggle, Ctrl+K command palette                                                        |
 | `src/app/shared/ui`            | Button, icon (with RTL mirroring), skeleton                                                                    |
 | `src/app/admin`                | The private back-office (lazy, client-only): sign-in, content editor, field components. See docs/BACKOFFICE.md |
-| `src/app/pages`                | Route pages (a foundations preview until the timeline lands)                                                   |
+| `src/app/pages`                | Route pages: home (the timeline of sections), blog list and post, CV, not found                                |
 | `src/i18n`                     | `en.json`, `fr.json`, `ar.json`: keep the three files in sync                                                  |
-| `public/content-snapshot.json` | Build-time content used when the API is asleep (generated later)                                               |
+| `public/content-snapshot.json` | Build-time content used when the API is asleep (the committed one is demo data; `pnpm snapshot` replaces it)   |
 
 Static build and content (from the repo root):
 

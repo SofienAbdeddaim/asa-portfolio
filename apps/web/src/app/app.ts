@@ -10,6 +10,7 @@ import { LocaleService } from './core/locale.service';
 import { SECTIONS, goToSection } from './core/sections';
 import { ScrollService } from './core/scroll.service';
 import { ThemeService } from './core/theme.service';
+import { ArabicFonts } from './layout/arabic-fonts';
 import { CommandPalette } from './layout/command-palette';
 import { LANGUAGE_NAMES } from './layout/language-switcher';
 import { SiteHeader } from './layout/site-header';
@@ -17,9 +18,13 @@ import { SiteHeader } from './layout/site-header';
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, TranslocoPipe, SiteHeader, CommandPalette],
+  imports: [RouterOutlet, TranslocoPipe, SiteHeader, CommandPalette, ArabicFonts],
   host: { '(document:keydown)': 'onKeydown($event)' },
   template: `
+    @if (locale.direction() === 'rtl') {
+      <app-arabic-fonts />
+    }
+
     @if (!admin()) {
       <a
         href="#main"

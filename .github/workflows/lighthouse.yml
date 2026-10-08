@@ -1,0 +1,46 @@
+name: lighthouse
+
+# Performance, accessibility, best-practice and SEO budgets (e2e/lighthouse-budgets.json),
+# measured on the built site served with production headers and compression.
+on:
+  pull_request:
+    paths:
+      - apps/web/**
+      - packages/shared/**
+      - e2e/lighthouse*
+      - e2e/serve.mjs
+      - scripts/**
+      - .github/workflows/lighthouse.yml
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Budgets
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: pnpm --filter @asa/shared build
+      - run: pnpm --filter @asa/web build
+      - name: Run Lighthouse
+        run: pnpm lighthouse
+      - name: Keep the reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci
+          if-no-files-found: ignore
+          retention-days: 14

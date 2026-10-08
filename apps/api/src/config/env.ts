@@ -16,6 +16,16 @@ const schema = z.object({
   /** Defaults to true in production; must stay true unless serving over plain HTTP locally. */
   COOKIE_SECURE: bool.optional(),
   SWAGGER_ENABLED: bool.optional(),
+  /**
+   * Reverse proxies in front of the API, used to find the real client IP for rate limiting.
+   * 1 for a direct platform load balancer; 2 when another proxy sits in front of it (for example
+   * the site host forwarding /api to the API host).
+   */
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(1),
+  /** The deployed commit, shown by /api/health so a deployment can be verified. */
+  GIT_COMMIT: z.string().optional(),
+  /** Set by Render on every deploy; used when GIT_COMMIT is not. */
+  RENDER_GIT_COMMIT: z.string().optional(),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 });
 
@@ -37,6 +47,7 @@ export function loadEnv(source: Record<string, string | undefined>): Env {
   const production = result.data.NODE_ENV === 'production';
   return {
     ...result.data,
+    GIT_COMMIT: result.data.GIT_COMMIT ?? result.data.RENDER_GIT_COMMIT,
     COOKIE_SECURE: result.data.COOKIE_SECURE ?? production,
     SWAGGER_ENABLED: result.data.SWAGGER_ENABLED ?? !production,
   };

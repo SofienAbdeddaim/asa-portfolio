@@ -1,0 +1,135 @@
+name: deploy
+
+# After CI passes on main: deploy the API (Render), wait until it serves this commit, pull the
+# published content from it, build the static site and publish it (Netlify). Run it by hand to
+# refresh the pre-rendered pages after editing content in the back-office. Setup: docs/DEPLOYMENT.md
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+# Deployments are queued, never run side by side or cancelled half way.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  config:
+    name: Check the setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
+          API_URL: ${{ vars.API_URL }}
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          missing=()
+          for name in NETLIFY_AUTH_TOKEN RENDER_DEPLOY_HOOK_URL NETLIFY_SITE_ID API_URL SITE_URL; do
+            [ -n "${!name}" ] || missing+=("$name")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Deployment skipped::Not configured yet (missing: ${missing[*]}). See docs/DEPLOYMENT.md."
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    name: Deploy
+    needs: config
+    # Only for commits pushed to this repository's main branch whose CI run passed (a fork pull
+    # request from a branch also named "main" reports the same branch name, hence the other checks).
+    if: >
+      needs.config.outputs.ready == 'true' && (
+        github.event_name == 'workflow_dispatch' || (
+          github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_repository.full_name == github.repository
+        )
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment:
+      name: production
+      url: ${{ vars.SITE_URL }}
+    env:
+      SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      API_URL: ${{ vars.API_URL }}
+      SITE_URL: ${{ vars.SITE_URL }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Deploy the API
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: curl -fsS --retry 3 --max-time 30 -X POST "$RENDER_DEPLOY_HOOK_URL" -o /dev/null
+
+      # The API reports the commit it runs. Waiting for it (or a later one) means the content pulled
+      # next comes from the new version, and a failed API build stops the release here.
+      - name: Wait for the API to serve this commit
+        run: |
+          deadline=$((SECONDS + 1200))
+          while (( SECONDS < deadline )); do
+            live="$(curl -fsS --max-time 20 "$API_URL/api/health" 2>/dev/null | jq -r '.commit // empty' || true)"
+            git fetch --no-tags --quiet origin main || true
+            if [ -n "$live" ] && git cat-file -e "${live}^{commit}" 2>/dev/null && git merge-base --is-ancestor "$SHA" "$live"; then
+              echo "The API is serving ${live:0:7}."
+              exit 0
+            fi
+            echo "Waiting for the API (serving: ${live:-nothing yet})"
+            sleep 15
+          done
+          echo "::error title=API deployment::The API did not serve ${SHA:0:7} within 20 minutes. Check the Render deploy logs."
+          exit 1
+
+      - uses: ./.github/actions/setup
+
+      - name: Pull the published content
+        run: pnpm snapshot
+
+      - name: Build the site
+        env:
+          API_ORIGIN: ${{ vars.API_URL }}
+        run: |
+          pnpm site:url "$SITE_URL"
+          pnpm --filter @asa/shared build
+          pnpm --filter @asa/web build
+
+      - name: Publish the site
+        run: >
+          npx --yes netlify-cli@27.11.2 deploy --prod --no-build
+          --dir apps/web/dist/web/browser --message "deploy ${SHA}"
+
+      # The site answers, the pre-rendered page is there, and /api reaches the API through it.
+      - name: Check the live site
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fsS --max-time 20 "$SITE_URL/en" | grep -q 'lang="en"' &&
+               curl -fsS --max-time 30 "$SITE_URL/api/health" | jq -e '.database == "up"' > /dev/null; then
+              echo "### Deployed ${SHA:0:7}" >> "$GITHUB_STEP_SUMMARY"
+              echo "- Site: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
+              echo "- API: $API_URL" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Not ready yet (attempt $attempt)"
+            sleep 10
+          done
+          echo "::error title=Smoke test::The live site did not answer correctly."
+          exit 1

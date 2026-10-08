@@ -1,0 +1,22 @@
+name: keepwarm
+
+# Optional. Render's free web services sleep after 15 minutes without traffic, and the first request
+# afterwards waits about a minute. Set the repository variable KEEP_WARM to "true" to ping the API
+# every 10 minutes. Note the trade-off in docs/DEPLOYMENT.md before enabling it.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    if: vars.KEEP_WARM == 'true' && vars.API_URL != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping the API
+        env:
+          API_URL: ${{ vars.API_URL }}
+        run: curl -fsS --retry 2 --max-time 60 "$API_URL/api/health"

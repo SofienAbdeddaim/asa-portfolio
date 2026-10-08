@@ -1,0 +1,30 @@
+name: release
+
+# Keeps a release pull request up to date from the Conventional Commits merged into main. Merging it
+# bumps the version, updates CHANGELOG.md, tags the commit and publishes a GitHub release.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          # Pull requests opened with the default token do not trigger other workflows, so the checks
+          # would never run on the release pull request. A fine-grained token in this secret fixes it
+          # (docs/DEPLOYMENT.md); without it the workflow still works and an admin can merge.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

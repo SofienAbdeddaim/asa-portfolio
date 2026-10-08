@@ -1,13 +1,10 @@
 /* Self-hosted fonts (npm packages, no external CDN); only the subsets we render are bundled.
-   Display: Bricolage Grotesque (Latin) + Lalezar (Arabic). Body: IBM Plex Sans + Plex Sans Arabic. */
+   Display: Bricolage Grotesque (Latin) + Lalezar (Arabic). Body: IBM Plex Sans + Plex Sans Arabic.
+   The Arabic faces live in layout/arabic-fonts.css so only Arabic pages download them. */
 @import '@fontsource-variable/bricolage-grotesque/wght.css';
-@import '@fontsource/lalezar/arabic-400.css';
 @import '@fontsource/ibm-plex-sans/latin-400.css';
 @import '@fontsource/ibm-plex-sans/latin-500.css';
 @import '@fontsource/ibm-plex-sans/latin-600.css';
-@import '@fontsource/ibm-plex-sans-arabic/arabic-400.css';
-@import '@fontsource/ibm-plex-sans-arabic/arabic-500.css';
-@import '@fontsource/ibm-plex-sans-arabic/arabic-600.css';
 
 @import 'tailwindcss';
 

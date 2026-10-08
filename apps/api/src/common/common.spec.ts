@@ -84,6 +84,21 @@ describe('env', () => {
     expect(env.COOKIE_SECURE).toBe(false);
     expect(env.SWAGGER_ENABLED).toBe(true);
     expect(env.PORT).toBe(3000);
+    expect(env.TRUST_PROXY_HOPS).toBe(1);
+  });
+
+  it('reads the number of trusted proxies and rejects nonsense', () => {
+    expect(loadEnv({ ...valid, TRUST_PROXY_HOPS: '2' }).TRUST_PROXY_HOPS).toBe(2);
+    expect(() => loadEnv({ ...valid, TRUST_PROXY_HOPS: '-1' })).toThrow(/TRUST_PROXY_HOPS/);
+    expect(() => loadEnv({ ...valid, TRUST_PROXY_HOPS: 'many' })).toThrow(/TRUST_PROXY_HOPS/);
+  });
+
+  it('knows the deployed commit from GIT_COMMIT or what Render sets', () => {
+    expect(loadEnv(valid).GIT_COMMIT).toBeUndefined();
+    expect(loadEnv({ ...valid, RENDER_GIT_COMMIT: 'abc1234' }).GIT_COMMIT).toBe('abc1234');
+    expect(
+      loadEnv({ ...valid, GIT_COMMIT: 'def5678', RENDER_GIT_COMMIT: 'abc1234' }).GIT_COMMIT,
+    ).toBe('def5678');
   });
 
   it('rejects weak or missing secrets', () => {

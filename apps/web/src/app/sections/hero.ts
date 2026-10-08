@@ -40,10 +40,8 @@ interface Word {
               <span class="block text-2xl font-semibold sm:text-3xl">{{
                 'hero.greeting' | transloco
               }}</span>
-              <span
-                class="mt-2 block text-[clamp(3rem,8.5vw,6.5rem)] leading-[0.95]"
-                [attr.aria-label]="p.fullName"
-              >
+              <span class="mt-2 block text-[clamp(3rem,8.5vw,6.5rem)] leading-[0.95]">
+                <span class="sr-only">{{ p.fullName }}</span>
                 @for (word of words(); track $index; let wi = $index) {
                   <span class="block" aria-hidden="true">
                     @if (word.letters; as letters) {

@@ -1,0 +1,103 @@
+name: deploy-preview
+
+# A temporary copy of the site for a pull request, at https://pr-<number>--<site>.netlify.app, with
+# the link posted on the pull request. Only for changes that can alter the site. Netlify does not
+# meter non-production deployments on the free plan (docs/DEPLOYMENT.md); add the "no-preview" label
+# to skip one. Setup: docs/DEPLOYMENT.md
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+    paths:
+      - apps/web/**
+      - packages/shared/**
+      - scripts/**
+      - .github/workflows/deploy-preview.yml
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    name: Preview
+    # Only pull requests from this repository: a fork's code must never run with these secrets.
+    if: >
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      !github.event.pull_request.draft &&
+      !contains(github.event.pull_request.labels.*.name, 'no-preview')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
+      API_URL: ${{ vars.API_URL }}
+      SITE_URL: ${{ vars.SITE_URL }}
+    steps:
+      - name: Check the setup
+        id: check
+        run: |
+          missing=()
+          for name in NETLIFY_AUTH_TOKEN NETLIFY_SITE_ID API_URL SITE_URL; do
+            [ -n "${!name}" ] || missing+=("$name")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::notice title=Preview skipped::Not configured yet (missing: ${missing[*]}). See docs/DEPLOYMENT.md."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.check.outputs.ready == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - if: steps.check.outputs.ready == 'true'
+        uses: ./.github/actions/setup
+
+      # The preview shows the real published content, and talks to the real API through /api.
+      # (Signing in to the back-office does not work from a preview: the API only accepts the
+      # production origin.)
+      - name: Build the site
+        if: steps.check.outputs.ready == 'true'
+        env:
+          API_ORIGIN: ${{ vars.API_URL }}
+        run: |
+          pnpm snapshot
+          pnpm site:url "$SITE_URL"
+          pnpm --filter @asa/shared build
+          pnpm --filter @asa/web build
+          # A preview is never to be indexed.
+          printf '\n/*\n  X-Robots-Tag: noindex, nofollow\n' >> apps/web/dist/web/browser/_headers
+
+      - name: Publish the preview
+        id: deploy
+        if: steps.check.outputs.ready == 'true'
+        env:
+          ALIAS: pr-${{ github.event.pull_request.number }}
+        run: |
+          npx --yes netlify-cli@27.11.2 deploy --no-build --json \
+            --dir apps/web/dist/web/browser --alias "$ALIAS" \
+            --message "preview of pull request ${ALIAS#pr-}" > deploy.json
+          echo "url=$(jq -r '.deploy_url' deploy.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Link it from the pull request
+        if: steps.check.outputs.ready == 'true'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+        with:
+          script: |
+            const marker = '<!-- preview-deployment -->';
+            const body = `${marker}\n**Preview:** ${process.env.PREVIEW_URL}\n\nBuilt from ${context.payload.pull_request.head.sha.slice(0, 7)} with the published content. Back-office sign-in is disabled on previews.`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number });
+            const existing = comments.find((comment) => comment.body?.startsWith(marker));
+            if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            else await github.rest.issues.createComment({ owner, repo, issue_number, body });

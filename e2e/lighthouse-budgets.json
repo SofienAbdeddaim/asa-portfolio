@@ -1,0 +1,21 @@
+{
+  "runs": 3,
+  "pages": ["/en", "/fr", "/ar", "/en/blog", "/en/blog/hello-world", "/en/cv"],
+  "scores": {
+    "performance": 0.8,
+    "accessibility": 0.95,
+    "best-practices": 0.95,
+    "seo": 0.95
+  },
+  "metrics": {
+    "largest-contentful-paint": 3500,
+    "cumulative-layout-shift": 0.1,
+    "total-blocking-time": 400
+  },
+  "overrides": {
+    "/ar": {
+      "scores": { "performance": 0.6 },
+      "metrics": { "largest-contentful-paint": 4500, "total-blocking-time": 600 }
+    }
+  }
+}

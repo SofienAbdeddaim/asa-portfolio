@@ -87,7 +87,7 @@ describe('profile, snapshot and health', () => {
 
   it('reports database health and degrades to 503', async () => {
     const ok = await http().get('/api/health').expect(200);
-    expect(ok.body).toMatchObject({ status: 'ok', database: 'up' });
+    expect(ok.body).toMatchObject({ status: 'ok', database: 'up', commit: null });
     connection.readyState = 0;
     await http().get('/api/health').expect(503);
     connection.readyState = 1;

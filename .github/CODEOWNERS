@@ -1,0 +1,5 @@
+# Pull requests that touch these paths ask the owner for a review.
+*                       @SofienAbdeddaim
+/.github/               @SofienAbdeddaim
+/apps/api/src/auth/     @SofienAbdeddaim
+/docs/adr/              @SofienAbdeddaim

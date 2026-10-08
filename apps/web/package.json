@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && node ../../scripts/generate-seo-files.mjs",
+    "build": "ng build && node ../../scripts/generate-seo-files.mjs && node ../../scripts/generate-netlify-files.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --coverage",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit"

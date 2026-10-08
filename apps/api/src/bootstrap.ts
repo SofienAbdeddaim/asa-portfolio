@@ -9,8 +9,8 @@ import type { Env } from './config/env.js';
 /** Shared by `main.ts` and the HTTP tests so both run the same middleware stack. */
 export function configureApp(app: INestApplication, env: Env): void {
   const server = app.getHttpAdapter().getInstance() as Express;
-  // Behind Render/Netlify proxies: use the forwarded client IP for rate limiting.
-  server.set('trust proxy', 1);
+  // Behind platform proxies: use the forwarded client IP for rate limiting.
+  server.set('trust proxy', env.TRUST_PROXY_HOPS);
   server.disable('x-powered-by');
 
   const swaggerCsp = env.SWAGGER_ENABLED

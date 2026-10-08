@@ -62,9 +62,10 @@ describe('home page sections', () => {
   it('hero: availability label, name for assistive tech, and Latin names isolated as ltr', async () => {
     const { el } = await render('ar');
     expect(el.querySelector('app-hero p')?.textContent).toContain('توفّر محدود');
-    expect(el.querySelector('#hero-title [aria-label]')?.getAttribute('aria-label')).toBe(
-      'Alex Placeholder',
-    );
+    // The animated letters are hidden from assistive tech; the name is read once, whole.
+    expect(el.querySelector('#hero-title .sr-only')?.textContent).toBe('Alex Placeholder');
+    expect(el.querySelectorAll('#hero-title [aria-hidden="true"]').length).toBeGreaterThan(0);
+    expect(el.querySelector('#hero-title [aria-label]')).toBeNull();
     const wordBoxes = el.querySelectorAll('#hero-title [dir="ltr"]');
     expect(wordBoxes).toHaveLength(2);
     expect([...wordBoxes].map((box) => box.textContent?.replace(/\s/g, ''))).toEqual([

@@ -1,0 +1,35 @@
+# Render Blueprint for the API (docs/DEPLOYMENT.md). The site itself is static and lives on Netlify.
+# Deployments are triggered by the "deploy" GitHub workflow through the service's deploy hook,
+# after CI passes, so automatic deploys from Git are turned off.
+services:
+  - type: web
+    name: asa-portfolio-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    autoDeploy: false
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Atlas connection string (docs/DEPLOYMENT.md, step 1). Set in the dashboard.
+      - key: MONGODB_URI
+        sync: false
+      # The public address of the site, for example https://my-portfolio.netlify.app. Set in the dashboard.
+      - key: CORS_ORIGIN
+        sync: false
+      # Generated once by Render as random base64 (256 bits), which is the format both need.
+      # Changing TOTP_ENCRYPTION_KEY later makes every enrolled authenticator unreadable.
+      - key: JWT_SECRET
+        generateValue: true
+      - key: TOTP_ENCRYPTION_KEY
+        generateValue: true
+      - key: TOTP_ISSUER
+        value: ASA Portfolio
+      # Render's load balancer, plus Netlify forwarding /api to it.
+      - key: TRUST_PROXY_HOPS
+        value: '2'
+      - key: LOG_LEVEL
+        value: info
