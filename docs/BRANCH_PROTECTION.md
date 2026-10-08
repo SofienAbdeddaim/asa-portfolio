@@ -16,7 +16,7 @@
 | Conversations must be resolved; stale approvals are dismissed on push | Review remarks are not lost.                                                                                                                               |
 | No approvals required                                                 | This is a one-person project; GitHub does not let you approve your own pull request. Raise `required_approving_review_count` when others join.             |
 | Linear history, no force-push, no deletion                            | The history the release notes come from stays intact.                                                                                                      |
-| Required checks, branch up to date                                    | `Lint, types, tests, build`, `API image builds`, `Playwright`, `CodeQL`, `Known vulnerabilities`, `Secret scan`.                                           |
+| Required checks, branch up to date                                    | `Lint, types, tests, build`, `API image builds`, `Playwright`, `CodeQL`, `Container image`, `Known vulnerabilities`, `Secret scan`.                        |
 | No bypass actors                                                      | Not even the owner can push straight to `main`. If you need an escape hatch, add the repository admin role under `bypass_actors` with mode `pull_request`. |
 
 Not required on purpose: `Lighthouse` runs only when the web app changes (a required check that does not always run would block unrelated pull requests), and `Dependency review` runs on pull requests only.

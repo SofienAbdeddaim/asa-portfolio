@@ -24,12 +24,16 @@ export class User {
   @Prop({ type: Number, default: 0 })
   lastTotpStep!: number;
 
-  /** SHA-256 hashes of unused recovery codes. */
+  /** Keyed hashes (HMAC) of unused recovery codes. */
   @Prop({ type: [String], default: [] })
   recoveryCodeHashes!: string[];
 
   @Prop({ type: Number, default: 0 })
   failedLogins!: number;
+
+  /** Wrong second-factor codes in a row (counted apart from wrong passwords). */
+  @Prop({ type: Number, default: 0 })
+  failedMfa!: number;
 
   @Prop({ type: Date })
   lockedUntil?: Date;

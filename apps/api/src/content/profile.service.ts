@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import type { Model } from 'mongoose';
+import { SnapshotCache } from './snapshot-cache.js';
 
 export const PROFILE_MODEL = 'Profile';
 
@@ -11,7 +12,10 @@ export interface ProfileDoc {
 /** The profile is a singleton: one document, replaced as a whole. */
 @Injectable()
 export class ProfileService {
-  constructor(@InjectModel(PROFILE_MODEL) private readonly model: Model<ProfileDoc>) {}
+  constructor(
+    @InjectModel(PROFILE_MODEL) private readonly model: Model<ProfileDoc>,
+    @Inject(SnapshotCache) private readonly cache: SnapshotCache,
+  ) {}
 
   async get() {
     const doc = await this.model.findOne();
@@ -29,6 +33,7 @@ export class ProfileService {
         setDefaultsOnInsert: true,
       },
     );
+    this.cache.invalidate();
     return doc.toJSON();
   }
 }

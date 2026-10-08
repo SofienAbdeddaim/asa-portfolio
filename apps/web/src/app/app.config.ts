@@ -1,6 +1,10 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideBrowserGlobalErrorListeners, type ApplicationConfig } from '@angular/core';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import {
+  provideClientHydration,
+  withEventReplay,
+  withIncrementalHydration,
+} from '@angular/platform-browser';
 import {
   TitleStrategy,
   provideRouter,
@@ -22,7 +26,7 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'disabled' }),
     ),
     provideHttpClient(withFetch(), withInterceptors([authRefreshInterceptor])),
-    provideClientHydration(withEventReplay()),
+    provideClientHydration(withEventReplay(), withIncrementalHydration()),
     provideI18n(),
     { provide: TitleStrategy, useClass: PageTitleStrategy },
   ],

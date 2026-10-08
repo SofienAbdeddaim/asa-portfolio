@@ -14,6 +14,7 @@ import {
   decrypt,
   encrypt,
   generateRecoveryCodes,
+  hmacHex,
   normalizeRecoveryCode,
   randomToken,
   safeEqual,
@@ -21,7 +22,7 @@ import {
 } from '../common/crypto.js';
 import { ENV, type Env } from '../config/env.js';
 import { SESSION_MODEL, type SessionDocument } from './session.schema.js';
-import { REFRESH_TTL_SECONDS, TokenService } from './token.service.js';
+import { MAX_SESSION_SECONDS, REFRESH_TTL_SECONDS, TokenService } from './token.service.js';
 import { TotpService } from './totp.service.js';
 import { USER_MODEL, type UserDocument } from './user.schema.js';
 
@@ -69,16 +70,11 @@ export class AuthService {
     password: string,
   ): Promise<{ challenge: string; mfaEnrolled: boolean }> {
     const user = await this.users.findOne({ email: email.trim().toLowerCase() });
-    if (user?.lockedUntil && user.lockedUntil > new Date()) {
-      throw new HttpException(
-        'Too many failed attempts, try again later',
-        HttpStatus.TOO_MANY_REQUESTS,
-      );
-    }
+    if (user) this.assertNotLocked(user);
     const hash = user?.passwordHash ?? (await this.getDummyHash());
     const valid = await argon2.verify(hash, password).catch(() => false);
     if (!user || !valid) {
-      if (user) await this.recordFailure(user);
+      if (user) await this.registerFailure(user, 'failedLogins');
       throw new UnauthorizedException('Invalid credentials');
     }
     await this.users.updateOne(
@@ -93,16 +89,36 @@ export class AuthService {
     return this.dummyHash;
   }
 
-  private async recordFailure(user: UserDocument): Promise<void> {
-    const failed = user.failedLogins + 1;
-    if (failed >= MAX_FAILED_LOGINS) {
+  private assertNotLocked(user: UserDocument): void {
+    if (user.lockedUntil && user.lockedUntil > new Date()) {
+      throw new HttpException(
+        'Too many failed attempts, try again later',
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+  }
+
+  /**
+   * Counts a wrong password or a wrong second factor. Five in a row lock the account for 15
+   * minutes. The two kinds are counted apart because a correct password resets only its own
+   * counter: someone who knows the password still cannot guess the code without limit.
+   */
+  private async registerFailure(
+    user: UserDocument,
+    counter: 'failedLogins' | 'failedMfa',
+  ): Promise<void> {
+    await this.users.updateOne({ _id: user._id }, { $inc: { [counter]: 1 } });
+    const fresh = await this.users.findById(user.id);
+    if (fresh && (fresh[counter] ?? 0) >= MAX_FAILED_LOGINS) {
       await this.users.updateOne(
         { _id: user._id },
-        { $set: { failedLogins: 0, lockedUntil: new Date(Date.now() + LOCK_MINUTES * 60_000) } },
+        { $set: { [counter]: 0, lockedUntil: new Date(Date.now() + LOCK_MINUTES * 60_000) } },
       );
-    } else {
-      await this.users.updateOne({ _id: user._id }, { $set: { failedLogins: failed } });
     }
+  }
+
+  private hashRecoveryCode(code: string): string {
+    return hmacHex(normalizeRecoveryCode(code), this.env.TOTP_ENCRYPTION_KEY);
   }
 
   // ---- step 2a: 2FA enrollment (first login) ------------------------------------------------
@@ -140,7 +156,7 @@ export class AuthService {
           totpEnabled: true,
           totpSecretEnc: user.totpPendingSecretEnc,
           lastTotpStep: step,
-          recoveryCodeHashes: recoveryCodes.map((c) => sha256Hex(normalizeRecoveryCode(c))),
+          recoveryCodeHashes: recoveryCodes.map((code) => this.hashRecoveryCode(code)),
         },
         $unset: { totpPendingSecretEnc: 1 },
       },
@@ -158,26 +174,42 @@ export class AuthService {
     if (!user.totpEnabled || !user.totpSecretEnc) {
       throw new BadRequestException('Two-factor authentication is not enabled');
     }
+    this.assertNotLocked(user);
 
     if (input.recoveryCode !== undefined) {
-      const hash = sha256Hex(normalizeRecoveryCode(input.recoveryCode));
+      const hash = this.hashRecoveryCode(input.recoveryCode);
       const consumed = await this.users.updateOne(
         { _id: user._id, recoveryCodeHashes: hash },
         { $pull: { recoveryCodeHashes: hash } },
       );
-      if (consumed.modifiedCount !== 1) throw new UnauthorizedException('Invalid recovery code');
-      return this.issueSession(user.id);
+      if (consumed.modifiedCount !== 1) {
+        await this.registerFailure(user, 'failedMfa');
+        throw new UnauthorizedException('Invalid recovery code');
+      }
+      return this.issueVerifiedSession(user);
     }
 
     const secret = decrypt(user.totpSecretEnc, this.env.TOTP_ENCRYPTION_KEY);
     const step = this.totp.verify(secret, input.code ?? '');
-    if (step === null || step <= user.lastTotpStep) throw new UnauthorizedException('Invalid code');
-    // The conditional update makes the replay check atomic across concurrent requests.
-    const claimed = await this.users.updateOne(
-      { _id: user._id, lastTotpStep: { $lt: step } },
-      { $set: { lastTotpStep: step } },
-    );
-    if (claimed.modifiedCount !== 1) throw new UnauthorizedException('Invalid code');
+    const accepted =
+      step !== null &&
+      step > user.lastTotpStep &&
+      // The conditional update makes the replay check atomic across concurrent requests.
+      (
+        await this.users.updateOne(
+          { _id: user._id, lastTotpStep: { $lt: step } },
+          { $set: { lastTotpStep: step } },
+        )
+      ).modifiedCount === 1;
+    if (!accepted) {
+      await this.registerFailure(user, 'failedMfa');
+      throw new UnauthorizedException('Invalid code');
+    }
+    return this.issueVerifiedSession(user);
+  }
+
+  private async issueVerifiedSession(user: UserDocument): Promise<SessionTokens> {
+    if (user.failedMfa) await this.users.updateOne({ _id: user._id }, { $set: { failedMfa: 0 } });
     return this.issueSession(user.id);
   }
 
@@ -217,6 +249,14 @@ export class AuthService {
       await this.sessions.deleteMany({ userId: session.userId });
       throw new UnauthorizedException('Invalid session');
     }
+    // A session slides forward with use, but never past an absolute limit: signing in again (with
+    // the second factor) is required at least every 30 days, so a stolen cookie that is kept
+    // alive cannot last forever.
+    const startedAt = session.createdAt?.getTime() ?? Date.now();
+    if (Date.now() - startedAt > MAX_SESSION_SECONDS * 1000) {
+      await this.sessions.deleteOne({ _id: session._id });
+      throw new UnauthorizedException('Invalid session');
+    }
     const next = randomToken();
     session.secretHash = sha256Hex(next);
     session.expiresAt = new Date(Date.now() + REFRESH_TTL_SECONDS * 1000);
@@ -227,11 +267,79 @@ export class AuthService {
     };
   }
 
+  /** Ends the session the cookie belongs to. A session id alone (without its secret) does nothing. */
   async logout(refreshToken: string | undefined): Promise<void> {
-    const [sessionId] = (refreshToken ?? '').split('.');
-    if (sessionId && Types.ObjectId.isValid(sessionId)) {
-      await this.sessions.deleteOne({ _id: sessionId });
+    const [sessionId, secret] = (refreshToken ?? '').split('.');
+    if (!sessionId || !secret || !Types.ObjectId.isValid(sessionId)) return;
+    const session = await this.sessions.findById(sessionId);
+    if (session && safeEqual(session.secretHash, sha256Hex(secret))) {
+      await this.sessions.deleteOne({ _id: session._id });
     }
+  }
+
+  // ---- account recovery (used by the admin CLI, never exposed over HTTP) --------------------
+
+  private async userByEmail(email: string): Promise<UserDocument | null> {
+    return this.users.findOne({ email: email.trim().toLowerCase() });
+  }
+
+  /** Ends every session of the user. Returns false when there is no such user. */
+  async revokeSessions(email: string): Promise<boolean> {
+    const user = await this.userByEmail(email);
+    if (!user) return false;
+    await this.sessions.deleteMany({ userId: user._id });
+    return true;
+  }
+
+  /** Clears the lockout after failed attempts. */
+  async unlock(email: string): Promise<boolean> {
+    const user = await this.userByEmail(email);
+    if (!user) return false;
+    await this.users.updateOne(
+      { _id: user._id },
+      { $set: { failedLogins: 0, failedMfa: 0 }, $unset: { lockedUntil: 1 } },
+    );
+    return true;
+  }
+
+  /**
+   * For a lost authenticator and lost recovery codes: removes the second factor, ends every session,
+   * and makes the next sign-in enroll a new authenticator (the password is still required).
+   */
+  async resetTwoFactor(email: string): Promise<boolean> {
+    const user = await this.userByEmail(email);
+    if (!user) return false;
+    await this.users.updateOne(
+      { _id: user._id },
+      {
+        $set: { totpEnabled: false, lastTotpStep: 0, recoveryCodeHashes: [] },
+        $unset: { totpSecretEnc: 1, totpPendingSecretEnc: 1 },
+      },
+    );
+    await this.sessions.deleteMany({ userId: user._id });
+    return true;
+  }
+
+  /** Sets a new password, ends every session and clears any lockout. */
+  async setPassword(email: string, password: string): Promise<boolean> {
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      throw new BadRequestException(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+    }
+    const user = await this.userByEmail(email);
+    if (!user) return false;
+    await this.users.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          passwordHash: await argon2.hash(password, { type: argon2.argon2id }),
+          failedLogins: 0,
+          failedMfa: 0,
+        },
+        $unset: { lockedUntil: 1 },
+      },
+    );
+    await this.sessions.deleteMany({ userId: user._id });
+    return true;
   }
 
   async me(userId: string): Promise<{ id: string; email: string }> {

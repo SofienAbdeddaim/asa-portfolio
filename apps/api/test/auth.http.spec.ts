@@ -60,6 +60,16 @@ describe('auth over HTTP', () => {
     expect(unknownUser.body.message).toBe(wrongPassword.body.message);
   });
 
+  it('never lets a sign-in response be cached', async () => {
+    const login = await http()
+      .post('/api/auth/login')
+      .send({ email: EMAIL, password: PASSWORD })
+      .expect(200);
+    expect(login.headers['cache-control']).toBe('no-store');
+    const refused = await http().get('/api/auth/me').expect(401);
+    expect(refused.headers['cache-control']).toBe('no-store');
+  });
+
   it('validates the body strictly', async () => {
     await http().post('/api/auth/login').send({ email: 'not-an-email', password: 'x' }).expect(400);
     await http()

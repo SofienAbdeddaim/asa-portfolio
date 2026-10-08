@@ -11,12 +11,14 @@ import {
 } from './profile.controller.js';
 import { PROFILE_MODEL, ProfileService } from './profile.service.js';
 import { RESOURCES, serviceToken } from './resources.js';
+import { SnapshotCache } from './snapshot-cache.js';
 import { profileSchema } from './schemas.js';
 
 const serviceProviders: Provider[] = RESOURCES.map((definition) => ({
   provide: serviceToken(definition),
-  inject: [getModelToken(definition.modelName)],
-  useFactory: (model: Model<ContentDoc>) => new ContentService(model, definition),
+  inject: [getModelToken(definition.modelName), SnapshotCache],
+  useFactory: (model: Model<ContentDoc>, cache: SnapshotCache) =>
+    new ContentService(model, definition, () => cache.invalidate()),
 }));
 
 @Module({
@@ -34,6 +36,7 @@ const serviceProviders: Provider[] = RESOURCES.map((definition) => ({
     ...RESOURCES.flatMap(createContentControllers),
   ],
   providers: [
+    SnapshotCache,
     ProfileService,
     ...serviceProviders,
     {

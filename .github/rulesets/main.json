@@ -30,6 +30,7 @@
           { "context": "API image builds" },
           { "context": "Playwright" },
           { "context": "CodeQL" },
+          { "context": "Container image" },
           { "context": "Known vulnerabilities" },
           { "context": "Secret scan" }
         ]

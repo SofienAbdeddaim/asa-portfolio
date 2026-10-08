@@ -14,6 +14,7 @@ import {
   SnapshotController,
 } from '../src/content/profile.controller.js';
 import { ProfileService } from '../src/content/profile.service.js';
+import { SnapshotCache } from '../src/content/snapshot-cache.js';
 import { RESOURCES } from '../src/content/resources.js';
 import { HealthController } from '../src/health/health.controller.js';
 import { TEST_ENV } from './auth-harness.js';
@@ -49,6 +50,7 @@ describe('profile, snapshot and health', () => {
       providers: [
         TokenService,
         JwtAuthGuard,
+        SnapshotCache,
         { provide: ENV, useValue: TEST_ENV },
         { provide: ProfileService, useValue: profileService },
         { provide: 'CONTENT_SERVICES', useValue: RESOURCES.map(() => contentService) },
@@ -83,6 +85,31 @@ describe('profile, snapshot and health', () => {
       .set('Cookie', adminCookie)
       .send({ ...profile, email: 'nope' })
       .expect(400);
+  });
+
+  it('serves the snapshot from memory for a few seconds, until something is changed', async () => {
+    const cache = app.get(SnapshotCache);
+    cache.invalidate();
+    contentService.listPublic.mockClear();
+    const first = await http().get('/api/content').expect(200);
+    const second = await http().get('/api/content').expect(200);
+    expect(second.body.generatedAt).toBe(first.body.generatedAt);
+    expect(contentService.listPublic).toHaveBeenCalledTimes(RESOURCES.length);
+
+    cache.invalidate(); // what every back-office write does
+    await http().get('/api/content').expect(200);
+    expect(contentService.listPublic).toHaveBeenCalledTimes(RESOURCES.length * 2);
+  });
+
+  it('does not let a stale build overwrite a change made while it ran', () => {
+    const cache = new SnapshotCache();
+    const generation = cache.begin();
+    cache.invalidate();
+    cache.set({ old: true }, generation);
+    expect(cache.get()).toBeUndefined();
+    cache.set({ fresh: true }, cache.begin());
+    expect(cache.get()).toEqual({ fresh: true });
+    expect(cache.get(Date.now() + 6_000)).toBeUndefined();
   });
 
   it('reports database health and degrades to 503', async () => {

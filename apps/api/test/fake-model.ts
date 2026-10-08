@@ -46,6 +46,9 @@ export function createFakeModel(defaults: Record<string, unknown> = {}) {
       const row = rows.find((candidate) => matches(candidate, filter));
       if (!row) return { matchedCount: 0, modifiedCount: 0 };
       Object.assign(row, update['$set'] ?? {});
+      for (const [key, by] of Object.entries(update['$inc'] ?? {})) {
+        row[key] = ((row[key] as number | undefined) ?? 0) + (by as number);
+      }
       for (const key of Object.keys(update['$unset'] ?? {})) delete row[key];
       for (const [key, value] of Object.entries(update['$pull'] ?? {})) {
         row[key] = (row[key] as unknown[]).filter((item) => item !== value);

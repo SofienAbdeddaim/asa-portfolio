@@ -19,6 +19,14 @@ RUN pnpm --filter @asa/api --prod deploy --legacy /out
 
 FROM node:24-slim AS runtime
 ENV NODE_ENV=production
+# Take the Debian security fixes published since the base image was built, and drop what a running
+# API never uses: npm, corepack and yarn bring their own dependencies (and vulnerabilities) along.
+RUN apt-get update \
+ && apt-get upgrade -y --no-install-recommends \
+ && rm -rf /var/lib/apt/lists/* \
+    /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+    /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
 WORKDIR /app
 COPY --from=build --chown=node:node /out ./
 USER node

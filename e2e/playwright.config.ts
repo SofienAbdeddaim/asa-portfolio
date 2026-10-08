@@ -29,11 +29,11 @@ export default defineConfig({
   },
   projects: [
     { name: 'setup', testMatch: /auth\.setup\.ts/ },
-    { name: 'public', testMatch: /(public|language)\.spec\.ts/ },
+    { name: 'public', testMatch: /(public|language|a11y|keyboard|security)\.spec\.ts/ },
     { name: 'auth', testMatch: /auth\.spec\.ts/, dependencies: ['setup'] },
     {
       name: 'admin',
-      testMatch: /admin\.spec\.ts/,
+      testMatch: /(admin|backup)\.spec\.ts/,
       dependencies: ['setup'],
       use: { storageState: '.auth/state.json' },
     },

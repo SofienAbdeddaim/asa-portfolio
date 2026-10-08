@@ -114,6 +114,19 @@ From now on, every push to `main` that passes CI deploys by itself.
 - **Preview a change.** A pull request that touches the web app gets a comment with its preview address (`pr-<number>--<site>.netlify.app`). Previews show the real content, are never indexed, and cannot sign in to the back-office (the API only accepts the production origin). Add the `no-preview` label to skip one. Previews are not metered on the free plan according to Netlify's pricing page; if credits drop after opening pull requests, change the workflow to require a label.
 - **Roll back.** Netlify: **Deploys →** an earlier deploy **→ Publish deploy**. Render: **Events →** an earlier deploy **→ Rollback**. Or revert the commit on `main`.
 
+## Backups and recovery
+
+**Atlas's free tier has no backups.** Everything you write in the back-office, drafts and unpublished entries included, lives only there. From your machine, with the production `MONGODB_URI` in `.env`:
+
+```bash
+pnpm --filter @asa/api backup export                     # to backups/<date and time>
+pnpm --filter @asa/api backup import <folder>            # into an empty database only
+```
+
+An export holds the profile, every entry (drafts too) and every uploaded image, and never accounts or sessions. Do it before large edits and every few weeks, and keep the folders somewhere private (they are git-ignored for that reason). A restore is rehearsed by the end-to-end tests; to try one for real, point `MONGODB_URI` at a new empty database first.
+
+The same machine and `.env` run the account recovery tool (lost authenticator, forgotten password, lockout): [BACKOFFICE.md](BACKOFFICE.md#if-something-goes-wrong). Both tools talk straight to the database, so treat that `.env` like the keys to the site and delete the production `MONGODB_URI` from it when you are done.
+
 ## Cold starts
 
 After 15 idle minutes Render stops the API, and the next request waits about a minute. Visitors do not notice on the pages, which are static; the live refresh and the back-office wait for it. Two ways to deal with it:

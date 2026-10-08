@@ -13,3 +13,4 @@ playwright-report/
 test-results/
 .lighthouseci/
 e2e/.auth/
+backups/

@@ -13,7 +13,7 @@ import { ContentStore } from '../core/content.store';
 import { formatDate } from '../core/locale';
 import { LocaleService } from '../core/locale.service';
 import { LocalizedPipe } from '../core/localized.pipe';
-import { markdownToText } from '../core/markdown';
+import { markdownToText } from '../core/markdown-text';
 import { Reveal } from '../core/reveal.directive';
 import { SeoService } from '../core/seo.service';
 import { Skeleton } from '../shared/ui/skeleton';

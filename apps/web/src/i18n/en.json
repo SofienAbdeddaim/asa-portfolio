@@ -21,6 +21,7 @@
   "language": {
     "label": "Language",
     "switchTo": "Switch language to {{language}}",
+    "changed": "Language changed to {{language}}",
     "names": {
       "fr": "French",
       "en": "English",

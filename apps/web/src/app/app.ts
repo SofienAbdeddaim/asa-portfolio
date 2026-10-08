@@ -7,6 +7,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LOCALES } from '@asa/shared';
 import { CommandService, type Command } from './core/command.service';
 import { LocaleService } from './core/locale.service';
+import { RouteFocusService } from './core/route-focus.service';
 import { SECTIONS, goToSection } from './core/sections';
 import { ScrollService } from './core/scroll.service';
 import { ThemeService } from './core/theme.service';
@@ -66,6 +67,9 @@ import { SiteHeader } from './layout/site-header';
 
       <app-command-palette />
     }
+
+    <!-- Says that the language changed; page changes are announced by moving focus (RouteFocusService). -->
+    <p class="sr-only" role="status" aria-live="polite">{{ routeFocus.announcement() }}</p>
   `,
 })
 export class App {
@@ -84,9 +88,11 @@ export class App {
   );
   private readonly transloco = inject(TranslocoService);
   private readonly theme = inject(ThemeService);
+  protected readonly routeFocus = inject(RouteFocusService);
 
   constructor() {
     inject(ScrollService).start();
+    this.routeFocus.start();
 
     // Labels are translated, so the shell's commands are rebuilt whenever translations load.
     effect(() => {

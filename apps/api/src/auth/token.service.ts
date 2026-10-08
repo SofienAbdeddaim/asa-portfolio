@@ -4,6 +4,8 @@ import { ENV, type Env } from '../config/env.js';
 
 export const ACCESS_TTL_SECONDS = 15 * 60;
 export const REFRESH_TTL_SECONDS = 7 * 24 * 60 * 60;
+/** However often it is renewed, a session ends this long after the second-factor sign-in. */
+export const MAX_SESSION_SECONDS = 30 * 24 * 60 * 60;
 export const CHALLENGE_TTL_SECONDS = 5 * 60;
 
 type Purpose = 'access' | 'mfa';

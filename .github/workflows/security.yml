@@ -54,6 +54,26 @@ jobs:
       - name: Development dependencies (report only)
         run: pnpm audit --audit-level moderate || true
 
+  image:
+    name: Container image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build the API image
+        run: docker build --file apps/api/Dockerfile --tag asa-portfolio-api:scan .
+      # Fixed HIGH and CRITICAL findings fail the job; the image is rebuilt (and its OS packages
+      # upgraded) every time, so a fix released upstream clears the finding on the next run.
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: asa-portfolio-api:scan
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+
   dependency-review:
     name: Dependency review
     if: github.event_name == 'pull_request'

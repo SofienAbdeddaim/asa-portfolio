@@ -12,6 +12,9 @@ export class Session {
 
   @Prop({ type: Date, required: true })
   expiresAt!: Date;
+
+  /** Added by the `timestamps` option: when the second-factor sign-in happened. */
+  createdAt?: Date;
 }
 
 export type SessionDocument = HydratedDocument<Session>;

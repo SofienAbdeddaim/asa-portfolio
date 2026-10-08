@@ -83,6 +83,15 @@ describe('content controllers', () => {
       .expect(401);
   });
 
+  it('forbids caching of everything private, and leaves public content cacheable', async () => {
+    const admin = await http().get('/api/admin/projects').set('Cookie', adminCookie).expect(200);
+    expect(admin.headers['cache-control']).toBe('no-store');
+    const refused = await http().get('/api/admin/projects').expect(401);
+    expect(refused.headers['cache-control']).toBe('no-store');
+    const publicList = await http().get('/api/projects').expect(200);
+    expect(publicList.headers['cache-control']).not.toBe('no-store');
+  });
+
   it('lists everything for the admin, including drafts', async () => {
     const res = await http().get('/api/admin/projects').set('Cookie', adminCookie).expect(200);
     expect(res.body[0].published).toBe(false);

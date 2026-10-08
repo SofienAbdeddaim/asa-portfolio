@@ -37,6 +37,7 @@ export const userDefaults = {
   lastTotpStep: 0,
   recoveryCodeHashes: [],
   failedLogins: 0,
+  failedMfa: 0,
 };
 
 /** Builds a Nest app around the real auth stack with in-memory models (no database). */

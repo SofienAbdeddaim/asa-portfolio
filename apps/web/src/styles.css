@@ -3,7 +3,6 @@
    The Arabic faces live in layout/arabic-fonts.css so only Arabic pages download them. */
 @import '@fontsource-variable/bricolage-grotesque/wght.css';
 @import '@fontsource/ibm-plex-sans/latin-400.css';
-@import '@fontsource/ibm-plex-sans/latin-500.css';
 @import '@fontsource/ibm-plex-sans/latin-600.css';
 
 @import 'tailwindcss';
@@ -81,6 +80,9 @@
     sans-serif;
   --font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
 
+  /* Only the regular and semibold faces are shipped (less to download); medium uses semibold. */
+  --font-weight-medium: 600;
+
   --container-page: 76rem;
 }
 
@@ -138,6 +140,12 @@
     outline-offset: 3px;
     border-radius: 0.5rem;
     box-shadow: 0 0 0 6px var(--c-sun);
+  }
+
+  /* Headings and regions that scripts focus on a page change are not controls: no ring. */
+  :is(h1, main, [role='main'])[tabindex='-1']:focus-visible {
+    outline: none;
+    box-shadow: none;
   }
 
   ::selection {
@@ -224,7 +232,7 @@
     background: var(--chip-bg, var(--surface));
     color: var(--chip-fg, var(--fg));
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 1.6;
   }
 

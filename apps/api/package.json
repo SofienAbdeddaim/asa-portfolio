@@ -11,6 +11,8 @@
     "test": "vitest run --coverage",
     "seed:admin": "tsx --env-file-if-exists=../../.env src/cli/seed-admin.ts",
     "seed:demo": "tsx --env-file-if-exists=../../.env src/cli/seed-demo.ts",
+    "admin": "tsx --env-file-if-exists=../../.env src/cli/admin.ts",
+    "backup": "tsx --env-file-if-exists=../../.env src/cli/backup.ts",
     "smoke": "node scripts/smoke.mjs",
     "snapshot:demo": "tsx src/cli/export-demo-snapshot.ts"
   },

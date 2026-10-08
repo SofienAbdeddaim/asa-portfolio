@@ -1,21 +1,22 @@
 {
   "runs": 3,
+  "latency": 40,
   "pages": ["/en", "/fr", "/ar", "/en/blog", "/en/blog/hello-world", "/en/cv"],
   "scores": {
-    "performance": 0.8,
+    "performance": 0.85,
     "accessibility": 0.95,
     "best-practices": 0.95,
     "seo": 0.95
   },
   "metrics": {
-    "largest-contentful-paint": 3500,
+    "largest-contentful-paint": 3200,
     "cumulative-layout-shift": 0.1,
-    "total-blocking-time": 400
+    "total-blocking-time": 300
   },
   "overrides": {
     "/ar": {
-      "scores": { "performance": 0.6 },
-      "metrics": { "largest-contentful-paint": 4500, "total-blocking-time": 600 }
+      "scores": { "performance": 0.75 },
+      "metrics": { "largest-contentful-paint": 4200, "total-blocking-time": 350 }
     }
   }
 }

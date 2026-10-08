@@ -34,13 +34,14 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
       API_URL: ${{ vars.API_URL }}
       SITE_URL: ${{ vars.SITE_URL }}
     steps:
       - name: Check the setup
         id: check
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
         run: |
           missing=()
           for name in NETLIFY_AUTH_TOKEN NETLIFY_SITE_ID API_URL SITE_URL; do
@@ -78,7 +79,10 @@ jobs:
       - name: Publish the preview
         id: deploy
         if: steps.check.outputs.ready == 'true'
+        # The only step that sees the Netlify token: not the dependency install, not the build.
         env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
           ALIAS: pr-${{ github.event.pull_request.number }}
         run: |
           npx --yes netlify-cli@27.11.2 deploy --no-build --json \

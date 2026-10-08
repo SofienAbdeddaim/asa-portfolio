@@ -2,6 +2,7 @@ import {
   createCipheriv,
   createDecipheriv,
   createHash,
+  createHmac,
   randomBytes,
   timingSafeEqual,
 } from 'node:crypto';
@@ -39,6 +40,16 @@ export function decrypt(payload: string, keyBase64: string): string {
 
 export const sha256Hex = (value: string): string =>
   createHash('sha256').update(value).digest('hex');
+
+/**
+ * Keyed hash for values that are short enough to guess offline (recovery codes): with the key kept
+ * out of the database, a leaked copy of the database alone cannot be brute-forced.
+ */
+export function hmacHex(value: string, keyBase64: string): string {
+  return createHmac('sha256', Buffer.from(keyBase64, 'base64'))
+    .update(`recovery-code:${value}`)
+    .digest('hex');
+}
 
 export const randomToken = (bytes = 32): string => randomBytes(bytes).toString('base64url');
 

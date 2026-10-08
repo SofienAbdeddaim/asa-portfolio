@@ -1,4 +1,5 @@
 import { expect, test as setup } from '@playwright/test';
+import { expectAccessible } from './a11y';
 import { ADMIN_EMAIL, ADMIN_PASSWORD } from '../env';
 import { AUTH_DIR, codeForStep, currentStep, saveSecrets, signInWithPassword } from './helpers';
 
@@ -13,6 +14,7 @@ setup(
     await expect(page.getByAltText(/QR code/)).toBeVisible();
     const secret = (await page.getByTestId('secret').innerText()).trim();
     expect(secret).toMatch(/^[A-Z2-7]{32}$/);
+    await expectAccessible(page, 'two-factor enrollment');
 
     // A wrong code is refused and does not enroll anything.
     await page.getByLabel('6-digit code').fill('000000');
@@ -28,6 +30,7 @@ setup(
     expect(codes).toHaveLength(10);
     for (const code of codes) expect(code.trim()).toMatch(/^[0-9a-f]{5}-[0-9a-f]{5}$/);
     expect(new Set(codes).size).toBe(10);
+    await expectAccessible(page, 'recovery codes');
 
     // The next step is gated on confirming the codes were saved.
     const open = page.getByRole('button', { name: 'Open the back-office' });

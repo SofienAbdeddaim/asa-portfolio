@@ -21,6 +21,7 @@ if (option('--pages'))
     .split(',')
     .map((page) => (page.startsWith('/') ? page : `/${page}`));
 if (option('--runs')) budgets.runs = Number(option('--runs'));
+if (option('--latency')) budgets.latency = Number(option('--latency'));
 const port = 4310;
 const outDir = here('../.lighthouseci/');
 
@@ -33,9 +34,20 @@ const median = (values) => {
 };
 
 async function startServer() {
-  const child = spawn(process.execPath, [here('serve.mjs'), '--port', String(port), '--mock-api'], {
-    stdio: ['ignore', 'pipe', 'inherit'],
-  });
+  const child = spawn(
+    process.execPath,
+    [
+      here('serve.mjs'),
+      '--port',
+      String(port),
+      '--mock-api',
+      '--latency',
+      String(budgets.latency ?? 0),
+    ],
+    {
+      stdio: ['ignore', 'pipe', 'inherit'],
+    },
+  );
   await new Promise((resolve, reject) => {
     child.once('error', reject);
     child.once('exit', (code) =>

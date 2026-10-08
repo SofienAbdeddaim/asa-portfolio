@@ -27,6 +27,12 @@ const root = resolve(
 );
 const port = Number(option('--port', process.env['PORT'] ?? 4300));
 const mockApi = args.includes('--mock-api');
+/**
+ * Milliseconds to wait before answering. A CDN is never 0 ms away; on localhost a font or script
+ * can finish before the browser has even painted, which no real visitor sees and which makes
+ * Lighthouse's simulation count it against the first paint. Performance runs use a few tens.
+ */
+const latency = Number(option('--latency', 0));
 /** Forward /api to this origin instead of the one written in _redirects (tests run the API on its own port). */
 const apiOverride = option('--api', null);
 
@@ -137,6 +143,7 @@ async function proxy(req, res, target) {
 createServer(async (req, res) => {
   const url = new URL(req.url ?? '/', 'http://localhost');
   const pathname = decodeURIComponent(url.pathname);
+  if (latency > 0) await new Promise((resolve) => setTimeout(resolve, latency));
 
   if (mockApi && pathname.startsWith('/api/')) {
     if (pathname === '/api/content')

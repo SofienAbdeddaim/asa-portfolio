@@ -67,8 +67,6 @@ jobs:
       SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
       API_URL: ${{ vars.API_URL }}
       SITE_URL: ${{ vars.SITE_URL }}
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -112,7 +110,11 @@ jobs:
           pnpm --filter @asa/shared build
           pnpm --filter @asa/web build
 
+      # The only step that sees the Netlify token: not the dependency install, not the build.
       - name: Publish the site
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
         run: >
           npx --yes netlify-cli@27.11.2 deploy --prod --no-build
           --dir apps/web/dist/web/browser --message "deploy ${SHA}"

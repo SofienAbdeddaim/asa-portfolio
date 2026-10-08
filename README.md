@@ -136,14 +136,17 @@ All API settings are validated at start-up; the process refuses to run with a mi
 | `pnpm lighthouse`                          | Performance, accessibility, best-practice and SEO budgets     |
 | `pnpm snapshot`                            | Pull the published content and images into the site           |
 | `pnpm screenshots`                         | Regenerate the images above                                   |
+| `pnpm --filter @asa/api admin` / `backup`  | Account recovery, and backup and restore of the content       |
 
 ## Quality and security
 
-- **Gates on every pull request:** commit and title lint, format, lint, types, unit and API tests with coverage thresholds, the production build, a Docker build of the API, end-to-end tests in a real browser against a real database, CodeQL, dependency review, `pnpm audit` and a secret scan of the whole history. Lighthouse runs on web changes. `main` accepts only squash-merged pull requests that pass them ([rules](docs/BRANCH_PROTECTION.md)).
-- **Authentication:** argon2id passwords; two-factor (TOTP) is mandatory and enrolled at first sign-in, secrets are encrypted at rest, ten single-use recovery codes; 15-minute access tokens and rotating refresh tokens with reuse detection, both in `httpOnly` cookies and never in web storage; account lockout and rate limits ([ADR 8](docs/adr/0008-authentication-design.md)).
-- **Hardening:** strict CSP with per-script hashes (no `unsafe-inline` for scripts), HSTS, `X-Frame-Options`, origin checks on every state-changing request, validated input, NoSQL-injection sanitizing, uploads decoded and re-encoded (never stored as sent), Markdown sanitized wherever it is rendered, at build time and in the browser.
-- **Supply chain:** actions pinned by commit, least-privilege tokens, Dependabot, no secrets or default credentials in the repository. Report a vulnerability through [SECURITY.md](SECURITY.md).
-- **Accessibility:** WCAG 2.2 AA colour contrast by construction, keyboard-operable everything (including the sticker playground and reordering), visible focus, skip link, landmarks, announcements for dynamic changes; Lighthouse accessibility is 100 on every page.
+- **Gates on every pull request:** commit and title lint, format, lint, types, unit and API tests with coverage thresholds, the production build, a Docker build of the API, end-to-end tests in a real browser against a real database, CodeQL, dependency review, `pnpm audit`, a scan of the API container image, and a secret scan of the whole history. Lighthouse runs on web changes. `main` accepts only squash-merged pull requests that pass them ([rules](docs/BRANCH_PROTECTION.md)).
+- **Authentication:** argon2id passwords; two-factor (TOTP) is mandatory and enrolled at first sign-in, secrets encrypted at rest, ten single-use recovery codes stored as keyed hashes; 15-minute access tokens and rotating refresh tokens with reuse detection and a 30-day limit, both in `httpOnly` cookies and never in web storage; separate lockouts for wrong passwords and wrong codes, plus rate limits ([ADR 8](docs/adr/0008-authentication-design.md)).
+- **Hardening:** strict CSP with per-script hashes (no `unsafe-inline` for scripts), HSTS and friends, origin checks on every state-changing request, validated input, uploads decoded and re-encoded (never stored as sent), Markdown sanitized wherever it is rendered, private responses never cached, a non-root container with no package managers. The review, the threats, and the risks that remain are in [docs/SECURITY.md](docs/SECURITY.md) and [ADR 18](docs/adr/0018-hardening.md); black-box probes of the running stack are part of the test suite.
+- **Recovery and backups:** a lost authenticator or password is recovered from a machine with database access (`admin` command), never over the web; the free database has no backups, so `backup export` and `backup import` save and restore everything the back-office holds, drafts and images included ([guide](docs/DEPLOYMENT.md#backups-and-recovery)).
+- **Supply chain:** actions pinned by commit, least-privilege tokens (the deploy token reaches only the publish step), Dependabot, no secrets or default credentials in the repository. Report a vulnerability through [SECURITY.md](SECURITY.md).
+- **Accessibility:** WCAG 2.2 AA enforced by axe-core on every page, language and theme, and on the back-office; keyboard-operable everything (including the sticker playground and reordering) with visible focus and no traps; focus moves to the new heading after a page change and language switches are announced; reflow at 320 px; Lighthouse accessibility is 100 on every page.
+- **Performance:** Lighthouse on mobile scores 93 to 97 on five of the six measured pages and 85 on the Arabic home page (its typography needs about 140 KB of fonts). Below-the-fold sections hydrate when they are about to be seen. How it is measured and what was changed: [ADR 18](docs/adr/0018-hardening.md).
 
 ## Deploying
 
@@ -157,11 +160,11 @@ Free-tier realities worth knowing up front:
 
 ## Documentation
 
-[PLAN](docs/PLAN.md) (phases and status) · [ADRs](docs/adr) · [Back-office guide](docs/BACKOFFICE.md) · [Deployment](docs/DEPLOYMENT.md) · [Testing](docs/TESTING.md) · [Branch protection](docs/BRANCH_PROTECTION.md) · [Design concepts](docs/CONCEPTS.md) · [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md) · [API](apps/api/README.md) · [Web](apps/web/README.md)
+[PLAN](docs/PLAN.md) (phases and status) · [ADRs](docs/adr) · [Back-office guide](docs/BACKOFFICE.md) · [Deployment](docs/DEPLOYMENT.md) · [Testing](docs/TESTING.md) · [Security](docs/SECURITY.md) · [Branch protection](docs/BRANCH_PROTECTION.md) · [Design concepts](docs/CONCEPTS.md) · [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md) · [API](apps/api/README.md) · [Web](apps/web/README.md)
 
 ## Status
 
-Phases 0 to 6 are done (the last one: CI/CD, deployment, previews, documentation); Phase 7, hardening, is next. The Lighthouse performance score is below its 90 target on the home page and the Arabic page; the numbers and the plan are in [ADR 17](docs/adr/0017-ci-cd-and-deployment.md).
+All phases of the plan are done ([docs/PLAN.md](docs/PLAN.md)). What is left is yours to do: create the accounts, set the secrets and variables, and run the first deploy ([docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)); the workflows, the deployment path and the release automation have been checked by linting and by running the pieces locally, but not yet on GitHub or the hosts.
 
 ## License
 

@@ -11,7 +11,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { resolveLocalized } from '@asa/shared';
 import { ContentStore } from '../core/content.store';
 import { LocaleService } from '../core/locale.service';
-import { markdownToText } from '../core/markdown';
+import { markdownToText } from '../core/markdown-text';
 import { SeoService, absoluteUrl, localizedPath } from '../core/seo.service';
 import { ScrollSpy } from '../core/sections';
 import { About } from '../sections/about';
@@ -52,26 +52,46 @@ import { Skeleton } from '../shared/ui/skeleton';
 
     @if (content(); as c) {
       <app-hero [profile]="c.profile" [locale]="locale.locale()" [tags]="tags()" />
-      <app-about
-        [profile]="c.profile"
-        [education]="c.education"
-        [certificates]="c.certificates"
-        [locale]="locale.locale()"
-      />
+
+      <!--
+        Below the first screen, each section is pre-rendered as usual but only becomes interactive
+        (its code loads and the page attaches to it) when it is about to be seen, which keeps the
+        start-up work small. Clicks before that are replayed once it is ready.
+      -->
+      @defer (on immediate; hydrate on viewport) {
+        <app-about
+          [profile]="c.profile"
+          [education]="c.education"
+          [certificates]="c.certificates"
+          [locale]="locale.locale()"
+        />
+      }
       @if (c.experiences.length) {
-        <app-experience [items]="c.experiences" [locale]="locale.locale()" />
+        @defer (on immediate; hydrate on viewport) {
+          <app-experience [items]="c.experiences" [locale]="locale.locale()" />
+        }
       }
       @if (c.skills.length) {
-        <app-skills [groups]="c.skills" [locale]="locale.locale()" />
+        @defer (on immediate; hydrate on viewport) {
+          <app-skills [groups]="c.skills" [locale]="locale.locale()" />
+        }
       }
       @if (c.projects.length) {
-        <app-projects [projects]="c.projects" [locale]="locale.locale()" />
+        @defer (on immediate; hydrate on viewport) {
+          <app-projects [projects]="c.projects" [locale]="locale.locale()" />
+        }
       }
-      <app-playground [names]="playNames()" />
+      @defer (on immediate; hydrate on viewport) {
+        <app-playground [names]="playNames()" />
+      }
       @if (c.testimonials.length) {
-        <app-testimonials [items]="c.testimonials" [locale]="locale.locale()" />
+        @defer (on immediate; hydrate on viewport) {
+          <app-testimonials [items]="c.testimonials" [locale]="locale.locale()" />
+        }
       }
-      <app-contact [profile]="c.profile" [locale]="locale.locale()" />
+      @defer (on immediate; hydrate on viewport) {
+        <app-contact [profile]="c.profile" [locale]="locale.locale()" />
+      }
     } @else {
       <div class="container-page space-y-6 pt-16" aria-busy="true">
         <div appSkeleton class="h-10 w-48"></div>

@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import type { Express } from 'express';
 import helmet from 'helmet';
 import { mongoSanitizeMiddleware } from './common/mongo-sanitize.js';
+import { noStore } from './common/no-store.js';
 import type { Env } from './config/env.js';
 
 /** Shared by `main.ts` and the HTTP tests so both run the same middleware stack. */
@@ -24,6 +25,8 @@ export function configureApp(app: INestApplication, env: Env): void {
   app.use(helmet(swaggerCsp ? { contentSecurityPolicy: swaggerCsp } : {}));
   app.use(cookieParser());
   app.use(mongoSanitizeMiddleware);
+  app.use('/api/auth', noStore);
+  app.use('/api/admin', noStore);
 
   app.setGlobalPrefix('api');
   app.enableCors({ origin: new URL(env.CORS_ORIGIN).origin, credentials: true });

@@ -41,23 +41,9 @@ Playwright runs against the production build, served with the generated `_redire
 
 #### Where the budgets stand
 
-Median of three runs, mobile emulation, on the development machine. Two idle runs bracket the noise:
+The budgets are regression guards set below measured values, with room for the noise of shared CI machines (scores move by several points between runs): performance 0.85 on every page and 0.75 on `/ar`, accessibility, best practices and SEO 0.95, and limits on LCP, CLS and blocking time. What was measured, what was changed to get there (performance went from 68 to 93 on the English home page), and why the server used for the measurement answers after 40 ms are in [ADR 18](0018-hardening.md).
 
-| Page                               | Performance | LCP       | TBT        |
-| ---------------------------------- | ----------- | --------- | ---------- |
-| `/en`                              | 86–88       | 2.9 s     | 216–265 ms |
-| `/fr`                              | 83–87       | 2.8–2.9 s | 208–266 ms |
-| `/ar`                              | 72–84       | 3.2–3.9 s | 220–284 ms |
-| `/en/blog`, `/en/blog/hello-world` | 88–90       | 2.7–3.0 s | 135–190 ms |
-| `/en/cv`                           | 90–94       | 2.5–2.8 s | 102–181 ms |
-
-Accessibility, best practices and SEO are 100 everywhere. Performance is just under the 90 target on the home page and further under on `/ar`, so the budgets in `e2e/lighthouse-budgets.json` are regression guards set below the worst of these runs, not the target (performance 0.8, and 0.6 for `/ar`). What was measured, for Phase 7:
-
-- The observed (unthrottled) first paint is about 0.4 s and the largest paint about 1 s; the scores come from Lighthouse's simulation of a slow phone, where the Angular runtime's hydration alone costs 200 to 300 ms of blocking time.
-- Moving the Arabic font faces out of the global stylesheet (a component declares them, so English and French pages no longer download or preload about 190 KB of Arabic fonts) took `/en` from 68 to about 87. The cost is that Arabic pages no longer preload their fonts.
-- Candidates: incremental hydration of the lower sections, preloading the Arabic faces on Arabic pages only, and trimming the work done after first paint (about 140 ms of layout).
-
-Lighthouse also fails to record a trace now and then (`NO_NAVSTART`, about one run in seven here). The runner repeats such a run and leaves it out of the median.
+Lighthouse also fails to record a trace now and then (`NO_NAVSTART`, about one run in six here). The runner repeats such a run and leaves it out of the median.
 
 ## Consequences
 

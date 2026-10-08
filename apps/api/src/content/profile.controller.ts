@@ -6,6 +6,7 @@ import { ProfileDto } from './dto.js';
 import { ProfileService } from './profile.service.js';
 import { RESOURCES } from './resources.js';
 import type { ContentService } from './content.service.js';
+import { SnapshotCache } from './snapshot-cache.js';
 
 @ApiTags('profile')
 @Controller('profile')
@@ -46,6 +47,7 @@ export class SnapshotController {
   constructor(
     @Inject(ProfileService) private readonly profile: ProfileService,
     @Inject('CONTENT_SERVICES') services: ContentService[],
+    @Inject(SnapshotCache) private readonly cache: SnapshotCache,
   ) {
     this.services = new Map(
       RESOURCES.map((definition, i) => [definition.path, services[i] as ContentService]),
@@ -54,15 +56,20 @@ export class SnapshotController {
 
   @Get()
   async snapshot() {
+    const cached = this.cache.get();
+    if (cached) return cached;
+    const generation = this.cache.begin();
     const entries = await Promise.all(
       [...this.services].map(
         async ([path, service]) => [path, await service.listPublic()] as const,
       ),
     );
-    return {
+    const snapshot = {
       generatedAt: new Date().toISOString(),
       profile: await this.profile.get(),
       ...Object.fromEntries(entries),
     };
+    this.cache.set(snapshot, generation);
+    return snapshot;
   }
 }

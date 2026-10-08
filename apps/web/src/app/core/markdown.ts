@@ -66,14 +66,4 @@ export function renderMarkdown(source: string): string {
   });
 }
 
-/** Plain text of a Markdown document, for descriptions and reading-time estimates. */
-export function markdownToText(source: string): string {
-  return source
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/[#>*_`~|-]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
+export { markdownToText } from './markdown-text';

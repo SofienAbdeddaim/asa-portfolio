@@ -16,8 +16,9 @@ Only the latest release on `main` is supported.
 
 ## What is already in place
 
-The design and its limits are documented in the ADRs under [docs/adr](docs/adr), mainly
-[0008](docs/adr/0008-authentication-design.md): password hashing with argon2id, mandatory TOTP two-factor
+The design, what is checked and the limits that are accepted are in [docs/SECURITY.md](docs/SECURITY.md),
+and the reasoning in the ADRs under [docs/adr](docs/adr), mainly
+[0008](docs/adr/0008-authentication-design.md) and [0018](docs/adr/0018-hardening.md): password hashing with argon2id, mandatory TOTP two-factor
 authentication with encrypted secrets and single-use recovery codes, short-lived access tokens with
 rotating refresh tokens in `httpOnly` cookies (never in web storage), strict CORS and origin
 checks, rate limiting, input validation and sanitization, a strict Content-Security-Policy, and

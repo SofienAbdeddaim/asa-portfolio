@@ -1,6 +1,12 @@
 import type { NextFunction, Request, Response } from 'express';
 
-/** Removes keys that could be interpreted as Mongo operators (`$...`) or paths (`a.b`). */
+/** Keys that would let input reach an object's prototype. */
+const PROTOTYPE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
+/**
+ * Removes keys that could be interpreted as Mongo operators (`$...`) or paths (`a.b`), or that
+ * target an object's prototype.
+ */
 export function sanitizeValue<T>(value: T): T {
   if (Array.isArray(value)) {
     value.forEach((item) => sanitizeValue(item));
@@ -9,7 +15,7 @@ export function sanitizeValue<T>(value: T): T {
   if (value !== null && typeof value === 'object') {
     const record = value as Record<string, unknown>;
     for (const key of Object.keys(record)) {
-      if (key.startsWith('$') || key.includes('.')) {
+      if (key.startsWith('$') || key.includes('.') || PROTOTYPE_KEYS.has(key)) {
         delete record[key];
       } else {
         sanitizeValue(record[key]);

@@ -24,6 +24,8 @@ export class ContentService {
       ResourceDefinition,
       'hasSlug' | 'stampPublishedAt' | 'publicSort'
     >,
+    /** Called after every write, so caches of public content can be cleared. */
+    private readonly onChange: () => void = () => undefined,
   ) {}
 
   async listPublic() {
@@ -54,7 +56,9 @@ export class ContentService {
     try {
       const doc = new this.model({ ...data, order: (last?.order ?? -1) + 1 });
       this.stamp(doc);
-      return (await doc.save()).toJSON();
+      const saved = (await doc.save()).toJSON();
+      this.onChange();
+      return saved;
     } catch (error) {
       if (isDuplicate(error)) throw new ConflictException('Slug already in use');
       throw error;
@@ -67,7 +71,9 @@ export class ContentService {
     doc.set(patch);
     this.stamp(doc);
     try {
-      return (await doc.save()).toJSON();
+      const saved = (await doc.save()).toJSON();
+      this.onChange();
+      return saved;
     } catch (error) {
       if (isDuplicate(error)) throw new ConflictException('Slug already in use');
       throw error;
@@ -77,6 +83,7 @@ export class ContentService {
   async remove(id: string): Promise<void> {
     const result = await this.model.deleteOne({ _id: id });
     if (result.deletedCount !== 1) throw new NotFoundException();
+    this.onChange();
   }
 
   /** Persists the drag-and-drop order: the position in `ids` becomes the new `order`. */
@@ -88,6 +95,7 @@ export class ContentService {
         updateOne: { filter: { _id: id }, update: { $set: { order: index } } },
       })),
     );
+    this.onChange();
   }
 
   private stamp(doc: { published: boolean; publishedAt?: Date | undefined }): void {

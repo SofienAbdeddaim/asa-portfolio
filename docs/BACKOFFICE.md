@@ -27,6 +27,15 @@ Later sign-ins ask for the 6-digit code, or a recovery code ("Use a recovery cod
 
 ## If something goes wrong
 
-- _Lost authenticator and recovery codes:_ there is no self-service reset on purpose. Remove the user and its sessions from the `portfolio` database, run `seed:admin` again, and enroll again.
-- _"Your session expired":_ sign in again. Sessions last 7 days of activity; the short-lived access token renews itself.
-- _Too many attempts:_ sign-in is limited to 5 tries per minute and the account locks for 15 minutes after 5 wrong passwords.
+- _"Your session expired":_ sign in again. A session lasts 7 days since you last used it, and never more than 30 days since you signed in with your code.
+- _Too many attempts:_ sign-in is limited to 5 tries per minute, and the account locks for 15 minutes after 5 wrong passwords **or** 5 wrong codes in a row. Wait, or clear it with the command below.
+- _Lost authenticator and recovery codes, forgot the password, or locked yourself out:_ there is no self-service reset on purpose (anything that lets you reset can let someone else take the site over). Run the recovery tool from your machine against the production database (put `MONGODB_URI` in `.env`, see [DEPLOYMENT.md](DEPLOYMENT.md)):
+
+```bash
+pnpm --filter @asa/api admin unlock <email>           # clear a lockout
+pnpm --filter @asa/api admin reset-2fa <email>        # lost authenticator: the next sign-in enrolls a new one
+NEW_ADMIN_PASSWORD='…' pnpm --filter @asa/api admin set-password <email>   # at least 12 characters
+pnpm --filter @asa/api admin revoke-sessions <email>  # sign out everywhere, for example if a device is lost
+```
+
+`reset-2fa` and `set-password` also sign every session out. The password is read from the environment, never from the command line, and never printed. If you think the password or the recovery codes leaked, change the password and run `reset-2fa` to get new codes.

@@ -94,4 +94,37 @@ describe('ContentService', () => {
     expect(operations.map((op) => op.updateOne.update.$set.order)).toEqual([0, 1, 2]);
     await expect(service.reorder(['a', 'a'])).rejects.toBeInstanceOf(ConflictException);
   });
+
+  it('tells its owner after every successful write, so cached copies can be dropped', async () => {
+    const onChange = vi.fn();
+    const entry = {
+      set: vi.fn(),
+      save: vi.fn(async () => ({ toJSON: () => ({}) })),
+      published: false,
+    };
+    class FakeDoc {
+      published = false;
+      async save() {
+        return { toJSON: () => ({}) };
+      }
+    }
+    const model = Object.assign(FakeDoc, {
+      ...makeModel(),
+      findById: vi.fn(async () => entry),
+      deleteOne: vi.fn(async () => ({ deletedCount: 1 })),
+    });
+    const service = new ContentService(model as never, {}, onChange);
+
+    await service.create({ title: 'x' });
+    await service.update('1', { title: 'y' });
+    await service.remove('1');
+    await service.reorder(['a', 'b']);
+    expect(onChange).toHaveBeenCalledTimes(4);
+
+    // A failed write changes nothing, so nothing is dropped.
+    onChange.mockClear();
+    entry.save.mockRejectedValueOnce({ code: 11000 });
+    await expect(service.update('1', { slug: 'taken' })).rejects.toBeInstanceOf(ConflictException);
+    expect(onChange).not.toHaveBeenCalled();
+  });
 });

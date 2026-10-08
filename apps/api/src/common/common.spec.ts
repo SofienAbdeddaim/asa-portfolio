@@ -7,6 +7,7 @@ import {
   decrypt,
   encrypt,
   generateRecoveryCodes,
+  hmacHex,
   normalizeRecoveryCode,
   safeEqual,
   sha256Hex,
@@ -40,6 +41,15 @@ describe('crypto', () => {
     expect(sha256Hex('a')).toBe(sha256Hex('a'));
   });
 
+  it('keys the hash of recovery codes: same input and key agree, another key does not', () => {
+    expect(hmacHex('a1b2c-3d4e5', KEY)).toBe(hmacHex('a1b2c-3d4e5', KEY));
+    expect(hmacHex('a1b2c-3d4e5', KEY)).not.toBe(sha256Hex('a1b2c-3d4e5'));
+    expect(hmacHex('a1b2c-3d4e5', KEY)).not.toBe(
+      hmacHex('a1b2c-3d4e5', Buffer.alloc(32, 2).toString('base64')),
+    );
+    expect(hmacHex('a1b2c-3d4e5', KEY)).not.toBe(hmacHex('a1b2c-3d4e6', KEY));
+  });
+
   it('generates unique, normalizable recovery codes', () => {
     const codes = generateRecoveryCodes();
     expect(new Set(codes).size).toBe(10);
@@ -52,6 +62,14 @@ describe('mongo sanitize', () => {
   it('strips operator and dotted keys recursively', () => {
     const input = { email: { $gt: '' }, nested: [{ 'a.b': 1, ok: { $where: 'x', fine: true } }] };
     expect(sanitizeValue(input)).toEqual({ email: {}, nested: [{ ok: { fine: true } }] });
+  });
+
+  it('also drops keys that reach for an object prototype', () => {
+    const input = JSON.parse(
+      '{"a":1,"__proto__":{"admin":true},"b":{"constructor":{"x":1},"prototype":2,"c":3}}',
+    );
+    expect(sanitizeValue(input)).toEqual({ a: 1, b: { c: 3 } });
+    expect(({} as Record<string, unknown>)['admin']).toBeUndefined();
   });
 
   it('sanitizes body, params and query in the middleware', () => {
