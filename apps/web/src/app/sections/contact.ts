@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import type { Profile, Social } from '@asa/shared';
+import type { Locale, Profile, Social } from '@asa/shared';
 import { Reveal } from '../core/reveal.directive';
 import { Button } from '../shared/ui/button';
 import { Icon, type IconName } from '../shared/ui/icon';
@@ -16,7 +17,7 @@ const SOCIAL: Record<Social['kind'], { label: string; icon: IconName }> = {
 @Component({
   selector: 'app-contact',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslocoPipe, Reveal, Button, Icon],
+  imports: [RouterLink, TranslocoPipe, Reveal, Button, Icon],
   template: `
     <section id="contact" class="container-page py-20" aria-labelledby="contact-title">
       <div
@@ -55,6 +56,10 @@ const SOCIAL: Record<Social['kind'], { label: string; icon: IconName }> = {
               <app-icon [name]="copied() ? 'check' : 'copy'" />
               {{ 'contact.copy' | transloco }}
             </button>
+            <a appButton color="sun" [routerLink]="['/', locale(), 'cv']">
+              {{ 'contact.cv' | transloco }}
+              <app-icon name="arrow" [mirror]="true" />
+            </a>
             <span role="status" class="font-semibold">{{
               copied() ? ('contact.copied' | transloco) : ''
             }}</span>
@@ -87,6 +92,7 @@ const SOCIAL: Record<Social['kind'], { label: string; icon: IconName }> = {
 })
 export class Contact {
   readonly profile = input.required<Profile | null>();
+  readonly locale = input<Locale>('en');
 
   protected readonly copied = signal(false);
   protected readonly socials = computed(() =>

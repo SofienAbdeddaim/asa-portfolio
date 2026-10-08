@@ -4,11 +4,15 @@ import {
   OnDestroy,
   afterNextRender,
   computed,
+  effect,
   inject,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { resolveLocalized } from '@asa/shared';
 import { ContentStore } from '../core/content.store';
 import { LocaleService } from '../core/locale.service';
+import { markdownToText } from '../core/markdown';
+import { SeoService, absoluteUrl, localizedPath } from '../core/seo.service';
 import { ScrollSpy } from '../core/sections';
 import { About } from '../sections/about';
 import { Contact } from '../sections/contact';
@@ -67,7 +71,7 @@ import { Skeleton } from '../shared/ui/skeleton';
       @if (c.testimonials.length) {
         <app-testimonials [items]="c.testimonials" [locale]="locale.locale()" />
       }
-      <app-contact [profile]="c.profile" />
+      <app-contact [profile]="c.profile" [locale]="locale.locale()" />
     } @else {
       <div class="container-page space-y-6 pt-16" aria-busy="true">
         <div appSkeleton class="h-10 w-48"></div>
@@ -82,6 +86,7 @@ export class HomePage implements OnDestroy {
   protected readonly store = inject(ContentStore);
   protected readonly locale = inject(LocaleService);
   private readonly spy = inject(ScrollSpy);
+  private readonly seo = inject(SeoService);
 
   protected readonly content = this.store.content;
   protected readonly tags = computed(() => [
@@ -93,6 +98,30 @@ export class HomePage implements OnDestroy {
   constructor() {
     void this.store.load();
     afterNextRender(() => this.spy.observe());
+
+    effect(() => {
+      this.locale.revision();
+      const profile = this.content()?.profile;
+      if (!profile) return;
+      const locale = this.locale.locale();
+      const headline = resolveLocalized(profile.headline, locale);
+      const bio = markdownToText(resolveLocalized(profile.bio, locale));
+      this.seo.update({
+        title: `${profile.fullName} · ${headline}`,
+        description: bio.slice(0, 160) || headline,
+        path: '',
+        image: profile.photoUrl,
+        jsonLd: {
+          '@type': 'Person',
+          name: profile.fullName,
+          jobTitle: headline,
+          url: absoluteUrl(localizedPath(locale, '')),
+          email: `mailto:${profile.email}`,
+          sameAs: profile.socials.map((social) => social.url),
+          ...(profile.photoUrl ? { image: absoluteUrl(profile.photoUrl) } : {}),
+        },
+      });
+    });
   }
 
   ngOnDestroy(): void {

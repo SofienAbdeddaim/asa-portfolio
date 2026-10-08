@@ -9,6 +9,7 @@ import type { ContentSnapshot } from '@asa/shared';
 import { appConfig } from './app.config';
 import { serverRoutes } from './app.routes.server';
 import { ContentStore } from './core/content.store';
+import { useServerPurifier } from './core/markdown';
 
 const serverConfig: ApplicationConfig = {
   providers: [
@@ -24,6 +25,14 @@ const serverConfig: ApplicationConfig = {
       } catch {
         // Without a snapshot the page prerenders its loading state.
       }
+    }),
+    // Blog posts are sanitized at build time too: DOMPurify needs a DOM, which jsdom provides.
+    provideAppInitializer(async () => {
+      const [{ JSDOM }, { default: createDOMPurify }] = await Promise.all([
+        import('jsdom'),
+        import('dompurify'),
+      ]);
+      useServerPurifier(createDOMPurify(new JSDOM('').window as never));
     }),
   ],
 };

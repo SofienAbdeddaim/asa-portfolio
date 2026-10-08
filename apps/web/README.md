@@ -22,4 +22,12 @@ pnpm --filter @asa/web build     # static output in dist/web/browser (prerenders
 | `src/i18n`                     | `en.json`, `fr.json`, `ar.json`: keep the three files in sync                                                  |
 | `public/content-snapshot.json` | Build-time content used when the API is asleep (generated later)                                               |
 
-See ADR 10 (architecture), ADR 11 (RTL rules), ADR 12 (visual identity) ADR 13 (playground) and ADR 14 (back-office).
+Static build and content (from the repo root):
+
+```bash
+API_URL=https://your-api.onrender.com pnpm snapshot   # pull content + images from the API
+node scripts/set-site-url.mjs https://your-site.example # canonical URLs, sitemaps
+pnpm --filter @asa/web build                            # prerender + sitemaps + robots.txt
+```
+
+See ADR 10 (architecture), ADR 11 (RTL rules), ADR 12 (visual identity) ADR 13 (playground) ADR 14 (back-office), ADR 15 (CV and PDF) and ADR 16 (SEO and the content pipeline).

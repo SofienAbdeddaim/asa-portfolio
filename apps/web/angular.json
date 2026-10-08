@@ -29,7 +29,8 @@
             "outputMode": "static",
             "security": {
               "allowedHosts": []
-            }
+            },
+            "externalDependencies": ["jsdom"]
           },
           "configurations": {
             "production": {

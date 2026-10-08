@@ -14,7 +14,9 @@
     "contact": "Contact",
     "menu": "Menu",
     "closeMenu": "Close menu",
-    "play": "Play"
+    "play": "Play",
+    "blog": "Blog",
+    "cv": "CV"
   },
   "language": {
     "label": "Language",
@@ -105,7 +107,8 @@
     "lead": "Got an idea, a role, or just a hello? My inbox is open.",
     "copy": "Copy email",
     "copied": "Email copied",
-    "elsewhere": "Find me elsewhere"
+    "elsewhere": "Find me elsewhere",
+    "cv": "Get my CV"
   },
   "common": {
     "newTab": "opens in a new tab"
@@ -148,5 +151,32 @@
       "ok": "That is more of a potato.",
       "low": "Was that a circle?"
     }
+  },
+  "blog": {
+    "eyebrow": "Blog",
+    "title": "Notes and writing",
+    "lead": "Short posts about building for the web.",
+    "empty": "No posts yet. Check back soon.",
+    "allTags": "All",
+    "filter": "Filter by tag",
+    "readingTime": "{{minutes}} min read",
+    "back": "All posts",
+    "notFoundTitle": "Post not found",
+    "notFoundBody": "That post does not exist or is not published.",
+    "fallbackNote": "This post is not translated yet, so it is shown in English.",
+    "published": "Published"
+  },
+  "cv": {
+    "title": "CV",
+    "print": "Print or save as PDF",
+    "hint": "Opens your browser print dialog: choose Save as PDF. Colors and layout adapt for paper.",
+    "profile": "Profile",
+    "experience": "Experience",
+    "education": "Education",
+    "skills": "Skills",
+    "certificates": "Certificates",
+    "projects": "Selected projects",
+    "contact": "Contact",
+    "present": "Present"
   }
 }

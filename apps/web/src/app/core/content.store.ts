@@ -4,6 +4,7 @@ import {
   Injectable,
   PLATFORM_ID,
   TransferState,
+  computed,
   inject,
   makeStateKey,
   signal,
@@ -25,6 +26,9 @@ const SNAPSHOT_KEY = makeStateKey<ContentSnapshot>('content-snapshot');
  *
  * At prerender time the snapshot is read from disk (see `app.config.server.ts`), rendered into the
  * HTML and handed to the browser through TransferState, so hydration needs no extra request.
+ *
+ * Pages that only need content to render (titles, blog posts) wait for `ensureSnapshot()`, which
+ * never touches the API; `load()` additionally refreshes from the API in the browser.
  */
 @Injectable({ providedIn: 'root' })
 export class ContentStore {
@@ -37,6 +41,11 @@ export class ContentStore {
   readonly content = this._content.asReadonly();
   readonly source = this._source.asReadonly();
 
+  readonly profile = computed(() => this._content()?.profile ?? null);
+  /** Published posts, newest first (the API already sorts them). */
+  readonly posts = computed(() => this._content()?.posts ?? []);
+
+  private snapshotLoad?: Promise<void>;
   private started = false;
 
   constructor() {
@@ -55,18 +64,27 @@ export class ContentStore {
     this.transfer.set(SNAPSHOT_KEY, snapshot);
   }
 
+  /** Makes sure the build-time snapshot is loaded (once). Never waits for the API. */
+  ensureSnapshot(): Promise<void> {
+    this.snapshotLoad ??= this.loadSnapshot();
+    return this.snapshotLoad;
+  }
+
+  private async loadSnapshot(): Promise<void> {
+    if (this._content()) return;
+    try {
+      this._content.set(await firstValueFrom(this.http.get<ContentSnapshot>(SNAPSHOT_URL)));
+      this._source.set('snapshot');
+    } catch {
+      // No snapshot (e.g. first local run): the live request below may still succeed.
+    }
+  }
+
+  /** Snapshot first, then (in the browser only) a refresh from the API. */
   async load(): Promise<void> {
     if (this.started) return;
     this.started = true;
-
-    if (!this._content()) {
-      try {
-        this._content.set(await firstValueFrom(this.http.get<ContentSnapshot>(SNAPSHOT_URL)));
-        this._source.set('snapshot');
-      } catch {
-        // No snapshot (e.g. first local run): fall through to the live request.
-      }
-    }
+    await this.ensureSnapshot();
     if (!this.browser) return; // prerendering must not depend on the API being awake
 
     try {

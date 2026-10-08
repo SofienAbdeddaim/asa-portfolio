@@ -452,6 +452,32 @@
         "fr": "# Bonjour\n\nMarkdown **fictif**.",
         "ar": "# مرحبا\n\nنص **تجريبي**."
       }
+    },
+    {
+      "id": "post-2",
+      "order": 1,
+      "published": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "technologies": [],
+      "images": [],
+      "featured": false,
+      "tags": ["css", "rtl", "i18n"],
+      "slug": "building-for-rtl",
+      "title": {
+        "en": "Building for right-to-left",
+        "fr": "Construire pour la droite à gauche",
+        "ar": "البناء للاتجاه من اليمين إلى اليسار"
+      },
+      "excerpt": {
+        "en": "Placeholder notes from making a trilingual site.",
+        "fr": "Notes fictives sur la création d’un site trilingue.",
+        "ar": "ملاحظات تجريبية من بناء موقع بثلاث لغات."
+      },
+      "body": {
+        "en": "# Building for right-to-left\n\nLogical properties make mirroring **free**.\n\n- Use `margin-inline-start`\n- Test in Arabic early\n\n[MDN](https://developer.mozilla.org)",
+        "ar": "# البناء للاتجاه من اليمين إلى اليسار\n\nالخصائص المنطقية تجعل الانعكاس **مجانيًا**."
+      }
     }
   ]
 }

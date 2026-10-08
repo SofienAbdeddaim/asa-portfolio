@@ -2,6 +2,7 @@ import type { Routes } from '@angular/router';
 import { DEFAULT_LOCALE } from '@asa/shared';
 import { adminAreaGuard } from './admin/guards';
 import { localeGuard } from './core/locale.guard';
+import { cvTitle, homeTitle, postTitle } from './core/page-titles';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: DEFAULT_LOCALE },
@@ -17,8 +18,26 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        data: { titleKey: 'home.title' },
+        title: homeTitle,
+        data: { fullTitle: true },
         loadComponent: () => import('./pages/home.page').then((m) => m.HomePage),
+      },
+      {
+        path: 'blog',
+        data: { titleKey: 'blog.title' },
+        loadComponent: () => import('./pages/blog-list.page').then((m) => m.BlogListPage),
+      },
+      {
+        path: 'blog/:slug',
+        title: postTitle,
+        data: { fullTitle: true },
+        loadComponent: () => import('./pages/blog-post.page').then((m) => m.BlogPostPage),
+      },
+      {
+        path: 'cv',
+        title: cvTitle,
+        data: { fullTitle: true },
+        loadComponent: () => import('./pages/cv.page').then((m) => m.CvPage),
       },
       {
         path: '**',

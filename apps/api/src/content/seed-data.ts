@@ -214,5 +214,24 @@ export const DEMO_CONTENT: Record<string, Record<string, unknown>[]> = {
       tags: ['example'],
       published: true,
     },
+    {
+      slug: 'building-for-rtl',
+      title: t(
+        'Building for right-to-left',
+        'Construire pour la droite à gauche',
+        'البناء للاتجاه من اليمين إلى اليسار',
+      ),
+      excerpt: t(
+        'Placeholder notes from making a trilingual site.',
+        'Notes fictives sur la création d’un site trilingue.',
+        'ملاحظات تجريبية من بناء موقع بثلاث لغات.',
+      ),
+      body: {
+        en: '# Building for right-to-left\n\nLogical properties make mirroring **free**.\n\n- Use `margin-inline-start`\n- Test in Arabic early\n\n[MDN](https://developer.mozilla.org)',
+        ar: '# البناء للاتجاه من اليمين إلى اليسار\n\nالخصائص المنطقية تجعل الانعكاس **مجانيًا**.',
+      },
+      tags: ['css', 'rtl', 'i18n'],
+      published: true,
+    },
   ],
 };

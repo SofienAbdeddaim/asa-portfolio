@@ -139,7 +139,7 @@ const TOOLS = [
           <div>
             <p class="a-label">Preview</p>
             <div
-              class="a-card prose-preview min-h-40 overflow-auto p-4"
+              class="a-card markdown min-h-40 overflow-auto p-4"
               [attr.dir]="current().dir"
               [attr.lang]="current().code"
               [innerHTML]="preview()"

@@ -104,5 +104,30 @@ export const CONTENT_FIXTURE: ContentSnapshot = {
       quote: { en: 'A fake testimonial.', fr: 'Un faux témoignage.' },
     },
   ],
-  posts: [],
+  posts: [
+    {
+      ...meta('post-1', 0),
+      slug: 'hello-world',
+      title: { en: 'Hello, world', fr: 'Bonjour le monde', ar: 'مرحبا بالعالم' },
+      excerpt: { en: 'A first post.', fr: 'Un premier article.', ar: 'مقال أول.' },
+      body: {
+        en: '# Hello\n\nSome **bold** text.\n\n[out](https://example.com)\n\n<script>alert(1)</script>',
+        fr: '# Bonjour\n\nDu texte **gras**.',
+        ar: '# مرحبا\n\nنص **تجريبي**.',
+      },
+      tags: ['angular', 'rtl'],
+      coverUrl: '/media/cover.webp',
+      publishedAt: '2026-02-10T09:00:00.000Z',
+      updatedAt: '2026-02-11T09:00:00.000Z',
+    },
+    {
+      ...meta('post-2', 1),
+      slug: 'english-only',
+      title: { en: 'English only' },
+      excerpt: { en: 'No translation yet.' },
+      body: { en: 'Just English.' },
+      tags: ['angular'],
+      publishedAt: '2026-01-05T09:00:00.000Z',
+    },
+  ],
 };

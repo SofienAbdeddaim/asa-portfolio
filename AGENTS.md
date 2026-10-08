@@ -20,6 +20,7 @@ Personal portfolio monorepo (FR/EN/AR, true RTL) with a private back-office. Own
 - TypeScript strict; no `any` without a justified disable comment. No abandoned dependencies.
 - Layout uses logical properties only (`ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`, `rtl:`), never hardcoded left/right. `pnpm lint` enforces it (`scripts/logical-props.mjs`, escape hatch: `rtl-ok`).
 - Back-office: add content fields in `apps/web/src/app/admin/resources.ts` (one data entry drives list, form and payload; keep limits equal to the API DTOs). Render Markdown only through `renderMarkdown` (sanitized).
+- Public pages set their metadata through `SeoService` and get content-dependent titles from route resolvers; new public routes need a `ServerRoute` entry (and a sitemap path in `scripts/seo-lib.mjs`) to be prerendered and listed. Server-side DOM is minimal: use `appendChild`, not `append`.
 - Web visuals: reuse `.sticker`, `.btn`, `.chip` and the color tokens (ADR 12); shadows, tilts and slides read `--dir-sign`; any new motion must sit behind `prefers-reduced-motion` and keep content visible without JS.
 - Web: standalone components, signals, OnPush, `app-` selectors; user-visible text goes through Transloco keys in all three `src/i18n/*.json` files.
 - Translatable fields are `{ fr, en, ar }`; English is required and is the fallback.

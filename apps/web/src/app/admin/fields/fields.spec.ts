@@ -132,7 +132,7 @@ describe('Field: Markdown', () => {
   async function markdown() {
     const ctx = await renderField(projectFields, 'description');
     const editor = () => q<HTMLTextAreaElement>(ctx.el, 'textarea');
-    const preview = () => q(ctx.el, '.prose-preview');
+    const preview = () => q(ctx.el, '.markdown');
     const tab = (code: string) => q<HTMLButtonElement>(ctx.el, `#f-description-tab-${code}`);
     return { ...ctx, editor, preview, tab };
   }

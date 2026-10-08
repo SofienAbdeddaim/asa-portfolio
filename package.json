@@ -15,9 +15,12 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "pnpm --filter @asa/shared build && pnpm -r --if-present typecheck",
-    "test": "pnpm --filter @asa/shared build && node --test scripts/logical-props.test.mjs && pnpm -r --if-present test",
+    "test": "pnpm --filter @asa/shared build && node --test scripts/*.test.mjs && pnpm -r --if-present test",
     "build": "pnpm -r --if-present build",
-    "audit:prod": "pnpm audit --prod --audit-level high"
+    "audit:prod": "pnpm audit --prod --audit-level high",
+    "snapshot": "node scripts/fetch-snapshot.mjs",
+    "snapshot:demo": "pnpm --filter @asa/api snapshot:demo",
+    "site:url": "node scripts/set-site-url.mjs"
   },
   "lint-staged": {
     "*.{ts,mts,js,mjs,cjs}": [

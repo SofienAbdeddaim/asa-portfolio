@@ -63,7 +63,7 @@ describe('locale routing', () => {
     const { el } = await setup('/ar');
     expect(document.documentElement.lang).toBe('ar');
     expect(document.documentElement.dir).toBe('rtl');
-    expect(TestBed.inject(Title).getTitle()).toBe('معرض الأعمال · ASA');
+    expect(TestBed.inject(Title).getTitle()).toBe('Alex Placeholder · مهندس برمجيات أول');
     expect(el.querySelector('#hero-title')?.textContent).toContain('مرحبًا');
     expect(el.querySelector('#about-title')?.textContent).toContain('قليل عني');
   });
@@ -71,7 +71,8 @@ describe('locale routing', () => {
   it('renders French with ltr direction', async () => {
     const { el } = await setup('/fr');
     expect(document.documentElement.dir).toBe('ltr');
-    expect(TestBed.inject(Title).getTitle()).toBe('Portfolio · ASA');
+    // The fixture has no French headline, so the English one is used.
+    expect(TestBed.inject(Title).getTitle()).toBe('Alex Placeholder · Senior Software Engineer');
     expect(el.querySelector('#experience-title')?.textContent).toContain("D'où je viens");
   });
 
@@ -115,7 +116,7 @@ describe('shell', () => {
     expect(el.querySelector('a[href="#main"]')?.textContent).toContain('Skip to main content');
     expect(el.querySelector('[role="main"]#main')).not.toBeNull();
     // The section links appear in both the desktop bar and the mobile menu.
-    expect(el.querySelectorAll('nav[aria-label="Main navigation"] a')).toHaveLength(14);
+    expect(el.querySelectorAll('nav[aria-label="Main navigation"] a')).toHaveLength(18);
   });
 
   it('opens and closes the command palette with Ctrl+K', async () => {
@@ -145,6 +146,8 @@ describe('shell', () => {
       'go-play',
       'go-kind',
       'go-contact',
+      'go-blog',
+      'go-cv',
       'lang-fr',
       'lang-ar',
       'theme',
@@ -276,7 +279,10 @@ describe('back-office area', () => {
   it('removes the noindex tag again on public pages', async () => {
     const { go } = await admin();
     await go('/en');
-    expect(document.querySelector('meta[name="robots"]')).toBeNull();
+    // Public pages are indexable: the back-office's noindex tag is replaced.
+    expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe(
+      'index, follow',
+    );
     expect(document.querySelector('header')).not.toBeNull();
   });
 });

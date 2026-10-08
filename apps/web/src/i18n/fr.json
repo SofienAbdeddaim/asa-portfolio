@@ -14,7 +14,9 @@
     "contact": "Contact",
     "menu": "Menu",
     "closeMenu": "Fermer le menu",
-    "play": "Jeux"
+    "play": "Jeux",
+    "blog": "Blog",
+    "cv": "CV"
   },
   "language": {
     "label": "Langue",
@@ -105,7 +107,8 @@
     "lead": "Une idée, un poste, ou juste un bonjour ? Ma boîte mail est ouverte.",
     "copy": "Copier l'e-mail",
     "copied": "E-mail copié",
-    "elsewhere": "Me retrouver ailleurs"
+    "elsewhere": "Me retrouver ailleurs",
+    "cv": "Obtenir mon CV"
   },
   "common": {
     "newTab": "s'ouvre dans un nouvel onglet"
@@ -148,5 +151,32 @@
       "ok": "Plutôt une patate.",
       "low": "C’était un cercle ?"
     }
+  },
+  "blog": {
+    "eyebrow": "Blog",
+    "title": "Notes et articles",
+    "lead": "Courts articles sur la création pour le web.",
+    "empty": "Aucun article pour le moment. Revenez bientôt.",
+    "allTags": "Tous",
+    "filter": "Filtrer par tag",
+    "readingTime": "{{minutes}} min de lecture",
+    "back": "Tous les articles",
+    "notFoundTitle": "Article introuvable",
+    "notFoundBody": "Cet article n’existe pas ou n’est pas publié.",
+    "fallbackNote": "Cet article n’est pas encore traduit, il est donc affiché en anglais.",
+    "published": "Publié"
+  },
+  "cv": {
+    "title": "CV",
+    "print": "Imprimer ou enregistrer en PDF",
+    "hint": "Ouvre la fenêtre d’impression du navigateur : choisissez Enregistrer au format PDF. Les couleurs et la mise en page s’adaptent au papier.",
+    "profile": "Profil",
+    "experience": "Expérience",
+    "education": "Formation",
+    "skills": "Compétences",
+    "certificates": "Certifications",
+    "projects": "Projets choisis",
+    "contact": "Contact",
+    "present": "Aujourd’hui"
   }
 }

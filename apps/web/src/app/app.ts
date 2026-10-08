@@ -106,6 +106,14 @@ export class App {
         },
       }));
 
+      const pageCommands: Command[] = (['blog', 'cv'] as const).map((id) => ({
+        id: `go-${id}`,
+        label: t('commands.goTo', { section: t(`nav.${id}`) }),
+        keywords: t(`nav.${id}`),
+        group: navigate,
+        run: () => void this.router.navigate(['/', current, id]),
+      }));
+
       this.commands.register('shell', [
         {
           id: 'home',
@@ -115,6 +123,7 @@ export class App {
           run: () => void this.router.navigate(['/', current]).then(() => scrollTo({ top: 0 })),
         },
         ...sectionCommands,
+        ...pageCommands,
         ...LOCALES.filter((code) => code !== current).map((code) => ({
           id: `lang-${code}`,
           label: t('language.switchTo', { language: LANGUAGE_NAMES[code] }),
