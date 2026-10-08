@@ -4,6 +4,8 @@ export default defineConfig({
   test: {
     include: ['src/**/*.spec.ts', 'test/**/*.spec.ts'],
     setupFiles: ['reflect-metadata'],
+    // Hashing a password with argon2id takes real time, and a shared CI machine can be slow.
+    testTimeout: 20_000,
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],

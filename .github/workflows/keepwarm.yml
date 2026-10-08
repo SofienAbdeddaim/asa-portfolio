@@ -2,7 +2,8 @@ name: keepwarm
 
 # Optional. Render's free web services sleep after 15 minutes without traffic, and the first request
 # afterwards waits about a minute. Set the repository variable KEEP_WARM to "true" to ping the API
-# every 10 minutes. Note the trade-off in docs/DEPLOYMENT.md before enabling it.
+# every 10 minutes. Note the trade-off in docs/DEPLOYMENT.md before enabling it. Never on a private
+# repository: 4,320 runs a month, each billed as a minute, are more than its 2,000 free minutes.
 on:
   schedule:
     - cron: '*/10 * * * *'
@@ -12,7 +13,7 @@ permissions: {}
 
 jobs:
   ping:
-    if: vars.KEEP_WARM == 'true' && vars.API_URL != ''
+    if: vars.KEEP_WARM == 'true' && vars.API_URL != '' && github.event.repository.private != true
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:

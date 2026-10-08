@@ -34,6 +34,17 @@ describe('crypto', () => {
     expect(() => decrypt('garbage', KEY)).toThrow('Malformed');
   });
 
+  it('refuses a truncated authentication tag, which would be easier to forge', () => {
+    const parts = encrypt('secret', KEY).split('.');
+    for (const length of [4, 8, 12, 15]) {
+      const short = [...parts];
+      short[2] = Buffer.from(parts[2]!, 'base64url').subarray(0, length).toString('base64url');
+      expect(() => decrypt(short.join('.'), KEY), `${length} bytes`).toThrow('Malformed');
+    }
+    expect(Buffer.from(parts[2]!, 'base64url')).toHaveLength(16);
+    expect(decrypt(parts.join('.'), KEY)).toBe('secret');
+  });
+
   it('compares in constant time and hashes deterministically', () => {
     expect(safeEqual('abc', 'abc')).toBe(true);
     expect(safeEqual('abc', 'abd')).toBe(false);

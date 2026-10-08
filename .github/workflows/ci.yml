@@ -1,9 +1,26 @@
 name: ci
 
+# Everything that must pass before a change is trusted, and what the deploy workflow waits for:
+# static checks, unit tests and the build, the API container, and the end-to-end tests in a real
+# browser against a real database (docs/TESTING.md). Changes that only touch documentation skip it.
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.claude/**'
+      - LICENSE
+      - .github/CODEOWNERS
+      - .github/pull_request_template.md
   pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.claude/**'
+      - LICENSE
+      - .github/CODEOWNERS
+      - .github/pull_request_template.md
   workflow_dispatch:
 
 concurrency:
@@ -73,3 +90,51 @@ jobs:
           echo "$output"
           test "$status" -ne 0
           echo "$output" | grep -q "Invalid environment"
+
+  # The real stack, end to end: the built site (served with the generated headers and redirects),
+  # the built API and a throwaway MongoDB, driven by a real browser. A failure here stops the
+  # deployment, because the deploy workflow only follows a successful run of this one.
+  playwright:
+    name: Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      mongo:
+        image: mongo:8
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping:1}).ok'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CI: 'true'
+      MONGODB_URI: mongodb://127.0.0.1:27017/portfolio_e2e
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Build
+        run: |
+          pnpm --filter @asa/shared build
+          pnpm --filter @asa/api build
+          pnpm --filter @asa/web build
+
+      - name: Install the browser
+        run: pnpm --filter @asa/e2e exec playwright install --with-deps chromium
+
+      - name: Run the tests
+        run: pnpm e2e
+
+      - name: Keep the report when something fails
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          retention-days: 7

@@ -50,7 +50,7 @@ Only two things are reachable from the internet: the static site, and the API (t
 
 - **Repository:** no secrets or default credentials (the history is scanned in CI); every secret comes from the environment and the API refuses to start without strong values.
 - **CI:** third-party actions pinned to a commit; least-privilege tokens; the Netlify token reaches only the publish step, not installs or builds; pull requests from forks never run with secrets; deployment only follows a green CI on `main`.
-- **Scanning on every change and weekly:** CodeQL, dependency review, `pnpm audit` (production dependencies block, others are reported), secret scan, and a scan of the API container image for HIGH and CRITICAL findings.
+- **Scanning on every change and weekly:** Semgrep static analysis (it caught a real weakness in the encryption helper during Phase 7), `pnpm audit` (production dependencies block, others are reported), a secret scan of the whole history, and a scan of the API container image for HIGH and CRITICAL findings. While the repository is public, CodeQL and dependency review run as well (GitHub charges for them on private repositories).
 - **Container:** non-root user, no package managers, OS packages patched at build, health check, fails closed on missing configuration.
 - **Logs** redact cookies and authorization headers, and never contain bodies.
 
@@ -64,7 +64,7 @@ Only two things are reachable from the internet: the static site, and the API (t
 | Cookies are `httpOnly`, strict and scoped, nothing in storage | `e2e/tests/auth.spec.ts`, `security-admin.spec.ts`                                                         |
 | Scripts in Markdown never run                                 | `e2e/tests/admin.spec.ts`, `public.spec.ts`, `apps/web` unit tests                                         |
 | Headers and CSP, no violations in the browser                 | `e2e/tests/public.spec.ts` (the page tests fail on any CSP violation)                                      |
-| Dependencies, container, secrets, code                        | the `security` workflow                                                                                    |
+| Dependencies, container, secrets, code                        | the `security` workflow (Semgrep always, CodeQL on public repositories)                                    |
 
 ## Known limits, accepted
 

@@ -8,11 +8,15 @@ import {
 } from 'node:crypto';
 
 const VERSION = 'v1';
+/** The full GCM tag. Left to its default, a decipher accepts a truncated one, which is forgeable. */
+const TAG_BYTES = 16;
 
 /** AES-256-GCM. Output format: v1.<iv>.<tag>.<ciphertext> (base64url). */
 export function encrypt(plain: string, keyBase64: string): string {
   const iv = randomBytes(12);
-  const cipher = createCipheriv('aes-256-gcm', Buffer.from(keyBase64, 'base64'), iv);
+  const cipher = createCipheriv('aes-256-gcm', Buffer.from(keyBase64, 'base64'), iv, {
+    authTagLength: TAG_BYTES,
+  });
   const data = Buffer.concat([cipher.update(plain, 'utf8'), cipher.final()]);
   const tag = cipher.getAuthTag();
   return [
@@ -26,12 +30,15 @@ export function encrypt(plain: string, keyBase64: string): string {
 export function decrypt(payload: string, keyBase64: string): string {
   const [version, iv, tag, data] = payload.split('.');
   if (version !== VERSION || !iv || !tag || !data) throw new Error('Malformed ciphertext');
+  const tagBytes = Buffer.from(tag, 'base64url');
+  if (tagBytes.length !== TAG_BYTES) throw new Error('Malformed ciphertext');
   const decipher = createDecipheriv(
     'aes-256-gcm',
     Buffer.from(keyBase64, 'base64'),
     Buffer.from(iv, 'base64url'),
+    { authTagLength: TAG_BYTES },
   );
-  decipher.setAuthTag(Buffer.from(tag, 'base64url'));
+  decipher.setAuthTag(tagBytes);
   return Buffer.concat([
     decipher.update(Buffer.from(data, 'base64url')),
     decipher.final(),

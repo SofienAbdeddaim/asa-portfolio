@@ -1,7 +1,6 @@
 # ASA Portfolio
 
 [![ci](https://github.com/SofienAbdeddaim/asa-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/SofienAbdeddaim/asa-portfolio/actions/workflows/ci.yml)
-[![e2e](https://github.com/SofienAbdeddaim/asa-portfolio/actions/workflows/e2e.yml/badge.svg)](https://github.com/SofienAbdeddaim/asa-portfolio/actions/workflows/e2e.yml)
 [![security](https://github.com/SofienAbdeddaim/asa-portfolio/actions/workflows/security.yml/badge.svg)](https://github.com/SofienAbdeddaim/asa-portfolio/actions/workflows/security.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 

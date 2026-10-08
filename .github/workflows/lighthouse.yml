@@ -13,6 +13,13 @@ on:
       - .github/workflows/lighthouse.yml
   push:
     branches: [main]
+    paths:
+      - apps/web/**
+      - packages/shared/**
+      - e2e/lighthouse*
+      - e2e/serve.mjs
+      - scripts/**
+      - .github/workflows/lighthouse.yml
   workflow_dispatch:
 
 concurrency:

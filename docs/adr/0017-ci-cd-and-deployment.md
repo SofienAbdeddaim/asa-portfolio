@@ -32,7 +32,7 @@ Same-repository, non-draft pull requests that touch the web app get a Netlify al
 
 ### End-to-end tests
 
-Playwright runs against the production build, served with the generated `_redirects` and `_headers`, the compiled API and a real MongoDB, with the admin created through the real sign-in and two-factor flow. No mocks of our own code. One worker and no retries, because sign-in is rate limited and a retry would hide flakiness. The reset script refuses any database not named `*_e2e`.
+Playwright (a job of the `ci` workflow, so the deploy workflow, which follows `ci`, also waits for it) runs against the production build, served with the generated `_redirects` and `_headers`, the compiled API and a real MongoDB, with the admin created through the real sign-in and two-factor flow. No mocks of our own code. One worker and no retries, because sign-in is rate limited and a retry would hide flakiness. The reset script refuses any database not named `*_e2e`.
 
 ### Lighthouse
 

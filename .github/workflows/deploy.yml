@@ -60,9 +60,6 @@ jobs:
       )
     runs-on: ubuntu-latest
     timeout-minutes: 40
-    environment:
-      name: production
-      url: ${{ vars.SITE_URL }}
     env:
       SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
       API_URL: ${{ vars.API_URL }}

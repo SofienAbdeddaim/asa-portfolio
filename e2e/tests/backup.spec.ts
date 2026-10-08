@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { expect, test } from '@playwright/test';
 import { MongoClient } from 'mongodb';
@@ -13,11 +14,14 @@ import { TINY_PNG } from './helpers';
 const RESTORE_URI = MONGODB_URI.replace(/_e2e(\?.*)?$/, '_e2e_restore$1');
 const slug = `backup-draft-${Date.now().toString(36)}`;
 
+// The compiled tool, as a deployment would run it: it starts in a second or two, where the
+// TypeScript runner takes ten under load.
+const TOOL = fileURLToPath(new URL('../../apps/api/dist/cli/backup.js', import.meta.url));
+
 function backupTool(args: string[], uri: string): string {
-  return execFileSync('pnpm', ['--filter', '@asa/api', 'backup', ...args], {
+  return execFileSync(process.execPath, [TOOL, ...args], {
     env: { ...process.env, ...apiEnv, MONGODB_URI: uri },
     encoding: 'utf8',
-    shell: process.platform === 'win32', // pnpm is a .cmd file there
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 }
@@ -25,6 +29,7 @@ function backupTool(args: string[], uri: string): string {
 test('everything, drafts and images included, can be exported and restored into a fresh database', async ({
   request,
 }) => {
+  test.setTimeout(120_000);
   const folder = mkdtempSync(join(tmpdir(), 'asa-e2e-backup-'));
   const client = new MongoClient(RESTORE_URI);
   let draftId = '';

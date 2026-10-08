@@ -3,7 +3,21 @@ name: security
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.claude/**'
+      - LICENSE
+      - .github/CODEOWNERS
+      - .github/pull_request_template.md
   pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.claude/**'
+      - LICENSE
+      - .github/CODEOWNERS
+      - .github/pull_request_template.md
   schedule:
     # Weekly, so a new advisory is noticed even when nothing is being merged.
     - cron: '17 5 * * 1'
@@ -17,8 +31,12 @@ permissions:
   contents: read
 
 jobs:
+  # Code scanning and dependency review are free for public repositories and need a paid license
+  # (GitHub Code Security) on private ones, so they only run where they work. The audits, the image
+  # scan and the secret scan below run everywhere.
   codeql:
     name: CodeQL
+    if: github.event.repository.private != true
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -37,6 +55,26 @@ jobs:
       - uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
           category: /language:javascript-typescript
+
+  # Open-source static analysis that works on private repositories too (CodeQL above needs a license
+  # there). The image is pinned by digest and the rule packs come from the public Semgrep registry,
+  # with telemetry off; any finding fails the job. To accept a false positive, add a
+  # `// nosemgrep: <rule-id>` comment with the reason next to it.
+  sast:
+    name: Static analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Semgrep 1.179.0
+        run: >
+          docker run --rm --volume "$PWD:/src" --workdir /src
+          semgrep/semgrep@sha256:93963d9295a366f59e4850127b1550400ee7b388f04fe144e4a1f6325d96e01b
+          semgrep scan --metrics=off --error
+          --config p/security-audit --config p/typescript --config p/nodejs --config p/owasp-top-ten
+          apps packages scripts e2e
 
   dependencies:
     name: Known vulnerabilities
@@ -76,7 +114,7 @@ jobs:
 
   dependency-review:
     name: Dependency review
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.repository.private != true
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

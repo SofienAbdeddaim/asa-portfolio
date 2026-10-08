@@ -4,11 +4,8 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
-      day: monday
-      time: '06:00'
-      timezone: Europe/Paris
-    open-pull-requests-limit: 6
+      interval: monthly
+    open-pull-requests-limit: 4
     commit-message:
       prefix: 'chore(deps)'
       prefix-development: 'chore(deps-dev)'
@@ -51,16 +48,16 @@ updates:
       # Angular supports a narrow TypeScript range and pins it (ADR 2): move it with Angular.
       - dependency-name: typescript
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      # The types follow the Node.js the code runs on (22 and 24), not the newest release.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directories:
       - /
       - /.github/actions/setup
     schedule:
-      interval: weekly
-      day: monday
-      time: '06:00'
-      timezone: Europe/Paris
+      interval: monthly
     commit-message:
       prefix: 'ci(deps)'
     groups:
@@ -70,9 +67,11 @@ updates:
   - package-ecosystem: docker
     directory: /apps/api
     schedule:
-      interval: weekly
-      day: monday
-      time: '06:00'
-      timezone: Europe/Paris
+      interval: monthly
     commit-message:
       prefix: 'build(deps)'
+    ignore:
+      # Node.js moves by decision (ADR 2): only even-numbered LTS lines, and a new line needs the
+      # engines range, .nvmrc and the CI setup to change together.
+      - dependency-name: node
+        update-types: ['version-update:semver-major']
