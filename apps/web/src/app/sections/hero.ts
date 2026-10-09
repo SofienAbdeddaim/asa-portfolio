@@ -66,7 +66,7 @@ interface Word {
               }}</span>
             </p>
 
-            <div class="mt-10 flex flex-wrap gap-4">
+            <div class="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
               <button type="button" appButton color="coral" (click)="jump('projects')">
                 {{ 'hero.work' | transloco }}
                 <app-icon name="arrow" [mirror]="true" />
