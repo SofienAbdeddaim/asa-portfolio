@@ -2,7 +2,8 @@ name: ci
 
 # Everything that must pass before a change is trusted, and what the deploy workflow waits for:
 # static checks, unit tests and the build, the API container, and the end-to-end tests in a real
-# browser against a real database (docs/TESTING.md). Changes that only touch documentation skip it.
+# browser against a real database (docs/TESTING.md). Pushes to main that only touch documentation skip
+# it; pull requests always run it, because the ruleset requires its checks.
 on:
   push:
     branches: [main]
@@ -13,14 +14,9 @@ on:
       - LICENSE
       - .github/CODEOWNERS
       - .github/pull_request_template.md
+  # No paths-ignore on pull requests: the ruleset requires these checks, and a check that does not run
+  # (a documentation-only change) is a check that never reports, so the pull request could not be merged.
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-      - '.claude/**'
-      - LICENSE
-      - .github/CODEOWNERS
-      - .github/pull_request_template.md
   workflow_dispatch:
 
 concurrency:
