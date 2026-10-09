@@ -10,14 +10,9 @@ on:
       - LICENSE
       - .github/CODEOWNERS
       - .github/pull_request_template.md
+  # No paths-ignore on pull requests: the ruleset requires these checks, and a check that does not run
+  # (a documentation-only change) is a check that never reports, so the pull request could not be merged.
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-      - '.claude/**'
-      - LICENSE
-      - .github/CODEOWNERS
-      - .github/pull_request_template.md
   schedule:
     # Weekly, so a new advisory is noticed even when nothing is being merged.
     - cron: '17 5 * * 1'
