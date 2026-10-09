@@ -84,8 +84,9 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
           ALIAS: pr-${{ github.event.pull_request.number }}
+        # The repository is a pnpm workspace: the CLI must be told which package the site is.
         run: |
-          npx --yes netlify-cli@27.11.2 deploy --no-build --json \
+          npx --yes netlify-cli@27.11.2 deploy --no-build --json --filter @asa/web \
             --dir apps/web/dist/web/browser --alias "$ALIAS" \
             --message "preview of pull request ${ALIAS#pr-}" > deploy.json
           echo "url=$(jq -r '.deploy_url' deploy.json)" >> "$GITHUB_OUTPUT"

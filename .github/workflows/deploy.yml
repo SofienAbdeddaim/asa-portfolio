@@ -112,8 +112,10 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
+        # The repository is a pnpm workspace: since version 16 the CLI scans for workspaces and refuses
+        # to choose one itself (even with --dir and the site id), so it is told which one this is.
         run: >
-          npx --yes netlify-cli@27.11.2 deploy --prod --no-build
+          npx --yes netlify-cli@27.11.2 deploy --prod --no-build --filter @asa/web
           --dir apps/web/dist/web/browser --message "deploy ${SHA}"
 
       # The site answers, the pre-rendered page is there, and /api reaches the API through it.
