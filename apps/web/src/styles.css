@@ -11,12 +11,14 @@
    While IBM Plex Sans downloads, text is drawn in a stand-in. When the real font arrives the text
    changes size, lines wrap differently and the page jumps (the hero badge next to the headline
    moved by 0.1 on a slow machine). These faces are Arial and Arial Bold stretched to the metrics
-   of IBM Plex Sans 400 and 600, so the swap changes the letter shapes and nothing else. The numbers
+   of IBM Plex Sans 400 and 600, so the swap changes the letter shapes and nothing else. Linux has
+   no Arial: Liberation Sans and Arimo have the same metrics and are listed too, otherwise the stand-in
+   is the (wider) system font and the page still jumps. The numbers
    come from the font files (units per em, ascent, descent, average letter width). They only cover
    Latin letters: Arabic text must never be set in them. */
 @font-face {
   font-family: 'IBM Plex Sans Fallback';
-  src: local('Arial'), local('ArialMT');
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo');
   font-weight: 400;
   size-adjust: 101.17%;
   ascent-override: 101.32%;
@@ -29,7 +31,9 @@
 
 @font-face {
   font-family: 'IBM Plex Sans Fallback';
-  src: local('Arial Bold'), local('Arial-BoldMT');
+  src:
+    local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'),
+    local('LiberationSans-Bold'), local('Arimo Bold');
   font-weight: 600;
   size-adjust: 97.3%;
   ascent-override: 105.35%;
