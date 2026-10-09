@@ -119,10 +119,11 @@ jobs:
           --dir apps/web/dist/web/browser --message "deploy ${SHA}"
 
       # The site answers, the pre-rendered page is there, and /api reaches the API through it.
+      # Netlify redirects /en to /en/, hence -L; the free API may be asleep, hence the retries.
       - name: Check the live site
         run: |
           for attempt in 1 2 3 4 5 6; do
-            if curl -fsS --max-time 20 "$SITE_URL/en" | grep -q 'lang="en"' &&
+            if curl -fsSL --max-time 20 "$SITE_URL/en" | grep -q 'lang="en"' &&
                curl -fsS --max-time 30 "$SITE_URL/api/health" | jq -e '.database == "up"' > /dev/null; then
               echo "### Deployed ${SHA:0:7}" >> "$GITHUB_STEP_SUMMARY"
               echo "- Site: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"
