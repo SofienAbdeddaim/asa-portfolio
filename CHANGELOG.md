@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.1.0...v1.1.1) (2026-10-11)
+
+
+### Bug fixes
+
+* **api:** check content against the database schemas before importing ([#11](https://github.com/SofienAbdeddaim/asa-portfolio/issues/11)) ([fb758a1](https://github.com/SofienAbdeddaim/asa-portfolio/commit/fb758a1027ab95841525eccabc690b48379c769f))
+* **web:** keep the experience line's tip at mid-screen however long the list ([#13](https://github.com/SofienAbdeddaim/asa-portfolio/issues/13)) ([8dd6260](https://github.com/SofienAbdeddaim/asa-portfolio/commit/8dd626020c568c3d9395dc34d40b5a6565915e51))
+* **web:** make the experience line end at the sticky star while scrolling ([#14](https://github.com/SofienAbdeddaim/asa-portfolio/issues/14)) ([4c3c3d5](https://github.com/SofienAbdeddaim/asa-portfolio/commit/4c3c3d5e6f39543a222c710cf45cba108aecb50f))
+
 ## [1.1.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.0.0...v1.1.0) (2026-10-11)
 
 
