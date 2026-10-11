@@ -83,7 +83,24 @@
     "details": "Détail de la mission"
   },
   "skills": {
-    "title": "Compétences"
+    "title": "Compétences",
+    "total": {
+      "zero": "{{count}} compétences,",
+      "one": "{{count}} compétence,",
+      "two": "{{count}} compétences,",
+      "few": "{{count}} compétences,",
+      "many": "{{count}} de compétences,",
+      "other": "{{count}} compétences,"
+    },
+    "core": "un cœur de métier :",
+    "count": {
+      "zero": "{{count}} compétences",
+      "one": "{{count}} compétence",
+      "two": "{{count}} compétences",
+      "few": "{{count}} compétences",
+      "many": "{{count}} de compétences",
+      "other": "{{count}} compétences"
+    }
   },
   "projects": {
     "title": "Projets",

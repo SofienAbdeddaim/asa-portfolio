@@ -114,13 +114,26 @@ describe('home page sections', () => {
     );
   });
 
-  it('skills: the strongest skills come first and stand out, with no rating widget', async () => {
+  it('skills: an index row per group, strongest skills first, with no rating widget', async () => {
     const { el } = await render('en');
-    const items = [...el.querySelectorAll('#skills li')];
+    const rows = el.querySelectorAll('#skills .skill-row');
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.querySelector('.skill-num')?.textContent?.trim()).toBe('01');
+    expect(rows[0]?.querySelector('.skill-count')?.textContent?.trim()).toBe('2 skills');
+    const items = [...el.querySelectorAll('#skills .skill-items li')];
     expect(items.map((li) => li.textContent?.trim())).toEqual(['Angular', 'CSS']);
-    expect(items[0]?.classList).toContain('font-semibold');
-    expect(items[1]?.classList).toContain('text-muted');
+    expect(items[0]?.classList).toContain('strong');
+    expect(items[1]?.classList).not.toContain('strong');
+    // Latin product names stay left-to-right inside Arabic text.
+    expect(items[0]?.querySelector('.ltr-island')).not.toBeNull();
+    expect(el.querySelector('.skills-lead')?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      '2 skills, one core craft: Frontend',
+    );
     expect(el.querySelector('#skills [role="img"]')).toBeNull();
+
+    TestBed.resetTestingModule();
+    const arabic = await render('ar');
+    expect(arabic.el.querySelector('#skills .skill-count')?.textContent?.trim()).toBe('مهارتان');
   });
 
   it('projects: external links are safe and announce the new tab', async () => {

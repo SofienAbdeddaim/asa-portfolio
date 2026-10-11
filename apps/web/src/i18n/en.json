@@ -83,7 +83,24 @@
     "details": "Role details"
   },
   "skills": {
-    "title": "Skills"
+    "title": "Skills",
+    "total": {
+      "zero": "{{count}} skills,",
+      "one": "{{count}} skill,",
+      "two": "{{count}} skills,",
+      "few": "{{count}} skills,",
+      "many": "{{count}} skills,",
+      "other": "{{count}} skills,"
+    },
+    "core": "one core craft:",
+    "count": {
+      "zero": "{{count}} skills",
+      "one": "{{count}} skill",
+      "two": "{{count}} skills",
+      "few": "{{count}} skills",
+      "many": "{{count}} skills",
+      "other": "{{count}} skills"
+    }
   },
   "projects": {
     "title": "Projects",
