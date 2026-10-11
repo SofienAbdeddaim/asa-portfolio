@@ -98,14 +98,14 @@ test('the command palette is keyboard driven and can switch language', async ({ 
 test('the theme choice sticks across reloads and applies before first paint', async ({ page }) => {
   await page.goto('/en');
   const toggle = page.getByRole('button', { name: /^Theme:/ });
-  const initial = await page.locator('html').getAttribute('data-theme');
-  await toggle.click(); // light -> dark -> system cycle
+  const stored = () => page.evaluate(() => localStorage.getItem('theme'));
+  // The cycle (system -> light -> dark) runs inside a view transition, so wait for each step to land.
   await toggle.click();
-  const chosen = await page.evaluate(() => localStorage.getItem('theme'));
+  await expect.poll(stored).toBe('light');
+  await toggle.click();
+  await expect.poll(stored).toBe('dark');
   await page.reload();
-  const html = page.locator('html');
-  if (chosen) await expect(html).toHaveAttribute('data-theme', chosen);
-  else await expect(html).toHaveAttribute('data-theme', initial ?? 'light');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 });
 
 test('reduced motion removes decorative animation but keeps all content', async ({ browser }) => {

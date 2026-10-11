@@ -20,14 +20,23 @@ import { ThemeToggle } from './theme-toggle';
       >
         <a
           [routerLink]="['/', locale.locale()]"
-          class="group inline-flex min-h-11 items-center gap-2 font-display text-2xl font-extrabold"
+          class="inline-flex min-h-11 items-center"
           (click)="brandClick($event)"
         >
-          <app-icon
-            name="star"
-            class="size-8 text-sun transition-transform duration-500 group-hover:rotate-[216deg] [&_svg]:fill-current [&_svg]:stroke-ink"
+          <img
+            class="size-10 dark:hidden"
+            src="/logo.svg"
+            [alt]="'app.brand' | transloco"
+            width="40"
+            height="40"
           />
-          {{ 'app.brand' | transloco }}
+          <img
+            class="hidden size-10 dark:block"
+            src="/logo-dark.svg"
+            [alt]="'app.brand' | transloco"
+            width="40"
+            height="40"
+          />
         </a>
 
         <nav class="hidden xl:block" [attr.aria-label]="'nav.label' | transloco">
