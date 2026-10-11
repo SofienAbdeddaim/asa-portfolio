@@ -27,7 +27,13 @@ import { ThemeToggle } from './theme-toggle';
             name="star"
             class="size-8 text-sun transition-transform duration-500 group-hover:rotate-[216deg] [&_svg]:fill-current [&_svg]:stroke-ink"
           />
-          {{ 'app.brand' | transloco }}
+          <img
+            class="size-13"
+            src="/logo.svg"
+            [alt]="'app.brand' | transloco"
+            width="52"
+            height="52"
+          />
         </a>
 
         <nav class="hidden xl:block" [attr.aria-label]="'nav.label' | transloco">
