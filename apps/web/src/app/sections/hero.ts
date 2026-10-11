@@ -83,11 +83,11 @@ interface Fact {
               <dl class="grid grid-cols-3">
                 @for (fact of facts(); track fact.key; let i = $index) {
                   <div
-                    class="anim-up flex flex-col-reverse border-b border-line px-5 py-4 not-last:border-e"
+                    class="anim-up flex flex-col border-b border-line px-5 py-4 not-last:border-e"
                     [style.--delay]="0.6 + i * 0.08 + 's'"
                   >
                     <dt class="text-sm text-muted">{{ 'hero.' + fact.key | transloco }}</dt>
-                    <dd class="font-display text-3xl font-semibold tabular-nums">
+                    <dd class="order-first font-display text-3xl font-semibold tabular-nums">
                       {{ shown(fact.value) }}
                     </dd>
                   </div>
