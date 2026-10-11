@@ -7,14 +7,13 @@
     "label": "Main navigation",
     "home": "Home",
     "about": "About",
-    "experience": "Journey",
-    "skills": "Toolbox",
+    "experience": "Experience",
+    "skills": "Skills",
     "projects": "Projects",
-    "kind": "Kind words",
+    "kind": "Recommendations",
     "contact": "Contact",
     "menu": "Menu",
     "closeMenu": "Close menu",
-    "play": "Play",
     "blog": "Blog",
     "cv": "CV"
   },
@@ -47,13 +46,11 @@
     "group": {
       "navigate": "Navigate",
       "language": "Language",
-      "appearance": "Appearance",
-      "fun": "Just for fun"
+      "appearance": "Appearance"
     },
     "goHome": "Back to top",
     "goTo": "Go to {{section}}",
-    "toggleTheme": "Change theme",
-    "confetti": "Throw confetti"
+    "toggleTheme": "Change theme"
   },
   "status": {
     "stale": "Showing saved content. Live data is waking up."
@@ -62,36 +59,34 @@
     "title": "Portfolio"
   },
   "hero": {
-    "greeting": "Hi, I'm",
-    "available": "Open to new projects",
+    "available": "Available for new projects",
     "limited": "Limited availability",
     "closed": "Not available right now",
-    "work": "See my work",
-    "hello": "Say hello",
-    "scroll": "Scroll to explore"
+    "work": "See my experience",
+    "cv": "View my CV",
+    "years": "years of experience",
+    "missions": "roles",
+    "tech": "technologies",
+    "now": "Currently"
   },
   "about": {
-    "eyebrow": "01 · About",
-    "title": "A little about me",
+    "title": "About",
     "basedIn": "Based in",
     "education": "School",
     "certificates": "Certificates",
     "issuedBy": "by {{issuer}}"
   },
   "experience": {
-    "eyebrow": "02 · Journey",
-    "title": "Where I've been",
+    "title": "Experience",
     "present": "Present",
-    "at": "{{role}} at {{company}}"
+    "at": "{{role}} at {{company}}",
+    "details": "Role details"
   },
   "skills": {
-    "eyebrow": "03 · Toolbox",
-    "title": "What I work with",
-    "level": "{{level}} out of 5"
+    "title": "Skills"
   },
   "projects": {
-    "eyebrow": "04 · Projects",
-    "title": "Things I've built",
+    "title": "Projects",
     "featured": "Featured",
     "code": "Code",
     "demo": "Live demo",
@@ -99,17 +94,16 @@
     "demoFor": "Live demo of {{name}}"
   },
   "kind": {
-    "eyebrow": "06 · Kind words",
-    "title": "What people say"
+    "title": "Recommendations"
   },
   "contact": {
-    "eyebrow": "07 · Contact",
-    "title": "Let's make something fun",
-    "lead": "Got an idea, a role, or just a hello? My inbox is open.",
+    "eyebrow": "Contact",
+    "title": "Let's work together",
+    "lead": "A project, a role or a question? Write to me.",
     "copy": "Copy email",
     "copied": "Email copied",
-    "elsewhere": "Find me elsewhere",
-    "cv": "Get my CV"
+    "elsewhere": "You can also find me on",
+    "cv": "View my CV"
   },
   "common": {
     "newTab": "opens in a new tab"
@@ -124,34 +118,8 @@
     "body": "The private back-office is built in a later phase."
   },
   "footer": {
-    "note": "Made with Angular, a lot of cream paper and no tracking.",
+    "note": "Designed and built with Angular, with no tracking.",
     "top": "Back to top"
-  },
-  "play": {
-    "eyebrow": "05 · Play",
-    "title": "Playground",
-    "lead": "Drag the stickers around, then try to draw a perfect circle.",
-    "boardHint": "Drag a sticker, or focus it and use the arrow keys (Shift moves further).",
-    "boardLabel": "Sticker board",
-    "moveLabel": "Move the {{name}} sticker",
-    "shuffle": "Shuffle",
-    "gameTitle": "Draw a perfect circle",
-    "gameHint": "Press and draw one full circle in a single stroke, with a mouse, finger or pen.",
-    "pointerOnly": "This game needs a pointer, so it is entirely optional.",
-    "canvasLabel": "Drawing area for the circle game",
-    "start": "Draw here",
-    "again": "Try again",
-    "score": "{{score}} % round.",
-    "best": "Best: {{score}} %",
-    "tooShort": "That was too short. Draw a full circle.",
-    "open": "Almost! Go all the way around.",
-    "tier": {
-      "perfect": "Unbelievably round!",
-      "great": "Seriously round.",
-      "good": "Nice, a little wobbly.",
-      "ok": "That is more of a potato.",
-      "low": "Was that a circle?"
-    }
   },
   "blog": {
     "eyebrow": "Blog",

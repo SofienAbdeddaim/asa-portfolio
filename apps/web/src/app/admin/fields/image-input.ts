@@ -20,7 +20,7 @@ const MAX_BYTES = 5 * 1024 * 1024;
         <img
           [src]="url()"
           alt=""
-          class="size-24 rounded-lg border-2 border-ink bg-surface-2 object-cover"
+          class="size-24 rounded-lg border border-line bg-surface-2 object-cover"
           loading="lazy"
         />
       } @else {

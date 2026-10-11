@@ -16,8 +16,7 @@ type TransitionDocument = Document & { startViewTransition?: (update: () => void
   template: `
     <button
       type="button"
-      class="btn size-12 min-h-12 px-0"
-      style="--btn-bg: var(--surface); --btn-fg: var(--fg)"
+      class="btn btn-ghost size-10 min-h-10 px-0"
       [attr.aria-label]="'theme.current' | transloco: { theme: label() }"
       (click)="cycle($event)"
     >

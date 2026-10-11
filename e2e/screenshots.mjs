@@ -74,7 +74,6 @@ try {
   await capture('home-dark', { path: '/en', colorScheme: 'dark' });
   await capture('timeline', { path: '/en' }, section('experience'));
   await capture('projects', { path: '/en' }, section('projects'));
-  await capture('playground', { path: '/en' }, section('play'));
   await capture('blog-post', { path: '/en/blog/hello-world' });
   await capture('home-mobile', { path: '/en', viewport: phone });
   await capture('home-mobile-ar', { path: '/ar', viewport: phone, locale: 'ar-TN' });

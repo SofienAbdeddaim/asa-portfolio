@@ -29,13 +29,13 @@ import { SiteHeader } from './layout/site-header';
     @if (!admin()) {
       <a
         href="#main"
-        class="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-xl focus:border-[3px] focus:border-ink focus:bg-sun focus:px-4 focus:py-2 focus:font-bold focus:text-on-color"
+        class="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-ink focus:px-4 focus:py-2 focus:font-semibold focus:text-bg"
         >{{ 'app.skipToContent' | transloco }}</a
       >
 
       <div
-        class="scroll-progress pointer-events-none fixed inset-x-0 top-0 z-50 h-1.5 bg-coral"
-        style="transform: scaleX(0)"
+        class="scroll-progress pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5"
+        style="transform: scaleX(0); background: var(--grad)"
         aria-hidden="true"
       ></div>
 
@@ -44,7 +44,6 @@ import { SiteHeader } from './layout/site-header';
 
     <!-- One outlet for both areas. The back-office pages bring their own landmarks. -->
     <div
-      [class.pb-10]="!admin()"
       [attr.role]="admin() ? null : 'main'"
       [attr.id]="admin() ? null : 'main'"
       [attr.tabindex]="admin() ? null : -1"
@@ -54,12 +53,12 @@ import { SiteHeader } from './layout/site-header';
     </div>
 
     @if (!admin()) {
-      <footer class="mt-10 border-t-[3px] border-ink bg-surface py-8">
+      <footer class="border-t border-line py-8">
         <div
-          class="container-page flex flex-wrap items-center justify-between gap-4 text-sm font-medium"
+          class="container-page flex flex-wrap items-center justify-between gap-4 text-sm text-muted"
         >
           <p>{{ 'footer.note' | transloco }}</p>
-          <a href="#main" class="btn min-h-11 text-sm" style="--btn-bg: var(--c-sun)">{{
+          <a href="#main" class="nav-link inline-flex min-h-11 items-center">{{
             'footer.top' | transloco
           }}</a>
         </div>
@@ -148,16 +147,6 @@ export class App {
           keywords: 'dark light system',
           group: t('commands.group.appearance'),
           run: () => this.theme.cycle(),
-        },
-        {
-          id: 'confetti',
-          label: t('commands.confetti'),
-          keywords: 'party celebrate fun',
-          group: t('commands.group.fun'),
-          run: () =>
-            void import('./core/confetti').then(({ confetti }) =>
-              confetti(innerWidth / 2, innerHeight / 3, 60),
-            ),
         },
       ]);
     });

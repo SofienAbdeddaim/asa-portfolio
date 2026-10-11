@@ -62,7 +62,7 @@ describe('home page sections', () => {
   it('hero: availability label, name for assistive tech, and Latin names isolated as ltr', async () => {
     const { el } = await render('ar');
     expect(el.querySelector('app-hero p')?.textContent).toContain('توفّر محدود');
-    // The animated letters are hidden from assistive tech; the name is read once, whole.
+    // The animated lines are hidden from assistive tech; the name is read once, whole.
     expect(el.querySelector('#hero-title .sr-only')?.textContent).toBe('Alex Placeholder');
     expect(el.querySelectorAll('#hero-title [aria-hidden="true"]').length).toBeGreaterThan(0);
     expect(el.querySelector('#hero-title [aria-label]')).toBeNull();
@@ -74,10 +74,17 @@ describe('home page sections', () => {
     ]);
   });
 
-  it('hero: the orbiting text is only drawn for left-to-right locales', async () => {
-    expect((await render('en')).el.querySelector('textPath')).not.toBeNull();
-    TestBed.resetTestingModule();
-    expect((await render('ar')).el.querySelector('textPath')).toBeNull();
+  it('hero: key figures and the current role come from the experience', async () => {
+    // With reduced motion the figures do not count up, so they show their final value at once.
+    vi.stubGlobal('matchMedia', () => ({ matches: true }));
+    const { el } = await render('en');
+    vi.unstubAllGlobals();
+    const facts = [...el.querySelectorAll('app-hero dl > div')].map((row) =>
+      row.textContent?.replace(/\s+/g, ' ').trim(),
+    );
+    expect(facts).toContain('roles 2');
+    expect(facts).toContain('technologies 2');
+    expect(el.querySelector('app-hero')?.textContent).toContain('at Example Corp');
   });
 
   it('falls back to English when a translation is missing', async () => {
@@ -89,28 +96,31 @@ describe('home page sections', () => {
 
   it('experience: period uses the locale and the present label, bullets become list items', async () => {
     const { el } = await render('en');
-    const periods = [...el.querySelectorAll('#experience article > p.chip')].map((chip) =>
-      chip.textContent?.trim(),
+    const periods = [...el.querySelectorAll('#experience .timeline-item > p')].map((p) =>
+      p.textContent?.trim(),
     );
     expect(periods[0]).toBe('Jan 2021 – Present');
     expect(periods[1]).toBe('Mar 2018 – Dec 2020');
-    expect(
-      el.querySelectorAll('#experience article:first-of-type ul:not([aria-label]) li'),
-    ).toHaveLength(3);
+    expect(el.querySelectorAll('#experience .timeline-item:first-child details li')).toHaveLength(
+      3,
+    );
     expect(el.querySelector('#experience')?.textContent).toContain('First bullet');
     expect(el.querySelector('#experience')?.textContent).not.toContain('* Second');
 
     TestBed.resetTestingModule();
     const arabic = await render('ar');
-    expect(arabic.el.querySelector('#experience article > p.chip')?.textContent).toContain('الآن');
+    expect(arabic.el.querySelector('#experience .timeline-item > p')?.textContent).toContain(
+      'الآن',
+    );
   });
 
-  it('skills: level is exposed to assistive technology', async () => {
+  it('skills: the strongest skills come first and stand out, with no rating widget', async () => {
     const { el } = await render('en');
-    const labels = [...el.querySelectorAll('#skills [role="img"]')].map((n) =>
-      n.getAttribute('aria-label'),
-    );
-    expect(labels).toEqual(['5 out of 5', '3 out of 5']);
+    const items = [...el.querySelectorAll('#skills li')];
+    expect(items.map((li) => li.textContent?.trim())).toEqual(['Angular', 'CSS']);
+    expect(items[0]?.classList).toContain('font-semibold');
+    expect(items[1]?.classList).toContain('text-muted');
+    expect(el.querySelector('#skills [role="img"]')).toBeNull();
   });
 
   it('projects: external links are safe and announce the new tab', async () => {

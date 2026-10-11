@@ -32,14 +32,9 @@ export function readingMinutes(text: string): number {
   imports: [RouterLink, TranslocoPipe, LocalizedPipe, Reveal, Skeleton],
   template: `
     <section class="container-page py-14" aria-labelledby="blog-title">
-      <p
-        class="eyebrow sticker sticker-color px-3 py-1"
-        style="--sticker-bg: var(--c-sun); --shadow: 3px"
-      >
-        {{ 'blog.eyebrow' | transloco }}
-      </p>
-      <h1 id="blog-title" class="section-title mt-5">{{ 'blog.title' | transloco }}</h1>
-      <p class="mt-4 max-w-2xl text-xl">{{ 'blog.lead' | transloco }}</p>
+      <p class="eyebrow">{{ 'blog.eyebrow' | transloco }}</p>
+      <h1 id="blog-title" class="section-title mt-3">{{ 'blog.title' | transloco }}</h1>
+      <p class="mt-3 max-w-2xl text-lg text-muted">{{ 'blog.lead' | transloco }}</p>
 
       @if (store.content() === null) {
         <div class="mt-10 grid gap-6" aria-busy="true">
@@ -47,7 +42,7 @@ export function readingMinutes(text: string): number {
           <div appSkeleton class="h-40"></div>
         </div>
       } @else if (store.posts().length === 0) {
-        <p class="sticker mt-10 p-8 text-lg">{{ 'blog.empty' | transloco }}</p>
+        <p class="card mt-10 p-8 text-lg text-muted">{{ 'blog.empty' | transloco }}</p>
       } @else {
         @if (tags().length > 1) {
           <div
@@ -57,10 +52,8 @@ export function readingMinutes(text: string): number {
           >
             <button
               type="button"
-              class="chip cursor-pointer"
+              class="chip min-h-8"
               [attr.aria-pressed]="active() === null"
-              [style.--chip-bg]="active() === null ? 'var(--c-sun)' : 'var(--surface)'"
-              [style.--chip-fg]="active() === null ? 'var(--on-color)' : 'var(--fg)'"
               (click)="active.set(null)"
             >
               {{ 'blog.allTags' | transloco }}
@@ -68,10 +61,8 @@ export function readingMinutes(text: string): number {
             @for (tag of tags(); track tag) {
               <button
                 type="button"
-                class="chip cursor-pointer"
+                class="chip min-h-8"
                 [attr.aria-pressed]="active() === tag"
-                [style.--chip-bg]="active() === tag ? 'var(--c-sun)' : 'var(--surface)'"
-                [style.--chip-fg]="active() === tag ? 'var(--on-color)' : 'var(--fg)'"
                 (click)="active.set(tag)"
               >
                 {{ tag }}
@@ -83,13 +74,10 @@ export function readingMinutes(text: string): number {
         <ul class="mt-10 grid list-none gap-8 md:grid-cols-2">
           @for (post of visible(); track post.id; let i = $index) {
             <li [appReveal]="(i % 2) * 100">
-              <article
-                class="sticker sticker-lift relative flex h-full flex-col overflow-hidden"
-                [style.--tilt]="i % 2 ? '0.6deg' : '-0.6deg'"
-              >
+              <article class="card card-hover relative flex h-full flex-col overflow-hidden">
                 @if (post.coverUrl) {
                   <img
-                    class="aspect-video w-full border-b-[3px] border-ink object-cover"
+                    class="aspect-video w-full border-b border-line object-cover"
                     [src]="post.coverUrl"
                     alt=""
                     loading="lazy"
@@ -97,14 +85,14 @@ export function readingMinutes(text: string): number {
                   />
                 }
                 <div class="flex flex-1 flex-col p-6">
-                  <p class="text-sm font-semibold text-muted">
+                  <p class="font-mono text-xs text-muted">
                     @if (post.publishedAt) {
                       <time [attr.datetime]="post.publishedAt">{{ date(post) }}</time> ·
                     }
                     {{ 'blog.readingTime' | transloco: { minutes: minutes(post) } }}
                   </p>
                   <h2
-                    class="mt-2 text-3xl"
+                    class="mt-2 text-2xl"
                     [attr.lang]="lang(post.title)"
                     [attr.dir]="dir(post.title)"
                   >
@@ -115,7 +103,7 @@ export function readingMinutes(text: string): number {
                     >
                   </h2>
                   <p
-                    class="mt-3 text-lg"
+                    class="mt-3 text-muted"
                     [attr.lang]="lang(post.excerpt)"
                     [attr.dir]="dir(post.excerpt)"
                   >
@@ -124,7 +112,7 @@ export function readingMinutes(text: string): number {
                   @if (post.tags.length) {
                     <ul class="mt-auto flex flex-wrap gap-2 pt-5" aria-hidden="true">
                       @for (tag of post.tags; track tag) {
-                        <li class="chip ltr-island text-xs" style="--chip-bg: var(--surface-2)">
+                        <li class="chip ltr-island">
                           {{ tag }}
                         </li>
                       }

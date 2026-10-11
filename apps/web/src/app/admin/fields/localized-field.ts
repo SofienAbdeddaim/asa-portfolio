@@ -90,8 +90,8 @@ const TOOLS = [
               [id]="id() + '-tab-' + option.code"
               [attr.aria-selected]="active() === option.code"
               [attr.aria-controls]="id() + '-panel'"
-              [style.--btn-bg]="active() === option.code ? 'var(--c-sun)' : 'var(--surface)'"
-              [style.--btn-fg]="'var(--on-color)'"
+              [style.--btn-bg]="active() === option.code ? 'var(--ink)' : 'var(--surface)'"
+              [style.--btn-fg]="active() === option.code ? 'var(--bg)' : 'var(--fg)'"
               (click)="active.set(option.code)"
             >
               {{ option.code.toUpperCase() }}

@@ -1,6 +1,6 @@
 # 12. Visual identity: "Sticker book" with a scroll-drawn timeline
 
-Status: accepted (supersedes the palette, fonts and component look of ADR 11; its RTL, accessibility and logical-property rules still apply)
+Status: superseded by ADR 20 (look, fonts and motion); its RTL, accessibility and logical-property rules still apply
 
 ## Context
 

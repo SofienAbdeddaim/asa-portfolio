@@ -17,9 +17,9 @@ The personal portfolio of Sofien Abdeddaim, Senior Software Engineer: a trilingu
 | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | <img src="docs/screenshots/timeline.jpg" alt="The experience timeline" width="420" /> | <img src="docs/screenshots/projects.jpg" alt="The projects section" width="420" /> |
 
-| Playground                                                                                                    | Blog                                                                       |
-| ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| <img src="docs/screenshots/playground.jpg" alt="Draggable stickers and the draw-a-circle game" width="420" /> | <img src="docs/screenshots/blog-post.jpg" alt="A blog post" width="420" /> |
+| Blog                                                                       |
+| -------------------------------------------------------------------------- |
+| <img src="docs/screenshots/blog-post.jpg" alt="A blog post" width="420" /> |
 
 | Dark theme                                                                | Mobile                                                                                                                                                              |
 | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -31,8 +31,8 @@ The screenshots show the clearly fake demo content that ships with the repositor
 
 ## Features
 
-- **Three languages, one design.** Every text exists in French, English and Arabic (English is the fallback). Arabic is not a translation of the layout: it mirrors it, including shadows, tilts, slide-ins and icons, through logical CSS properties only (a lint rule forbids `left` and `right`).
-- **A sticker-book identity** with motion that respects `prefers-reduced-motion`, a draggable-sticker playground and a draw-a-perfect-circle game, a Ctrl+K command palette, and a light and dark theme.
+- **Three languages, one design.** Every text exists in French, English and Arabic (English is the fallback). Arabic is not a translation of the layout: it mirrors it, including drawn lines, arrows and icons, through logical CSS properties only (a lint rule forbids `left` and `right`).
+- **A calm, editorial identity** (neutral paper, one accent, hairlines) with one orchestrated entrance and quiet scroll and hover details that respect `prefers-reduced-motion`, a Ctrl+K command palette, and a light and dark theme.
 - **Private back-office** at `/admin`: mandatory two-factor sign-in, a generic editor for every kind of content with per-language fields and translation-completeness hints, drafts, drag or keyboard reordering, secure image upload, and a Markdown editor with sanitized preview.
 - **Blog and CV.** Markdown posts, and a print-ready CV per language (browser print-to-PDF), all pre-rendered.
 - **Works while the API sleeps.** The site is static and built from a snapshot of the published content, then refreshes itself from the API when it is awake.
@@ -144,7 +144,7 @@ All API settings are validated at start-up; the process refuses to run with a mi
 - **Hardening:** strict CSP with per-script hashes (no `unsafe-inline` for scripts), HSTS and friends, origin checks on every state-changing request, validated input, uploads decoded and re-encoded (never stored as sent), Markdown sanitized wherever it is rendered, private responses never cached, a non-root container with no package managers. The review, the threats, and the risks that remain are in [docs/SECURITY.md](docs/SECURITY.md) and [ADR 18](docs/adr/0018-hardening.md); black-box probes of the running stack are part of the test suite.
 - **Recovery and backups:** a lost authenticator or password is recovered from a machine with database access (`admin` command), never over the web; the free database has no backups, so `backup export` and `backup import` save and restore everything the back-office holds, drafts and images included ([guide](docs/DEPLOYMENT.md#backups-and-recovery)).
 - **Supply chain:** actions pinned by commit, least-privilege tokens (the deploy token reaches only the publish step), Dependabot, no secrets or default credentials in the repository. Report a vulnerability through [SECURITY.md](SECURITY.md).
-- **Accessibility:** WCAG 2.2 AA enforced by axe-core on every page, language and theme, and on the back-office; keyboard-operable everything (including the sticker playground and reordering) with visible focus and no traps; focus moves to the new heading after a page change and language switches are announced; reflow at 320 px; Lighthouse accessibility is 100 on every page.
+- **Accessibility:** WCAG 2.2 AA enforced by axe-core on every page, language and theme, and on the back-office; keyboard-operable everything (including reordering) with visible focus and no traps; focus moves to the new heading after a page change and language switches are announced; reflow at 320 px; Lighthouse accessibility is 100 on every page.
 - **Performance:** Lighthouse on mobile scores 93 to 97 on five of the six measured pages and 85 on the Arabic home page (its typography needs about 140 KB of fonts). Below-the-fold sections hydrate when they are about to be seen. How it is measured and what was changed: [ADR 18](docs/adr/0018-hardening.md).
 
 ## Deploying

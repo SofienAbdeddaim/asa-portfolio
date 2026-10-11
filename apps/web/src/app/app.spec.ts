@@ -64,8 +64,8 @@ describe('locale routing', () => {
     expect(document.documentElement.lang).toBe('ar');
     expect(document.documentElement.dir).toBe('rtl');
     expect(TestBed.inject(Title).getTitle()).toBe('Alex Placeholder · مهندس برمجيات أول');
-    expect(el.querySelector('#hero-title')?.textContent).toContain('مرحبًا');
-    expect(el.querySelector('#about-title')?.textContent).toContain('قليل عني');
+    expect(el.querySelector('app-hero')?.textContent).toContain('اطّلع على مسيرتي');
+    expect(el.querySelector('#about-title')?.textContent).toContain('نبذة');
   });
 
   it('renders French with ltr direction', async () => {
@@ -73,7 +73,7 @@ describe('locale routing', () => {
     expect(document.documentElement.dir).toBe('ltr');
     // The fixture has no French headline, so the English one is used.
     expect(TestBed.inject(Title).getTitle()).toBe('Alex Placeholder · Senior Software Engineer');
-    expect(el.querySelector('#experience-title')?.textContent).toContain("D'où je viens");
+    expect(el.querySelector('#experience-title')?.textContent).toContain('Parcours');
   });
 
   it('sends unknown locales to the default locale 404', async () => {
@@ -115,8 +115,9 @@ describe('shell', () => {
     const { el } = await setup('/en');
     expect(el.querySelector('a[href="#main"]')?.textContent).toContain('Skip to main content');
     expect(el.querySelector('[role="main"]#main')).not.toBeNull();
-    // The section links appear in both the desktop bar and the mobile menu.
-    expect(el.querySelectorAll('nav[aria-label="Main navigation"] a')).toHaveLength(18);
+    // The section links appear in both the desktop bar (with the blog) and the mobile menu (with
+    // the blog and the CV).
+    expect(el.querySelectorAll('nav[aria-label="Main navigation"] a')).toHaveLength(15);
   });
 
   it('opens and closes the command palette with Ctrl+K', async () => {
@@ -134,7 +135,7 @@ describe('shell', () => {
     expect(commands.open()).toBe(false);
   });
 
-  it('registers translated commands: sections, languages, theme and fun', async () => {
+  it('registers translated commands: sections, pages, languages and theme', async () => {
     await setup('/en');
     const commands = TestBed.inject(CommandService);
     expect(commands.commands().map((c) => c.id)).toEqual([
@@ -143,7 +144,6 @@ describe('shell', () => {
       'go-experience',
       'go-skills',
       'go-projects',
-      'go-play',
       'go-kind',
       'go-contact',
       'go-blog',
@@ -151,11 +151,10 @@ describe('shell', () => {
       'lang-fr',
       'lang-ar',
       'theme',
-      'confetti',
     ]);
     const label = (id: string) => commands.commands().find((c) => c.id === id)?.label;
     expect(label('lang-fr')).toBe('Switch language to Français');
-    expect(label('go-experience')).toBe('Go to Journey');
+    expect(label('go-experience')).toBe('Go to Experience');
   });
 
   it('filters, navigates with the keyboard and runs the selected command', async () => {
@@ -202,11 +201,11 @@ describe('shell', () => {
       fixture.detectChanges();
     };
     press('ArrowUp');
-    expect(input.getAttribute('aria-activedescendant')).toBe('command-confetti');
+    expect(input.getAttribute('aria-activedescendant')).toBe('command-theme');
     press('ArrowDown');
     expect(input.getAttribute('aria-activedescendant')).toBe('command-home');
     press('End');
-    expect(input.getAttribute('aria-activedescendant')).toBe('command-confetti');
+    expect(input.getAttribute('aria-activedescendant')).toBe('command-theme');
     press('Home');
     expect(input.getAttribute('aria-activedescendant')).toBe('command-home');
   });

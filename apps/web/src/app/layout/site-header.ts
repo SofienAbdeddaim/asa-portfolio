@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { CommandService } from '../core/command.service';
+import { ContentStore } from '../core/content.store';
 import { LocaleService } from '../core/locale.service';
 import { SECTIONS, ScrollSpy } from '../core/sections';
 import { Icon } from '../shared/ui/icon';
@@ -13,82 +14,66 @@ import { ThemeToggle } from './theme-toggle';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, RouterLinkActive, TranslocoPipe, Icon, LanguageSwitcher, ThemeToggle],
   template: `
-    <header class="sticky top-3 z-40 px-3 sm:px-6">
-      <div
-        class="sticker mx-auto flex max-w-[76rem] items-center justify-between gap-2 rounded-full py-2 ps-4 pe-2"
-        style="--shadow: 4px"
-      >
+    <header
+      class="sticky top-0 z-40 border-b border-line bg-[color-mix(in_srgb,var(--bg)_85%,transparent)] backdrop-blur-md"
+    >
+      <div class="container-page flex min-h-16 items-center gap-6">
         <a
           [routerLink]="['/', locale.locale()]"
-          class="inline-flex min-h-11 items-center"
-          (click)="brandClick($event)"
+          class="inline-flex min-h-11 items-center gap-2.5 font-display font-semibold"
         >
-          <img
-            class="size-10 dark:hidden"
-            src="/logo.svg"
-            [alt]="'app.brand' | transloco"
-            width="40"
-            height="40"
-          />
-          <img
-            class="hidden size-10 dark:block"
-            src="/logo-dark.svg"
-            [alt]="'app.brand' | transloco"
-            width="40"
-            height="40"
-          />
+          <img class="size-8" src="/favicon.svg" alt="" width="32" height="32" />
+          <span>{{ store.content()?.profile?.fullName ?? ('app.brand' | transloco) }}</span>
         </a>
 
-        <nav class="hidden xl:block" [attr.aria-label]="'nav.label' | transloco">
-          <ul class="flex items-center gap-1">
+        <nav class="ms-auto hidden xl:block" [attr.aria-label]="'nav.label' | transloco">
+          <ul class="flex items-center gap-5 text-sm">
             @for (section of sections; track section.id) {
               <li>
                 <a
                   [routerLink]="['/', locale.locale()]"
                   [fragment]="section.id"
-                  class="inline-flex min-h-11 items-center rounded-full border-2 border-transparent px-3 text-sm font-bold hover:border-ink aria-[current=true]:border-ink aria-[current=true]:text-on-color"
-                  [style.background]="spy.active() === section.id ? section.color : null"
+                  class="nav-link inline-flex min-h-11 items-center"
                   [attr.aria-current]="spy.active() === section.id ? 'true' : null"
                   >{{ 'nav.' + section.id | transloco }}</a
                 >
               </li>
             }
-            @for (page of pages; track page.id) {
-              <li>
-                <a
-                  [routerLink]="['/', locale.locale(), page.id]"
-                  routerLinkActive
-                  #active="routerLinkActive"
-                  [attr.aria-current]="active.isActive ? 'page' : null"
-                  class="inline-flex min-h-11 items-center rounded-full border-2 border-ink px-3 text-sm font-bold text-on-color"
-                  [style.background]="page.color"
-                  >{{ 'nav.' + page.id | transloco }}</a
-                >
-              </li>
-            }
+            <li>
+              <a
+                [routerLink]="['/', locale.locale(), 'blog']"
+                routerLinkActive
+                #blog="routerLinkActive"
+                [attr.aria-current]="blog.isActive ? 'page' : null"
+                class="nav-link inline-flex min-h-11 items-center"
+                >{{ 'nav.blog' | transloco }}</a
+              >
+            </li>
           </ul>
         </nav>
 
-        <div class="flex items-center gap-2">
+        <div class="ms-auto flex items-center gap-1 xl:ms-0">
           <button
             type="button"
-            class="btn size-12 min-h-12 px-0 2xl:w-auto 2xl:px-4"
-            style="--btn-bg: var(--surface); --btn-fg: var(--fg)"
+            class="btn btn-ghost size-10 min-h-10 px-0"
             [attr.aria-label]="'palette.open' | transloco"
             (click)="commands.show()"
           >
             <app-icon name="search" />
-            <span class="ltr-island hidden items-center gap-1 text-xs font-bold 2xl:inline-flex">
-              <kbd>Ctrl</kbd>
-              <kbd>K</kbd>
-            </span>
           </button>
           <app-language-switcher class="hidden sm:block" />
           <app-theme-toggle />
+          <a
+            [routerLink]="['/', locale.locale(), 'cv']"
+            routerLinkActive
+            #cv="routerLinkActive"
+            [attr.aria-current]="cv.isActive ? 'page' : null"
+            class="btn ms-2 hidden min-h-9 px-3 text-sm sm:inline-flex"
+            >{{ 'nav.cv' | transloco }}</a
+          >
           <button
             type="button"
-            class="btn size-12 min-h-12 px-0 xl:hidden"
-            style="--btn-bg: var(--c-coral)"
+            class="btn btn-ghost size-10 min-h-10 px-0 xl:hidden"
             popovertarget="mobile-menu"
             [attr.aria-label]="'nav.menu' | transloco"
           >
@@ -101,37 +86,35 @@ import { ThemeToggle } from './theme-toggle';
         #menu
         id="mobile-menu"
         popover
-        class="sticker fixed inset-x-4 top-24 m-0 w-auto max-w-md p-3 sm:mx-auto sm:mt-0"
-        style="--shadow: 8px; position: fixed"
+        class="card fixed inset-x-4 top-20 m-0 w-auto max-w-md p-2 shadow-xl sm:mx-auto sm:mt-0"
+        style="position: fixed"
       >
         <nav [attr.aria-label]="'nav.label' | transloco">
-          <ul class="grid gap-2">
+          <ul class="grid">
             @for (section of sections; track section.id) {
               <li>
                 <a
                   [routerLink]="['/', locale.locale()]"
                   [fragment]="section.id"
-                  class="flex min-h-12 items-center rounded-xl border-[3px] border-ink px-4 text-lg font-bold text-on-color"
-                  [style.background]="section.color"
+                  class="flex min-h-12 items-center rounded-md px-4 font-semibold hover:bg-surface-2"
                   (click)="menu.hidePopover()"
                   >{{ 'nav.' + section.id | transloco }}</a
                 >
               </li>
             }
-            @for (page of pages; track page.id) {
+            @for (page of pages; track page) {
               <li>
                 <a
-                  [routerLink]="['/', locale.locale(), page.id]"
-                  class="flex min-h-12 items-center rounded-xl border-[3px] border-ink px-4 text-lg font-bold text-on-color"
-                  [style.background]="page.color"
+                  [routerLink]="['/', locale.locale(), page]"
+                  class="flex min-h-12 items-center rounded-md px-4 font-semibold hover:bg-surface-2"
                   (click)="menu.hidePopover()"
-                  >{{ 'nav.' + page.id | transloco }}</a
+                  >{{ 'nav.' + page | transloco }}</a
                 >
               </li>
             }
           </ul>
         </nav>
-        <app-language-switcher class="mt-4 block sm:hidden" />
+        <app-language-switcher class="mt-2 block border-t border-line px-2 pt-2 sm:hidden" />
       </div>
     </header>
   `,
@@ -139,17 +122,8 @@ import { ThemeToggle } from './theme-toggle';
 export class SiteHeader {
   protected readonly locale = inject(LocaleService);
   protected readonly commands = inject(CommandService);
+  protected readonly store = inject(ContentStore);
   protected readonly spy = inject(ScrollSpy);
   protected readonly sections = SECTIONS;
-  protected readonly pages = [
-    { id: 'blog', color: 'var(--c-sun)' },
-    { id: 'cv', color: 'var(--c-mint)' },
-  ] as const;
-
-  /** Tiny easter egg: the logo throws confetti, then navigates home as usual. */
-  protected async brandClick(event: MouseEvent): Promise<void> {
-    const box = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    const { confetti } = await import('../core/confetti');
-    confetti(box.left + 40, box.top + box.height / 2, 18);
-  }
+  protected readonly pages = ['blog', 'cv'] as const;
 }

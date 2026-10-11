@@ -1,6 +1,6 @@
 # 13. Interactive playground (inspired by Bruno Simon, Neal.fun, Cassie Codes)
 
-Status: accepted
+Status: superseded by ADR 20 (the playground was removed)
 
 ## Context
 
