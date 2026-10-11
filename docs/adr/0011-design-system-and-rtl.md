@@ -1,6 +1,6 @@
 # 11. Design system and RTL rules
 
-Status: accepted (palette, fonts and component look superseded by ADR 12; the RTL, motion, Intl and accessibility rules remain in force)
+Status: accepted (palette, fonts and component look superseded by ADR 12, then ADR 20; the RTL, motion, Intl and accessibility rules remain in force)
 
 ## Decision
 

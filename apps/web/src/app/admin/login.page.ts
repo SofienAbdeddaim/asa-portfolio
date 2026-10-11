@@ -125,7 +125,7 @@ const RECOVERY_PATTERN = /^[0-9a-fA-F]{5}-[0-9a-fA-F]{5}$/;
                 then enter the 6-digit code it shows.
               </p>
               <img
-                class="mx-auto mt-4 size-48 rounded-lg border-2 border-ink bg-white p-2"
+                class="mx-auto mt-4 size-48 rounded-lg border border-line bg-white p-2"
                 [src]="e.qrDataUrl"
                 alt="QR code to add this account to your authenticator app"
                 width="192"

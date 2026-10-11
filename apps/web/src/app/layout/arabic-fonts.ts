@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 
 /**
- * Brings in the Arabic font faces (about 190 KB). They are declared by a component instead of the
+ * Brings in the Arabic font faces (about 90 KB). They are declared by a component instead of the
  * global stylesheet so that only Arabic pages ask for them: the build inlines and preloads every
  * font in the global stylesheet, which would make English and French visitors download Arabic
  * fonts they never see.

@@ -8,13 +8,12 @@
     "home": "Accueil",
     "about": "À propos",
     "experience": "Parcours",
-    "skills": "Outils",
+    "skills": "Compétences",
     "projects": "Projets",
-    "kind": "Avis",
+    "kind": "Recommandations",
     "contact": "Contact",
     "menu": "Menu",
     "closeMenu": "Fermer le menu",
-    "play": "Jeux",
     "blog": "Blog",
     "cv": "CV"
   },
@@ -47,13 +46,11 @@
     "group": {
       "navigate": "Navigation",
       "language": "Langue",
-      "appearance": "Apparence",
-      "fun": "Pour le plaisir"
+      "appearance": "Apparence"
     },
     "goHome": "Retour en haut",
     "goTo": "Aller à : {{section}}",
-    "toggleTheme": "Changer le thème",
-    "confetti": "Lancer des confettis"
+    "toggleTheme": "Changer le thème"
   },
   "status": {
     "stale": "Contenu enregistré affiché. Les données en direct se réveillent."
@@ -62,36 +59,34 @@
     "title": "Portfolio"
   },
   "hero": {
-    "greeting": "Salut, moi c'est",
-    "available": "Ouvert à de nouveaux projets",
+    "available": "Ouvert à de nouvelles missions",
     "limited": "Disponibilité limitée",
     "closed": "Indisponible pour l'instant",
-    "work": "Voir mon travail",
-    "hello": "Dire bonjour",
-    "scroll": "Défiler pour explorer"
+    "work": "Voir mon parcours",
+    "cv": "Voir mon CV",
+    "years": "ans d'expérience",
+    "missions": "missions",
+    "tech": "technologies",
+    "now": "Actuellement"
   },
   "about": {
-    "eyebrow": "01 · À propos",
-    "title": "Un peu sur moi",
+    "title": "À propos",
     "basedIn": "Basé à",
     "education": "Formation",
     "certificates": "Certifications",
     "issuedBy": "par {{issuer}}"
   },
   "experience": {
-    "eyebrow": "02 · Parcours",
-    "title": "D'où je viens",
+    "title": "Parcours",
     "present": "Aujourd'hui",
-    "at": "{{role}} chez {{company}}"
+    "at": "{{role}} chez {{company}}",
+    "details": "Détail de la mission"
   },
   "skills": {
-    "eyebrow": "03 · Outils",
-    "title": "Avec quoi je travaille",
-    "level": "{{level}} sur 5"
+    "title": "Compétences"
   },
   "projects": {
-    "eyebrow": "04 · Projets",
-    "title": "Ce que j'ai construit",
+    "title": "Projets",
     "featured": "À la une",
     "code": "Code",
     "demo": "Démo en ligne",
@@ -99,17 +94,16 @@
     "demoFor": "Démo en ligne de {{name}}"
   },
   "kind": {
-    "eyebrow": "06 · Avis",
-    "title": "Ce qu'on en dit"
+    "title": "Recommandations"
   },
   "contact": {
-    "eyebrow": "07 · Contact",
-    "title": "Créons quelque chose de chouette",
-    "lead": "Une idée, un poste, ou juste un bonjour ? Ma boîte mail est ouverte.",
+    "eyebrow": "Contact",
+    "title": "Travaillons ensemble",
+    "lead": "Une mission, un poste ou une question ? Écrivez-moi.",
     "copy": "Copier l'e-mail",
     "copied": "E-mail copié",
-    "elsewhere": "Me retrouver ailleurs",
-    "cv": "Obtenir mon CV"
+    "elsewhere": "Retrouvez-moi aussi sur",
+    "cv": "Voir mon CV"
   },
   "common": {
     "newTab": "s'ouvre dans un nouvel onglet"
@@ -124,34 +118,8 @@
     "body": "Le back-office privé est construit dans une phase ultérieure."
   },
   "footer": {
-    "note": "Fait avec Angular, beaucoup de papier crème et aucun suivi.",
+    "note": "Conçu et développé avec Angular, sans aucun suivi.",
     "top": "Retour en haut"
-  },
-  "play": {
-    "eyebrow": "05 · Jeux",
-    "title": "Terrain de jeu",
-    "lead": "Déplacez les autocollants, puis essayez de dessiner un cercle parfait.",
-    "boardHint": "Faites glisser un autocollant, ou donnez-lui le focus et utilisez les flèches (Maj va plus loin).",
-    "boardLabel": "Tableau d’autocollants",
-    "moveLabel": "Déplacer l’autocollant {{name}}",
-    "shuffle": "Mélanger",
-    "gameTitle": "Dessinez un cercle parfait",
-    "gameHint": "Appuyez et dessinez un cercle complet d’un seul trait, à la souris, au doigt ou au stylet.",
-    "pointerOnly": "Ce jeu demande un pointeur, il est donc entièrement facultatif.",
-    "canvasLabel": "Zone de dessin du jeu du cercle",
-    "start": "Dessinez ici",
-    "again": "Réessayer",
-    "score": "{{score}} % rond.",
-    "best": "Meilleur : {{score}} %",
-    "tooShort": "C’était trop court. Dessinez un cercle complet.",
-    "open": "Presque ! Faites le tour complet.",
-    "tier": {
-      "perfect": "Incroyablement rond !",
-      "great": "Vraiment rond.",
-      "good": "Joli, un peu tremblant.",
-      "ok": "Plutôt une patate.",
-      "low": "C’était un cercle ?"
-    }
   },
   "blog": {
     "eyebrow": "Blog",

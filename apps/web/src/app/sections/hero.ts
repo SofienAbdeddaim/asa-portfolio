@@ -1,181 +1,164 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
-import type { Locale, Profile } from '@asa/shared';
-import { goToSection } from '../core/sections';
-import { LocalizedPipe } from '../core/localized.pipe';
 import { DOCUMENT } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  afterNextRender,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
+import type { Experience, Locale, Profile } from '@asa/shared';
+import { resolveLocalized } from '@asa/shared';
+import { LocalizedPipe } from '../core/localized.pipe';
+import { markdownToText } from '../core/markdown-text';
+import { prefersReducedMotion } from '../core/motion';
+import { goToSection } from '../core/sections';
 import { Button } from '../shared/ui/button';
 import { Icon } from '../shared/ui/icon';
-import { Marquee } from '../shared/ui/marquee';
 
-const ARABIC_SCRIPT = /[؀-ۿ]/;
+const ARABIC_SCRIPT = /[\u0600-\u06FF]/;
+const YEAR_MS = 365.25 * 24 * 3600 * 1000;
+const COUNT_DELAY = 600;
+const COUNT_DURATION = 1400;
 
-interface Word {
-  text: string;
-  /** Latin words animate letter by letter; Arabic words stay whole so letters keep joining. */
-  letters: string[] | null;
+interface Fact {
+  key: string;
+  value: number;
 }
 
 @Component({
   selector: 'app-hero',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslocoPipe, LocalizedPipe, Button, Icon, Marquee],
+  imports: [RouterLink, TranslocoPipe, LocalizedPipe, Button, Icon],
   template: `
-    <section class="container-page relative pt-8 pb-12 sm:pt-14" aria-labelledby="hero-title">
-      <div class="grid items-center gap-12 lg:grid-cols-[1.35fr_1fr]">
-        <div>
-          @if (profile(); as p) {
-            <p
-              class="sticker sticker-color inline-flex items-center gap-3 px-4 py-1.5 text-sm font-semibold"
-              style="--shadow: 4px; --sticker-bg: var(--c-sun)"
-            >
-              <span
-                class="anim-pulse size-3.5 rounded-full border-2 border-ink"
-                [style.background]="statusColor()"
-              ></span>
+    <section class="container-page pt-12 pb-16 sm:pt-20 sm:pb-24" aria-labelledby="hero-title">
+      @if (profile(); as p) {
+        <div class="grid items-end gap-12 lg:grid-cols-[1.35fr_1fr] lg:gap-16">
+          <div class="min-w-0">
+            <p class="anim-up inline-flex items-center gap-2.5 text-sm text-muted">
+              <span class="status-dot" [style.--dot]="statusColor()"></span>
               {{ availabilityKey() | transloco }}
             </p>
 
-            <h1 id="hero-title" class="mt-8">
-              <span class="block text-2xl font-semibold sm:text-3xl">{{
-                'hero.greeting' | transloco
-              }}</span>
-              <span class="mt-2 block text-[clamp(3rem,8.5vw,6.5rem)] leading-[0.95]">
-                <span class="sr-only">{{ p.fullName }}</span>
-                @for (word of words(); track $index; let wi = $index) {
-                  <span class="block" aria-hidden="true">
-                    @if (word.letters; as letters) {
-                      <span dir="ltr" class="inline-block font-extrabold">
-                        @for (letter of letters; track $index) {
-                          <span class="anim-letter" [style.--i]="offset(wi) + $index">{{
-                            letter
-                          }}</span>
-                        }
-                      </span>
-                    } @else {
-                      <span class="anim-letter" [style.--i]="$index * 3">{{ word.text }}</span>
-                    }
-                  </span>
-                }
-              </span>
+            <h1
+              id="hero-title"
+              class="mt-5 mb-5 text-[clamp(2.5rem,7.5vw,5.25rem)] wrap-anywhere leading-none font-bold tracking-[-0.035em]"
+            >
+              <span class="sr-only">{{ p.fullName }}</span>
+              @for (word of words(); track $index) {
+                <span class="anim-mask" aria-hidden="true">
+                  <span [attr.dir]="word.dir" [style.--delay]="$index * 0.1 + 's'">{{
+                    word.text
+                  }}</span>
+                </span>
+              }
             </h1>
 
-            <p class="mt-8 max-w-xl text-xl sm:text-2xl">
-              <span class="highlight" style="--hl: var(--c-mint)">{{
-                p.headline | localized: locale()
-              }}</span>
+            <p class="anim-up text-lg font-semibold sm:text-xl" style="--delay: 0.35s">
+              {{ p.headline | localized: locale() }}
             </p>
-
-            <div class="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-              <button type="button" appButton color="coral" (click)="jump('projects')">
-                {{ 'hero.work' | transloco }}
-                <app-icon name="arrow" [mirror]="true" />
-              </button>
-              <button type="button" appButton color="paper" (click)="jump('contact')">
-                <app-icon name="mail" />
-                {{ 'hero.hello' | transloco }}
-              </button>
-            </div>
-          }
-        </div>
-
-        <div class="relative mx-auto aspect-square w-full max-w-md" aria-hidden="true">
-          @if (profile(); as p) {
-            <div
-              class="sticker sticker-color anim-float absolute inset-[8%] grid place-items-center overflow-hidden"
-              style="--sticker-bg: var(--c-coral); --shadow: 12px; border-radius: 58% 42% 55% 45% / 45% 55% 45% 55%"
-            >
-              <span class="font-display text-[clamp(5rem,16vw,9rem)] leading-none">{{
-                initials()
-              }}</span>
-            </div>
-
-            @if (locale() !== 'ar') {
-              <svg
-                viewBox="0 0 200 200"
-                class="anim-spin absolute inset-0 size-full text-fg"
-                style="--spin-time: 26s"
-              >
-                <defs>
-                  <path id="orbit" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0" />
-                </defs>
-                <text
-                  class="font-display"
-                  font-size="15"
-                  font-weight="700"
-                  fill="currentColor"
-                  letter-spacing="2.2"
-                >
-                  <textPath href="#orbit" textLength="508" lengthAdjust="spacing">
-                    {{ orbitText(p) }}
-                  </textPath>
-                </text>
-              </svg>
+            @if (pitch(); as text) {
+              <p class="anim-up mt-3 max-w-xl text-muted" style="--delay: 0.45s">{{ text }}</p>
             }
 
-            <app-icon
-              name="star"
-              class="anim-wobble absolute -top-1 end-4 size-14 text-sun [&_svg]:fill-current"
-            />
-            <app-icon
-              name="star"
-              class="anim-wobble absolute bottom-6 -start-2 size-10 text-mint [&_svg]:fill-current"
-              style="animation-delay: -1.2s"
-            />
-            <span
-              class="anim-float absolute start-2 top-[18%] size-8 rounded-full border-[3px] border-ink bg-sky"
-              style="--delay: -1s"
-            ></span>
-            <span
-              class="anim-float absolute end-0 bottom-[22%] size-6 rotate-12 border-[3px] border-ink bg-pink"
-              style="--delay: -2.4s"
-            ></span>
+            <div class="anim-up mt-8 flex flex-wrap gap-3" style="--delay: 0.55s">
+              <button type="button" appButton variant="primary" (click)="jump()">
+                {{ 'hero.work' | transloco }}
+                <app-icon name="arrow" [mirror]="true" class="btn-arrow" />
+              </button>
+              <a appButton [routerLink]="['/', locale(), 'cv']">{{ 'hero.cv' | transloco }}</a>
+            </div>
+          </div>
+
+          @if (facts().length) {
+            <div
+              class="card facts anim-card"
+              style="--delay: 0.4s"
+              (pointermove)="spotlight($event)"
+            >
+              <dl class="grid grid-cols-3">
+                @for (fact of facts(); track fact.key; let i = $index) {
+                  <div
+                    class="anim-up flex flex-col-reverse border-b border-line px-5 py-4 not-last:border-e"
+                    [style.--delay]="0.6 + i * 0.08 + 's'"
+                  >
+                    <dt class="text-sm text-muted">{{ 'hero.' + fact.key | transloco }}</dt>
+                    <dd class="font-display text-3xl font-semibold tabular-nums">
+                      {{ shown(fact.value) }}
+                    </dd>
+                  </div>
+                }
+              </dl>
+              @if (current(); as job) {
+                <p class="anim-up px-5 py-4 text-sm" style="--delay: 1s">
+                  <span class="eyebrow block">{{ 'hero.now' | transloco }}</span>
+                  {{
+                    'experience.at'
+                      | transloco: { role: (job.role | localized: locale()), company: job.company }
+                  }}
+                </p>
+              }
+            </div>
           }
         </div>
-      </div>
-
-      @if (tags().length) {
-        <app-marquee class="mt-16 -mx-4 sm:-mx-8" [items]="tags()" [seconds]="45" />
       }
-
-      <p class="mt-10 flex items-center gap-3 text-sm text-muted" aria-hidden="true">
-        <span class="anim-float inline-block"><app-icon name="arrow" class="rotate-90" /></span>
-        {{ 'hero.scroll' | transloco }}
-      </p>
     </section>
   `,
 })
 export class Hero {
   readonly profile = input.required<Profile | null>();
+  readonly experiences = input<readonly Experience[]>([]);
   readonly locale = input.required<Locale>();
-  readonly tags = input<readonly string[]>([]);
 
   private readonly document = inject(DOCUMENT);
 
-  protected readonly words = computed<Word[]>(() => {
-    const name = this.profile()?.fullName ?? '';
-    return name
-      .split(/\s+/)
-      .filter(Boolean)
-      .map((text) => ({ text, letters: ARABIC_SCRIPT.test(text) ? null : [...text] }));
-  });
+  /** 0 → 1 while the figures count up; 1 on the server and when motion is reduced. */
+  private readonly progress = signal(1);
 
-  protected readonly initials = computed(() =>
+  /** Words of the name; Latin words are isolated as left-to-right so RTL pages keep them whole. */
+  protected readonly words = computed(() =>
     (this.profile()?.fullName ?? '')
       .split(/\s+/)
       .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => [...part][0] ?? '')
-      .join(''),
+      .map((text) => ({ text, dir: ARABIC_SCRIPT.test(text) ? 'rtl' : 'ltr' })),
+  );
+
+  /** The first sentence of the bio, as a one-line pitch under the headline. */
+  protected readonly pitch = computed(() => {
+    const profile = this.profile();
+    if (!profile) return '';
+    const text = markdownToText(resolveLocalized(profile.bio, this.locale()));
+    return text.match(/^.+?[.!?؟](?=\s|$)/)?.[0] ?? '';
+  });
+
+  /** Figures computed from the published experience, so they never drift from the content. */
+  protected readonly facts = computed<Fact[]>(() => {
+    const items = this.experiences();
+    if (!items.length) return [];
+    const first = Math.min(...items.map((item) => Date.parse(item.startDate)));
+    const years = Math.floor((Date.now() - first) / YEAR_MS);
+    return [
+      { key: 'years', value: years },
+      { key: 'missions', value: items.length },
+      { key: 'tech', value: new Set(items.flatMap((item) => item.technologies)).size },
+    ].filter((fact) => fact.value > 0);
+  });
+
+  protected readonly current = computed(() =>
+    this.experiences().find((item) => item.current || !item.endDate),
   );
 
   protected readonly statusColor = computed(() => {
     const status = this.profile()?.availability.status;
     return status === 'open'
-      ? 'var(--c-mint)'
+      ? 'var(--ok)'
       : status === 'limited'
-        ? 'var(--c-sun)'
-        : 'var(--c-pink)';
+        ? 'var(--accent)'
+        : 'var(--muted)';
   });
 
   protected readonly availabilityKey = computed(() => {
@@ -187,18 +170,37 @@ export class Hero {
         : 'hero.available';
   });
 
-  protected orbitText(profile: Profile): string {
-    return `${profile.headline.en} • `.repeat(2).toUpperCase();
+  constructor() {
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      if (prefersReducedMotion() || typeof requestAnimationFrame !== 'function') return;
+      let frame = 0;
+      const start = performance.now() + COUNT_DELAY;
+      this.progress.set(0);
+      const tick = (now: number) => {
+        const t = Math.min(1, Math.max(0, (now - start) / COUNT_DURATION));
+        this.progress.set(t);
+        if (t < 1) frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+      destroyRef.onDestroy(() => cancelAnimationFrame(frame));
+    });
   }
 
-  /** Delay index so letters of later words start after earlier ones. */
-  protected offset(wordIndex: number): number {
-    return this.words()
-      .slice(0, wordIndex)
-      .reduce((sum, word) => sum + (word.letters?.length ?? 1), 0);
+  /** The value shown while counting up (ease-out), and the exact value at rest. */
+  protected shown(value: number): number {
+    const t = this.progress();
+    return t >= 1 ? value : Math.round(value * (1 - Math.pow(2, -10 * t)));
   }
 
-  protected jump(id: 'projects' | 'contact'): void {
-    goToSection(this.document, id);
+  protected spotlight(event: PointerEvent): void {
+    const card = event.currentTarget as HTMLElement;
+    const box = card.getBoundingClientRect();
+    card.style.setProperty('--mx', `${event.clientX - box.left}px`);
+    card.style.setProperty('--my', `${event.clientY - box.top}px`);
+  }
+
+  protected jump(): void {
+    goToSection(this.document, 'experience');
   }
 }

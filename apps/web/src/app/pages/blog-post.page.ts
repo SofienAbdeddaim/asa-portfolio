@@ -25,7 +25,7 @@ import { readingMinutes } from './blog-list.page';
       @if (post(); as post) {
         <article class="mx-auto mt-6 max-w-3xl">
           <header>
-            <p class="text-sm font-semibold text-muted">
+            <p class="font-mono text-xs text-muted">
               @if (post.publishedAt) {
                 <time [attr.datetime]="post.publishedAt">{{ date() }}</time> ·
               }
@@ -41,10 +41,7 @@ import { readingMinutes } from './blog-list.page';
             @if (post.tags.length) {
               <ul class="mt-5 flex flex-wrap gap-2">
                 @for (tag of post.tags; track tag) {
-                  <li
-                    class="chip ltr-island text-sm"
-                    style="--chip-bg: var(--c-sun); --chip-fg: var(--on-color)"
-                  >
+                  <li class="chip ltr-island">
                     {{ tag }}
                   </li>
                 }
@@ -54,8 +51,7 @@ import { readingMinutes } from './blog-list.page';
 
           @if (post.coverUrl) {
             <img
-              class="sticker mt-8 aspect-video w-full object-cover"
-              style="--shadow: 8px"
+              class="card mt-8 aspect-video w-full object-cover"
               [src]="post.coverUrl"
               alt=""
               decoding="async"
@@ -64,7 +60,7 @@ import { readingMinutes } from './blog-list.page';
 
           @if (fallback()) {
             <p
-              class="mt-8 rounded-xl border-[3px] border-ink bg-surface-2 px-4 py-3 text-sm font-semibold"
+              class="mt-8 rounded-lg border border-line bg-surface-2 px-4 py-3 text-sm"
               role="note"
             >
               {{ 'blog.fallbackNote' | transloco }}

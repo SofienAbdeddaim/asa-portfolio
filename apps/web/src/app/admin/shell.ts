@@ -19,14 +19,14 @@ import { RESOURCES } from './resources';
   template: `
     <a
       href="#admin-main"
-      class="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-sun focus:px-4 focus:py-2 focus:font-bold focus:text-on-color"
+      class="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-ink focus:px-4 focus:py-2 focus:font-semibold focus:text-bg"
       >Skip to content</a
     >
 
     <div class="min-h-dvh lg:grid lg:grid-cols-[16rem_1fr]">
       <aside class="border-b-[3px] border-ink bg-surface p-4 lg:border-e-[3px] lg:border-b-0">
         <div class="flex items-center justify-between gap-3 lg:block">
-          <p class="font-display text-2xl font-extrabold">Back-office</p>
+          <p class="font-display text-2xl font-semibold">Back-office</p>
           <a
             class="a-btn min-h-10 px-3 text-sm lg:mt-3 lg:w-full"
             routerLink="/en"
@@ -41,7 +41,7 @@ import { RESOURCES } from './resources';
             @for (resource of resources; track resource.key) {
               <li>
                 <a
-                  class="flex min-h-11 items-center whitespace-nowrap rounded-lg border-2 border-transparent px-3 font-semibold hover:border-ink aria-[current=page]:border-ink aria-[current=page]:bg-sun aria-[current=page]:text-on-color"
+                  class="flex min-h-11 items-center whitespace-nowrap rounded-md px-3 font-semibold text-muted hover:bg-surface-2 hover:text-fg aria-[current=page]:bg-surface-2 aria-[current=page]:text-fg"
                   [routerLink]="['/admin', resource.key]"
                   routerLinkActive
                   #rla="routerLinkActive"
@@ -74,8 +74,7 @@ import { RESOURCES } from './resources';
       @if (toasts.toast(); as toast) {
         <p
           class="a-card pointer-events-auto max-w-xl px-5 py-3 font-semibold"
-          [style.background]="toast.kind === 'error' ? 'var(--surface)' : 'var(--c-mint)'"
-          [style.color]="toast.kind === 'error' ? 'var(--danger)' : 'var(--on-color)'"
+          [style.color]="toast.kind === 'error' ? 'var(--danger)' : 'var(--ok)'"
         >
           {{ toast.message }}
         </p>

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { watchBrowserProblems } from './helpers';
 
 const LOCALES = [
-  { code: 'en', dir: 'ltr', heading: 'Alex Placeholder', nav: 'Journey' },
+  { code: 'en', dir: 'ltr', heading: 'Alex Placeholder', nav: 'Experience' },
   { code: 'fr', dir: 'ltr', heading: 'Alex Placeholder', nav: 'Parcours' },
   { code: 'ar', dir: 'rtl', heading: 'Alex Placeholder', nav: 'المسيرة' },
 ] as const;
@@ -18,10 +18,10 @@ for (const locale of LOCALES) {
     const html = page.locator('html');
     await expect(html).toHaveAttribute('lang', locale.code);
     await expect(html).toHaveAttribute('dir', locale.dir);
-    // The name is drawn letter by letter; assistive technology reads it once, whole.
+    // The name is animated line by line; assistive technology reads it once, whole.
     await expect(page.locator('#hero-title .sr-only')).toHaveText(locale.heading);
     await expect(page.getByRole('link', { name: locale.nav }).first()).toBeVisible();
-    for (const id of ['about', 'experience', 'skills', 'projects', 'play', 'kind', 'contact']) {
+    for (const id of ['about', 'experience', 'skills', 'projects', 'kind', 'contact']) {
       await expect(page.locator(`#${id}`)).toBeAttached();
     }
 

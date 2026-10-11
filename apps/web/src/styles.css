@@ -1,9 +1,11 @@
 /* Self-hosted fonts (npm packages, no external CDN); only the subsets we render are bundled.
-   Display: Bricolage Grotesque (Latin) + Lalezar (Arabic). Body: IBM Plex Sans + Plex Sans Arabic.
-   The Arabic faces live in layout/arabic-fonts.css so only Arabic pages download them. */
-@import '@fontsource-variable/bricolage-grotesque/wght.css';
+   Display: Schibsted Grotesk (variable, Latin). Body: IBM Plex Sans. Labels and dates: IBM Plex
+   Mono. Arabic uses IBM Plex Sans Arabic for everything; it lives in layout/arabic-fonts.css so
+   only Arabic pages download it. */
+@import '@fontsource-variable/schibsted-grotesk/wght.css';
 @import '@fontsource/ibm-plex-sans/latin-400.css';
 @import '@fontsource/ibm-plex-sans/latin-600.css';
+@import '@fontsource/ibm-plex-mono/latin-400.css';
 
 @import 'tailwindcss';
 
@@ -48,27 +50,25 @@
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /* ---- Design tokens -------------------------------------------------------------------------
-   "Sticker book": cream paper, thick ink outlines, hard offset shadows, saturated stickers.
-   Every sticker color carries dark ink text (>= 6.9:1), so the text color never depends on the
-   theme. Page text and muted text meet WCAG 2.2 AA in both themes. */
+   "Quiet editorial": neutral paper, one ink, one accent, hairlines instead of outlines and
+   shadows, and typography doing the work (ADR 20). The gradient is the favicon's, used only as a
+   thin line. Page text, muted text and the accent meet WCAG 2.2 AA in both themes. */
 :root {
-  --bg: #fff4e0;
+  --bg: #f6f6f3;
   --surface: #ffffff;
-  --surface-2: #ffe9c2;
-  --fg: #17120f;
-  --muted: #5a4f45;
-  --ink: #17120f;
-  --accent: #ff5a36;
-  --link: #b32d0f;
-  --on-color: #17120f;
+  --surface-2: #efefeb;
+  --fg: #15171c;
+  --muted: #555a66;
+  --ink: #15171c;
+  --line: #e0e1e5;
+  --accent: #2650c4;
+  --on-accent: #ffffff;
+  --link: #2650c4;
+  --ok: #17845a;
   --danger: #b42318;
-
-  --c-coral: #ff5a36;
-  --c-sun: #ffd23f;
-  --c-mint: #3ee0a5;
-  --c-sky: #6cc4ff;
-  --c-lilac: #b79cff;
-  --c-pink: #ff8fc7;
+  --grad: linear-gradient(90deg, #19c3c0, #2f6bf0 55%, #7b4be6);
+  --grad-y: linear-gradient(180deg, #19c3c0, #2f6bf0 55%, #7b4be6);
+  --ease: cubic-bezier(0.2, 0.7, 0, 1);
 
   --dir-sign: 1;
   --origin: left;
@@ -76,18 +76,22 @@
 }
 
 [data-theme='dark'] {
-  --bg: #15101f;
-  --surface: #221a33;
-  --surface-2: #2d2342;
-  --fg: #fff4e0;
-  --muted: #c9bfd9;
-  --ink: #fff4e0;
-  --link: #ff9b82;
+  --bg: #0f1115;
+  --surface: #171a20;
+  --surface-2: #1e222a;
+  --fg: #e9eaee;
+  --muted: #a0a6b2;
+  --ink: #e9eaee;
+  --line: #2a2e37;
+  --accent: #86a8ff;
+  --on-accent: #0f1115;
+  --link: #9db8ff;
+  --ok: #4fd39c;
   --danger: #ff8a80;
   color-scheme: dark;
 }
 
-/* Animations and shadows read this sign so they travel and fall toward the reading direction. */
+/* Underlines, arrows and drawn lines read this sign so they travel toward the reading direction. */
 [dir='rtl'] {
   --dir-sign: -1;
   --origin: right;
@@ -100,50 +104,43 @@
   --color-fg: var(--fg);
   --color-muted: var(--muted);
   --color-ink: var(--ink);
+  --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
   --color-link: var(--link);
-  --color-on-color: var(--on-color);
+  --color-ok: var(--ok);
   --color-danger: var(--danger);
-  --color-coral: var(--c-coral);
-  --color-sun: var(--c-sun);
-  --color-mint: var(--c-mint);
-  --color-sky: var(--c-sky);
-  --color-lilac: var(--c-lilac);
-  --color-pink: var(--c-pink);
 
   --font-sans:
     'IBM Plex Sans', 'IBM Plex Sans Fallback', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui,
     sans-serif;
   --font-display:
-    'Bricolage Grotesque Variable', 'Lalezar', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui,
+    'Schibsted Grotesk Variable', 'IBM Plex Sans Arabic', 'IBM Plex Sans', ui-sans-serif, system-ui,
     sans-serif;
-  --font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
+  --font-mono:
+    'IBM Plex Mono', ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
 
-  /* Only the regular and semibold faces are shipped (less to download); medium uses semibold. */
+  /* Only the regular and semibold body faces are shipped (less to download); medium uses semibold. */
   --font-weight-medium: 600;
 
-  --container-page: 76rem;
+  --container-page: 72rem;
 }
 
 /* ---- Base ---------------------------------------------------------------------------------- */
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 6rem;
+    scroll-padding-top: 5.5rem;
     -webkit-text-size-adjust: 100%;
   }
 
   body {
     background: var(--bg);
-    background-image: radial-gradient(
-      color-mix(in srgb, var(--ink) 14%, transparent) 1.2px,
-      transparent 1.4px
-    );
-    background-size: 22px 22px;
     color: var(--fg);
     font-family: var(--font-sans);
     line-height: 1.65;
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
     overflow-x: clip;
   }
 
@@ -157,39 +154,33 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    font-weight: 800;
+    font-weight: 650;
     letter-spacing: -0.02em;
     text-wrap: balance;
-    line-height: 1.05;
+    line-height: 1.1;
   }
 
-  /* Lalezar has a single weight: never fake a bold, and give Arabic headings room. */
-  :lang(ar) h1,
-  :lang(ar) h2,
-  :lang(ar) h3,
-  :lang(ar) .font-display {
-    font-synthesis: none;
-    font-weight: 400;
+  /* Arabic headings are set in Plex Sans Arabic (semibold): no Latin tracking, more room. */
+  :lang(ar) :is(h1, h2, h3, .font-display) {
+    font-weight: 600;
     letter-spacing: 0;
-    line-height: 1.3;
+    line-height: 1.35;
   }
 
   :focus-visible {
-    outline: 3px solid var(--ink);
+    outline: 2px solid var(--accent);
     outline-offset: 3px;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 0 6px var(--c-sun);
+    border-radius: 0.375rem;
   }
 
   /* Headings and regions that scripts focus on a page change are not controls: no ring. */
   :is(h1, main, [role='main'])[tabindex='-1']:focus-visible {
     outline: none;
-    box-shadow: none;
   }
 
   ::selection {
-    background: var(--c-sun);
-    color: var(--ink);
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    color: var(--fg);
   }
 
   /* Code and Latin product names stay left-to-right inside right-to-left text. */
@@ -201,106 +192,268 @@
   }
 
   dialog::backdrop {
-    background: color-mix(in srgb, var(--ink) 55%, transparent);
+    background: color-mix(in srgb, #000 45%, transparent);
   }
 }
 
 /* ---- Components ---------------------------------------------------------------------------- */
 @layer components {
-  /* A thick-outlined card with a hard shadow that falls toward the reading direction. */
-  .sticker {
-    --shadow: 6px;
-    background: var(--sticker-bg, var(--surface));
-    color: var(--sticker-fg, var(--fg));
-    border: 3px solid var(--ink);
-    border-radius: 1.25rem;
-    box-shadow: calc(var(--dir-sign) * var(--shadow)) var(--shadow) 0 0 var(--ink);
-    rotate: calc(var(--dir-sign) * var(--tilt, 0deg));
+  /* A quiet panel: hairline border, no shadow. Hover lifts it a little where it is a link. */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+  }
+
+  .card-hover {
     transition:
-      translate 0.2s cubic-bezier(0.3, 1.6, 0.5, 1),
-      box-shadow 0.2s ease,
-      rotate 0.2s ease;
+      border-color 0.3s var(--ease),
+      translate 0.3s var(--ease),
+      box-shadow 0.3s var(--ease);
   }
 
-  .sticker-color {
-    --sticker-fg: var(--on-color);
-  }
-
-  .sticker-lift:hover,
-  .sticker-lift:focus-within {
-    --shadow: 10px;
-    translate: calc(var(--dir-sign) * -3px) -3px;
-    rotate: 0deg;
+  .card-hover:hover,
+  .card-hover:focus-within {
+    border-color: color-mix(in srgb, var(--ink) 35%, var(--line));
+    translate: 0 -2px;
+    box-shadow: 0 12px 28px -18px color-mix(in srgb, #000 45%, transparent);
   }
 
   .btn {
     display: inline-flex;
-    min-height: 3rem;
+    min-height: 2.75rem;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding-inline: 1.25rem;
-    border: 3px solid var(--ink);
-    border-radius: 999px;
-    background: var(--btn-bg, var(--c-sun));
-    color: var(--btn-fg, var(--on-color));
+    padding-inline: 1.1rem;
+    border: 1px solid var(--ink);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: var(--fg);
     font-weight: 600;
-    box-shadow: calc(var(--dir-sign) * 4px) 4px 0 0 var(--ink);
+    font-size: 0.9375rem;
     transition:
-      translate 0.15s cubic-bezier(0.3, 1.6, 0.5, 1),
-      box-shadow 0.15s ease;
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease),
+      translate 0.3s var(--ease);
   }
 
   .btn:hover {
-    translate: calc(var(--dir-sign) * -2px) -2px;
-    box-shadow: calc(var(--dir-sign) * 7px) 7px 0 0 var(--ink);
+    translate: 0 -1px;
+    background: var(--ink);
+    color: var(--bg);
   }
 
-  .btn:active {
-    translate: calc(var(--dir-sign) * 4px) 4px;
-    box-shadow: 0 0 0 0 var(--ink);
+  .btn-primary {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .btn-primary:hover {
+    background: color-mix(in srgb, var(--ink) 86%, var(--accent));
+  }
+
+  /* Icon-only buttons in the header: no border until hovered. */
+  .btn-ghost {
+    border-color: transparent;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--line);
+    background: var(--surface-2);
+    color: var(--fg);
+  }
+
+  /* The arrow inside a button nudges toward the reading direction on hover. */
+  .btn .btn-arrow {
+    transition: translate 0.35s var(--ease);
+  }
+
+  .btn:hover .btn-arrow {
+    translate: calc(var(--dir-sign) * 4px) 0;
   }
 
   .chip {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.15rem 0.75rem;
-    border: 2px solid var(--ink);
+    padding: 0.05rem 0.6rem;
+    border: 1px solid var(--line);
     border-radius: 999px;
-    background: var(--chip-bg, var(--surface));
-    color: var(--chip-fg, var(--fg));
-    font-size: 0.875rem;
-    font-weight: 600;
-    line-height: 1.6;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.7;
   }
 
+  button.chip {
+    cursor: pointer;
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease);
+  }
+
+  button.chip:hover {
+    color: var(--fg);
+  }
+
+  .chip[aria-pressed='true'] {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  /* Small uppercase label: section names, dates, metadata. */
   .eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    color: var(--muted);
     font-family: var(--font-mono);
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   :lang(ar) .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
     letter-spacing: 0;
     text-transform: none;
   }
 
   .section-title {
-    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-size: clamp(1.9rem, 4vw, 2.75rem);
   }
 
-  .highlight {
-    background: linear-gradient(transparent 58%, var(--hl, var(--c-sun)) 58% 92%, transparent 92%);
-    color: var(--on-color);
-    padding-inline: 0.15em;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
+  /* Home sections: a label column beside the content on wide screens, stacked on small ones. */
+  .section {
+    padding-block: clamp(3.5rem, 8vw, 6rem);
+    border-block-start: 1px solid var(--line);
+  }
+
+  .section-grid {
+    display: grid;
+    gap: 1.5rem 3rem;
+  }
+
+  @media (min-width: 64rem) {
+    .section-grid {
+      grid-template-columns: 12rem minmax(0, 1fr);
+    }
+  }
+
+  /* Text link whose underline draws from the reading start on hover (and stays when current). */
+  .nav-link {
+    position: relative;
+    color: var(--muted);
+    transition: color 0.3s var(--ease);
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0.45rem;
+    height: 1.5px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: var(--origin);
+    transition: transform 0.45s var(--ease);
+  }
+
+  .nav-link:hover,
+  .nav-link[aria-current] {
+    color: var(--fg);
+  }
+
+  .nav-link:hover::after,
+  .nav-link[aria-current]::after {
+    transform: scaleX(1);
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--dot, var(--ok));
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--dot, var(--ok)) 18%, transparent);
+  }
+
+  /* Key figures card: a gradient hairline on top and a soft halo that follows the pointer. */
+  .facts {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .facts::before {
+    content: '';
+    display: block;
+    height: 3px;
+    background: var(--grad);
+    transform-origin: var(--origin);
+  }
+
+  .facts::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0;
+    background: radial-gradient(
+      260px circle at var(--mx, 50%) var(--my, 50%),
+      color-mix(in srgb, var(--accent) 14%, transparent),
+      transparent 70%
+    );
+    transition: opacity 0.4s;
+  }
+
+  .facts:hover::after {
+    opacity: 1;
+  }
+
+  /* Timeline: a hairline rail at the reading start, filled with the gradient as it scrolls by. */
+  .timeline {
+    position: relative;
+    padding-inline-start: 1.75rem;
+  }
+
+  .timeline-rail,
+  .timeline-fill {
+    position: absolute;
+    inset-inline-start: 0.3125rem;
+    inset-block: 0.5rem 1.25rem;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--line);
+  }
+
+  .timeline-fill {
+    background: var(--grad-y);
+    transform-origin: top;
+  }
+
+  .timeline-item {
+    position: relative;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: -1.75rem;
+    top: 1.65rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 2px solid var(--accent);
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  .timeline-item:first-child::before {
+    top: 0.4rem;
   }
 }
 
@@ -317,86 +470,37 @@
 }
 
 /* ---- Motion --------------------------------------------------------------------------------
-   Everything below is decorative and sits behind prefers-reduced-motion. Slides and wobbles read
-   --dir-sign so they travel toward the reading direction in RTL. */
-@keyframes pop-in {
-  0% {
-    opacity: 0;
-    transform: translate(calc(var(--dir-sign) * -1.5rem), 2rem) scale(0.9)
-      rotate(calc(var(--dir-sign) * -4deg));
-  }
-  60% {
-    opacity: 1;
-    transform: translate(0, -0.35rem) scale(1.02);
-  }
-  100% {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes letter-pop {
-  0% {
-    opacity: 0;
-    transform: translateY(70%) rotate(calc(var(--dir-sign) * 12deg)) scale(0.6);
-  }
-  70% {
-    opacity: 1;
-    transform: translateY(-8%) rotate(calc(var(--dir-sign) * -3deg)) scale(1.05);
-  }
-  100% {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes wobble {
-  0%,
-  100% {
-    transform: rotate(calc(var(--dir-sign) * -6deg));
-  }
-  50% {
-    transform: rotate(calc(var(--dir-sign) * 6deg)) translateY(-0.4rem);
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-0.75rem);
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(calc(var(--dir-sign) * 360deg));
-  }
-}
-
-@keyframes marquee {
-  to {
-    transform: translateX(calc(var(--dir-sign) * -50%));
-  }
-}
-
-@keyframes pulse-ring {
-  0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ink) 55%, transparent);
-  }
-  100% {
-    box-shadow: 0 0 0 0.9rem transparent;
-  }
-}
-
-@keyframes draw {
+   One orchestrated moment (the hero entrance), then quiet details. Everything below is decorative
+   and sits behind prefers-reduced-motion; the resting state of every element is its final state,
+   so content is visible without JavaScript and when motion is reduced. */
+@keyframes rise {
   from {
-    clip-path: inset(0 0 100% 0);
+    transform: translateY(105%);
   }
   to {
-    clip-path: inset(0 0 0 0);
+    transform: none;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -409,63 +513,93 @@
   }
 }
 
+@keyframes grow-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes dot-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--dot, var(--ok)) 45%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 9px transparent;
+  }
+}
+
+@keyframes dot-light {
+  from {
+    background: var(--surface);
+    border-color: var(--line);
+    transform: scale(0.85);
+  }
+  to {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .anim-wobble {
-    animation: wobble 3.2s ease-in-out infinite;
+  .status-dot {
+    animation: dot-pulse 2.4s ease-out infinite;
   }
 
-  .anim-float {
-    animation: float 4.5s ease-in-out infinite;
+  /* Hero entrance: lines of the name slide out of a mask, the rest fades up in sequence. */
+  .anim-mask {
+    display: block;
+    overflow: hidden;
+    padding-block-end: 0.06em;
+  }
+
+  .anim-mask > span {
+    display: block;
+    animation: rise 1s var(--ease) both;
     animation-delay: var(--delay, 0s);
   }
 
-  .anim-spin {
-    animation: spin var(--spin-time, 18s) linear infinite;
+  .anim-up {
+    animation: fade-up 0.9s var(--ease) both;
+    animation-delay: var(--delay, 0s);
   }
 
-  .anim-pulse {
-    animation: pulse-ring 1.6s ease-out infinite;
+  .anim-card {
+    animation: card-in 1s var(--ease) both;
+    animation-delay: var(--delay, 0s);
   }
 
-  .anim-letter {
-    display: inline-block;
-    animation: letter-pop 0.7s cubic-bezier(0.3, 1.4, 0.5, 1) both;
-    animation-delay: calc(var(--i, 0) * 45ms + 150ms);
+  .anim-card.facts::before {
+    animation: grow-x 1.2s var(--ease) both;
+    animation-delay: calc(var(--delay, 0s) + 0.3s);
   }
 
-  .marquee-track {
-    animation: marquee var(--marquee-time, 38s) linear infinite;
-  }
-
-  .marquee:hover .marquee-track,
-  .marquee:focus-within .marquee-track {
-    animation-play-state: paused;
-  }
-
-  /* Elements below the fold are marked pending by RevealDirective, then popped in. */
+  /* Elements below the fold are marked pending by RevealDirective, then faded in. */
   [data-reveal='pending'] {
     opacity: 0;
   }
 
   [data-reveal='in'] {
-    animation: pop-in 0.7s cubic-bezier(0.3, 1.3, 0.5, 1) both;
+    animation: fade-up 0.8s var(--ease) both;
     animation-delay: var(--reveal-delay, 0s);
   }
 
-  /* Scroll-driven effects: progressive enhancement, absent browsers simply skip them. */
+  /* Scroll-driven effects: progressive enhancement, absent browsers show the final state. */
   @supports (animation-timeline: view()) {
-    /* Reveals the element from the top down. A clip (not a stroke dash, whose length on a stretched,
-       non-scaling path does not match the screen) keeps the tip level with the sticky star (45vh,
-       3rem tall) however long the list is: from its top reaching the star to its bottom doing so. */
-    .scroll-draw {
-      animation: draw linear both;
+    .timeline-fill {
+      animation: grow-y linear both;
       animation-timeline: view();
-      animation-range: cover calc(55vh - 1.5rem) cover calc(100% - 45vh - 1.5rem);
+      animation-range: cover 0% cover 65%;
     }
 
-    .scroll-spin {
-      animation: spin linear both;
-      animation-timeline: scroll(root);
+    .timeline-item::before {
+      animation: dot-light linear both;
+      animation-timeline: view();
+      animation-range: entry 40% cover 35%;
     }
 
     .scroll-progress {
@@ -476,23 +610,9 @@
   }
 }
 
-/* The marquee degrades to a wrapped, static list when motion is reduced. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-
-  .marquee {
-    overflow: visible;
-  }
-
-  .marquee-track {
-    flex-wrap: wrap;
-    width: auto !important;
-  }
-
-  .marquee-track [data-clone] {
-    display: none;
   }
 
   *,
@@ -527,15 +647,15 @@
 }
 
 /* ---- Back-office ---------------------------------------------------------------------------
-   Same tokens as the public site, calmer: forms need clarity more than personality. */
+   Same tokens as the public site: forms need clarity more than personality. */
 @layer components {
   .a-input {
     display: block;
     width: 100%;
     min-height: 2.75rem;
     padding: 0.5rem 0.75rem;
-    border: 2px solid var(--ink);
-    border-radius: 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--ink) 30%, var(--line));
+    border-radius: 0.5rem;
     background: var(--surface);
     color: var(--fg);
     font: inherit;
@@ -547,9 +667,8 @@
   }
 
   .a-input:focus-visible {
-    outline: 3px solid var(--ink);
+    outline: 2px solid var(--accent);
     outline-offset: 1px;
-    box-shadow: 0 0 0 6px var(--c-sun);
   }
 
   .a-input[aria-invalid='true'] {
@@ -577,8 +696,8 @@
   }
 
   .a-card {
-    border: 3px solid var(--ink);
-    border-radius: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
     background: var(--surface);
   }
 
@@ -589,8 +708,8 @@
     justify-content: center;
     gap: 0.5rem;
     padding-inline: 1rem;
-    border: 2px solid var(--ink);
-    border-radius: 0.6rem;
+    border: 1px solid var(--ink);
+    border-radius: 0.5rem;
     background: var(--btn-bg, var(--surface));
     color: var(--btn-fg, var(--fg));
     font-weight: 600;
@@ -607,9 +726,9 @@
   }
 
   .a-btn-primary {
-    --btn-bg: var(--c-sun);
-    --btn-fg: var(--on-color);
-    --btn-hover: #ffc61a;
+    --btn-bg: var(--ink);
+    --btn-fg: var(--bg);
+    --btn-hover: color-mix(in srgb, var(--ink) 86%, var(--accent));
   }
 
   .a-btn-danger {
@@ -620,7 +739,7 @@
     display: inline-flex;
     align-items: center;
     padding: 0.05rem 0.6rem;
-    border: 2px solid var(--ink);
+    border: 1px solid var(--line);
     border-radius: 999px;
     font-size: 0.8125rem;
     font-weight: 600;
@@ -628,18 +747,20 @@
   }
 
   .a-chip[data-state='ok'] {
-    background: var(--c-mint);
-    color: var(--on-color);
+    border-color: color-mix(in srgb, var(--ok) 40%, transparent);
+    background: color-mix(in srgb, var(--ok) 12%, var(--surface));
+    color: var(--ok);
   }
 
   .a-chip[data-state='warn'] {
-    background: var(--c-sun);
-    color: var(--on-color);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+    color: var(--accent);
   }
 }
 
 /* ---- Rendered Markdown --------------------------------------------------------------------
-   Used by the editor preview and, later, public blog posts. Logical properties only. */
+   Used by the editor preview and public blog posts. Logical properties only. */
 @layer components {
   .markdown > * + * {
     margin-block-start: 1em;
@@ -695,8 +816,8 @@
   .markdown pre {
     overflow: auto;
     padding: 1rem;
-    border: 2px solid var(--ink);
-    border-radius: 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
     background: var(--surface-2);
     direction: ltr;
   }
@@ -708,20 +829,20 @@
 
   .markdown blockquote {
     padding-inline-start: 1rem;
-    border-inline-start: 4px solid var(--ink);
+    border-inline-start: 2px solid var(--accent);
     color: var(--muted);
   }
 
   .markdown img {
     max-width: 100%;
     height: auto;
-    border: 2px solid var(--ink);
-    border-radius: 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
   }
 
   .markdown hr {
     border: 0;
-    border-block-start: 2px solid var(--ink);
+    border-block-start: 1px solid var(--line);
   }
 }
 
@@ -741,7 +862,7 @@
 
   .cv-header {
     padding-block-end: 1rem;
-    border-block-end: 3px solid var(--ink);
+    border-block-end: 2px solid var(--ink);
   }
 
   .cv-contact {
@@ -760,7 +881,7 @@
   .cv h2 {
     margin-block-end: 0.75rem;
     padding-block-end: 0.25rem;
-    border-block-end: 2px solid var(--ink);
+    border-block-end: 1px solid var(--line);
     font-family: var(--font-sans);
     font-size: 1.05rem;
     font-weight: 700;
@@ -769,8 +890,6 @@
   }
 
   :lang(ar) .cv h2 {
-    font-family: var(--font-display);
-    font-weight: 400;
     letter-spacing: 0;
     text-transform: none;
   }
@@ -780,11 +899,6 @@
     font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: 0;
-  }
-
-  :lang(ar) .cv h3 {
-    font-family: var(--font-display);
-    font-weight: 400;
   }
 
   .cv-entry {
@@ -849,6 +963,7 @@
     --fg: #000;
     --muted: #3d3d3d;
     --ink: #000;
+    --line: #bbb;
     --link: #000;
     color-scheme: light;
   }
@@ -856,7 +971,6 @@
   html,
   body {
     background: #fff !important;
-    background-image: none !important;
     font-size: 10.5pt;
     line-height: 1.45;
   }
@@ -880,11 +994,9 @@
     padding-block: 0;
   }
 
-  .cv.sticker {
+  .cv.card {
     padding: 0;
     border: 0;
-    box-shadow: none;
-    rotate: none;
     max-width: none;
   }
 

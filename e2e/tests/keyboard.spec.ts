@@ -60,46 +60,14 @@ for (const locale of ['en', 'ar'] as const) {
       reachedFooter,
       `never reached the footer; last stops: ${stops.slice(-5).join(', ')}`,
     ).toBe(true);
-    // Skip link, header, CTAs, projects, stickers, contact: a page with this much has many stops.
-    expect(stops.length).toBeGreaterThan(25);
+    // Skip link, header, CTAs, role details, projects, contact: a page with this much has many stops.
+    expect(stops.length).toBeGreaterThan(20);
 
     // And Shift+Tab walks back out without being stuck.
     for (let press = 0; press < 5; press += 1) await page.keyboard.press('Shift+Tab');
     expect(await describeFocus(page)).not.toBeNull();
   });
 }
-
-test('stickers move with the arrow keys', async ({ page }) => {
-  await page.goto('/en');
-  await page.locator('#play').scrollIntoViewIfNeeded(); // the stickers are drawn when the section is reached
-  const sticker = page.getByRole('button', { name: /^Move the .* sticker$/ }).first();
-  await expect(sticker).toBeVisible();
-  await sticker.focus();
-  const place = async () => {
-    // Two frames: the key press, then the render that moves the sticker.
-    await page.evaluate(
-      () =>
-        new Promise<void>((resolve) =>
-          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-        ),
-    );
-    return (await sticker.boundingBox())!;
-  };
-  const start = await place();
-  await page.keyboard.press('ArrowRight');
-  const right = await place();
-  await page.keyboard.press('ArrowLeft');
-  const left = await place();
-  await page.keyboard.press('ArrowDown');
-  const down = await place();
-  await page.keyboard.press('ArrowUp');
-  const up = await place();
-
-  // Stickers start at random places, so the edge of the board can block one direction. Both
-  // directions on an axis cannot be blocked at once, so each axis must have moved.
-  expect(new Set([start.x, right.x, left.x]).size).toBeGreaterThan(1);
-  expect(new Set([start.y, down.y, up.y]).size).toBeGreaterThan(1);
-});
 
 test('the command palette gives focus back to where it was opened from', async ({ page }) => {
   await page.goto('/en');
@@ -171,7 +139,7 @@ for (const path of NARROW_PAGES) {
             element.getBoundingClientRect().right > innerWidth + 1 &&
             getComputedStyle(element).position !== 'fixed',
         )
-        .filter((element) => !element.closest('.marquee, [aria-hidden="true"]'))
+        .filter((element) => !element.closest('[aria-hidden="true"]'))
         .slice(0, 5)
         .map(
           (element) =>
@@ -192,16 +160,12 @@ test('text can be spaced out and resized without losing content', async ({ page 
       '* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; } html { font-size: 125%; }',
   });
   await expect(page.locator('#hero-title')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'See my work' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'See my experience' })).toBeVisible();
   const clipped = await page.evaluate(() =>
     [...document.querySelectorAll<HTMLElement>('h1, h2, h3, button, a.btn, .chip')]
       .filter((element) => {
         const style = getComputedStyle(element);
-        return (
-          style.overflow === 'hidden' &&
-          element.scrollHeight > element.clientHeight + 2 &&
-          !element.closest('.marquee')
-        );
+        return style.overflow === 'hidden' && element.scrollHeight > element.clientHeight + 2;
       })
       .map((element) => element.textContent?.trim().slice(0, 30)),
   );

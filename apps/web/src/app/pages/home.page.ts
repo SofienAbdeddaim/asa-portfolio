@@ -3,7 +3,6 @@ import {
   Component,
   OnDestroy,
   afterNextRender,
-  computed,
   effect,
   inject,
 } from '@angular/core';
@@ -18,7 +17,6 @@ import { About } from '../sections/about';
 import { Contact } from '../sections/contact';
 import { Experience } from '../sections/experience';
 import { Hero } from '../sections/hero';
-import { Playground } from '../sections/playground';
 import { Projects } from '../sections/projects';
 import { Skills } from '../sections/skills';
 import { Testimonials } from '../sections/testimonials';
@@ -36,7 +34,6 @@ import { Skeleton } from '../shared/ui/skeleton';
     Experience,
     Skills,
     Projects,
-    Playground,
     Testimonials,
     Contact,
   ],
@@ -44,14 +41,14 @@ import { Skeleton } from '../shared/ui/skeleton';
     @if (store.source() === 'stale') {
       <p
         role="status"
-        class="container-page mt-4 rounded-xl border-[3px] border-ink bg-sun px-4 py-3 text-sm font-semibold text-on-color"
+        class="container-page mt-4 rounded-lg border border-line bg-surface px-4 py-3 text-sm text-muted"
       >
         {{ 'status.stale' | transloco }}
       </p>
     }
 
     @if (content(); as c) {
-      <app-hero [profile]="c.profile" [locale]="locale.locale()" [tags]="tags()" />
+      <app-hero [profile]="c.profile" [experiences]="c.experiences" [locale]="locale.locale()" />
 
       <!--
         Below the first screen, each section is pre-rendered as usual but only becomes interactive
@@ -81,9 +78,6 @@ import { Skeleton } from '../shared/ui/skeleton';
           <app-projects [projects]="c.projects" [locale]="locale.locale()" />
         }
       }
-      @defer (on immediate; hydrate on viewport) {
-        <app-playground [names]="playNames()" />
-      }
       @if (c.testimonials.length) {
         @defer (on immediate; hydrate on viewport) {
           <app-testimonials [items]="c.testimonials" [locale]="locale.locale()" />
@@ -109,12 +103,6 @@ export class HomePage implements OnDestroy {
   private readonly seo = inject(SeoService);
 
   protected readonly content = this.store.content;
-  protected readonly tags = computed(() => [
-    ...new Set((this.content()?.skills ?? []).flatMap((group) => group.items.map((i) => i.name))),
-  ]);
-
-  protected readonly playNames = computed(() => this.tags().slice(0, 12));
-
   constructor() {
     void this.store.load();
     afterNextRender(() => this.spy.observe());

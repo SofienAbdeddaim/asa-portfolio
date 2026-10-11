@@ -1,18 +1,12 @@
-import { Directive, computed, input } from '@angular/core';
+import { Directive, input } from '@angular/core';
 
-export type StickerColor = 'sun' | 'coral' | 'mint' | 'sky' | 'lilac' | 'pink' | 'paper';
+export type ButtonVariant = 'primary' | 'secondary';
 
-/** Styles a native `<button>` or `<a>` as a sticker button, so semantics stay native. */
+/** Styles a native `<button>` or `<a>` as a button, so semantics stay native. */
 @Directive({
   selector: 'button[appButton], a[appButton]',
-  host: { class: 'btn', '[style.--btn-bg]': 'background()', '[style.--btn-fg]': 'foreground()' },
+  host: { class: 'btn', '[class.btn-primary]': "variant() === 'primary'" },
 })
 export class Button {
-  readonly color = input<StickerColor>('sun');
-  protected readonly foreground = computed(() =>
-    this.color() === 'paper' ? 'var(--fg)' : 'var(--on-color)',
-  );
-  protected readonly background = computed(() =>
-    this.color() === 'paper' ? 'var(--surface)' : `var(--c-${this.color()})`,
-  );
+  readonly variant = input<ButtonVariant>('secondary');
 }

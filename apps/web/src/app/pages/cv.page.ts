@@ -22,7 +22,7 @@ import { Skeleton } from '../shared/ui/skeleton';
   template: `
     <div class="container-page py-10">
       <div class="no-print mb-6 flex flex-wrap items-center gap-4">
-        <button type="button" class="btn" style="--btn-bg: var(--c-sun)" (click)="print()">
+        <button type="button" class="btn btn-primary" (click)="print()">
           <app-icon name="arrow" class="rotate-90" />
           {{ 'cv.print' | transloco }}
         </button>
@@ -31,7 +31,7 @@ import { Skeleton } from '../shared/ui/skeleton';
 
       @if (store.content(); as c) {
         @if (c.profile; as p) {
-          <article class="cv sticker mx-auto max-w-[56rem] p-8 sm:p-12" style="--shadow: 8px">
+          <article class="cv card mx-auto max-w-[56rem] p-8 sm:p-12">
             <header class="cv-header">
               <h1 class="cv-name">{{ p.fullName }}</h1>
               <p class="cv-headline">{{ p.headline | localized: locale.locale() }}</p>

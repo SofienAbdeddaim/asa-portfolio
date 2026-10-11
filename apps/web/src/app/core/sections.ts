@@ -2,15 +2,14 @@ import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { prefersReducedMotion } from './motion';
 import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 
-/** Home page sections, in order. Each has a translated label at `nav.<id>` and a color. */
+/** Home page sections, in order. Each has a translated label at `nav.<id>`. */
 export const SECTIONS = [
-  { id: 'about', color: 'var(--c-sun)' },
-  { id: 'experience', color: 'var(--c-mint)' },
-  { id: 'skills', color: 'var(--c-sky)' },
-  { id: 'projects', color: 'var(--c-pink)' },
-  { id: 'play', color: 'var(--c-lilac)' },
-  { id: 'kind', color: 'var(--c-sun)' },
-  { id: 'contact', color: 'var(--c-coral)' },
+  { id: 'about' },
+  { id: 'experience' },
+  { id: 'skills' },
+  { id: 'projects' },
+  { id: 'kind' },
+  { id: 'contact' },
 ] as const;
 
 export type SectionId = (typeof SECTIONS)[number]['id'];

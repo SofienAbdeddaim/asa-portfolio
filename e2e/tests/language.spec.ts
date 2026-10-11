@@ -13,16 +13,7 @@ test('switching to Arabic mirrors the page, keeps the reader’s place and updat
   // Text length differs per language, so pixels move; the reader's place is the section in view.
   const sectionInView = () =>
     page.evaluate(() => {
-      const ids = [
-        'hero-title',
-        'about',
-        'experience',
-        'skills',
-        'projects',
-        'play',
-        'kind',
-        'contact',
-      ];
+      const ids = ['hero-title', 'about', 'experience', 'skills', 'projects', 'kind', 'contact'];
       const passed = ids.filter(
         (id) => (document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= 200,
       );

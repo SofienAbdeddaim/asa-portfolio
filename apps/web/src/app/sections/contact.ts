@@ -19,73 +19,62 @@ const SOCIAL: Record<Social['kind'], { label: string; icon: IconName }> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslocoPipe, Reveal, Button, Icon],
   template: `
-    <section id="contact" class="container-page py-20" aria-labelledby="contact-title">
-      <div
-        appReveal
-        class="sticker sticker-color relative overflow-hidden p-8 sm:p-14"
-        style="--sticker-bg: var(--c-coral); --shadow: 12px"
-      >
-        <span
-          class="anim-spin pointer-events-none absolute -end-10 -top-10 size-28 opacity-90 sm:-end-16 sm:-top-16 sm:size-56"
-          style="--spin-time: 40s"
-          aria-hidden="true"
-        >
-          <app-icon
-            name="star"
-            class="size-full text-sun [&_svg]:fill-current [&_svg]:stroke-ink"
-          />
-        </span>
+    <section id="contact" class="section" aria-labelledby="contact-title">
+      <div class="container-page section-grid">
+        <p class="eyebrow self-start lg:sticky lg:top-24">{{ 'contact.eyebrow' | transloco }}</p>
 
-        <p class="eyebrow">{{ 'contact.eyebrow' | transloco }}</p>
-        <h2 id="contact-title" class="mt-4 max-w-3xl text-[clamp(2.75rem,8vw,6rem)]">
-          {{ 'contact.title' | transloco }}
-        </h2>
-        <p class="mt-6 max-w-xl text-xl">{{ 'contact.lead' | transloco }}</p>
+        <div appReveal>
+          <h2 id="contact-title" class="section-title">{{ 'contact.title' | transloco }}</h2>
+          <p class="mt-3 max-w-xl text-lg text-muted">{{ 'contact.lead' | transloco }}</p>
 
-        @if (profile(); as p) {
-          <p class="mt-10">
-            <a
-              class="ltr-island inline-block break-all font-display text-[clamp(1.5rem,4.5vw,3rem)] font-extrabold underline decoration-[6px] underline-offset-[10px] hover:decoration-wavy"
-              [href]="'mailto:' + p.email"
-              >{{ p.email }}</a
-            >
-          </p>
+          @if (profile(); as p) {
+            <p class="mt-8">
+              <a
+                class="ltr-island inline-block font-display text-[clamp(1.4rem,3.6vw,2.25rem)] font-semibold break-all underline decoration-1 underline-offset-[6px] transition-[text-underline-offset,color] duration-300 hover:text-accent hover:underline-offset-[10px]"
+                [href]="'mailto:' + p.email"
+                >{{ p.email }}</a
+              >
+            </p>
 
-          <div class="mt-8 flex flex-wrap items-center gap-4">
-            <button type="button" appButton color="paper" (click)="copy(p.email, $event)">
-              <app-icon [name]="copied() ? 'check' : 'copy'" />
-              {{ 'contact.copy' | transloco }}
-            </button>
-            <a appButton color="sun" [routerLink]="['/', locale(), 'cv']">
-              {{ 'contact.cv' | transloco }}
-              <app-icon name="arrow" [mirror]="true" />
-            </a>
-            <span role="status" class="font-semibold">{{
-              copied() ? ('contact.copied' | transloco) : ''
-            }}</span>
-          </div>
+            <div class="mt-8 flex flex-wrap items-center gap-3">
+              <button type="button" appButton variant="primary" (click)="copy(p.email)">
+                <app-icon [name]="copied() ? 'check' : 'copy'" />
+                {{ 'contact.copy' | transloco }}
+              </button>
+              <a appButton [routerLink]="['/', locale(), 'cv']">
+                {{ 'contact.cv' | transloco }}
+                <app-icon name="arrow" [mirror]="true" class="btn-arrow" />
+              </a>
+              <span role="status" class="text-sm text-muted">{{
+                copied() ? ('contact.copied' | transloco) : ''
+              }}</span>
+            </div>
 
-          @if (socials().length) {
-            <h3 class="mt-12 text-2xl">{{ 'contact.elsewhere' | transloco }}</h3>
-            <ul class="mt-4 flex flex-wrap gap-4">
-              @for (social of socials(); track social.url) {
-                <li>
-                  <a
-                    class="btn min-h-12 min-w-12 px-4"
-                    style="--btn-bg: var(--surface); --btn-fg: var(--fg)"
-                    [href]="social.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <app-icon [name]="social.icon" />
-                    {{ social.label }}
-                    <span class="sr-only">({{ 'common.newTab' | transloco }})</span>
-                  </a>
-                </li>
-              }
-            </ul>
+            @if (socials().length) {
+              <div class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2">
+                <h3 class="text-sm font-normal tracking-normal text-muted">
+                  {{ 'contact.elsewhere' | transloco }}
+                </h3>
+                <ul class="flex flex-wrap gap-x-6 gap-y-2">
+                  @for (social of socials(); track social.url) {
+                    <li>
+                      <a
+                        class="nav-link inline-flex min-h-11 items-center gap-2 font-semibold"
+                        [href]="social.url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <app-icon [name]="social.icon" />
+                        {{ social.label }}
+                        <span class="sr-only">({{ 'common.newTab' | transloco }})</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
           }
-        }
+        </div>
       </div>
     </section>
   `,
@@ -99,9 +88,7 @@ export class Contact {
     (this.profile()?.socials ?? []).map((social) => ({ ...SOCIAL[social.kind], url: social.url })),
   );
 
-  protected async copy(email: string, event: Event): Promise<void> {
-    // Read the button position now: `currentTarget` is cleared once the event finishes dispatching.
-    const box = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  protected async copy(email: string): Promise<void> {
     try {
       await navigator.clipboard.writeText(email);
     } catch {
@@ -109,8 +96,5 @@ export class Contact {
     }
     this.copied.set(true);
     setTimeout(() => this.copied.set(false), 2500);
-
-    const { confetti } = await import('../core/confetti');
-    confetti(box.left + box.width / 2, box.top + box.height / 2);
   }
 }

@@ -24,8 +24,7 @@ import { Icon } from '../shared/ui/icon';
     <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- backdrop click is a mouse shortcut; Esc closes by keyboard -->
     <dialog
       #dialog
-      class="sticker m-auto mt-[12vh] w-[min(38rem,calc(100vw-2rem))] overflow-hidden p-0 text-fg"
-      style="--shadow: 10px"
+      class="card m-auto mt-[12vh] shadow-2xl w-[min(38rem,calc(100vw-2rem))] overflow-hidden p-0 text-fg"
       aria-labelledby="palette-title"
       (close)="commands.hide()"
       (click)="onDialogClick($event)"
@@ -58,7 +57,7 @@ import { Icon } from '../shared/ui/icon';
             role="option"
             [id]="'command-' + command.id"
             [attr.aria-selected]="index === active()"
-            class="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-xl px-3 py-2 font-medium aria-selected:bg-sun aria-selected:text-on-color"
+            class="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-md px-3 py-2 aria-selected:bg-surface-2 aria-selected:text-fg"
             (click)="run(command)"
             (mousemove)="active.set(index)"
           >
