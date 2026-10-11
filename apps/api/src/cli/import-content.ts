@@ -7,7 +7,7 @@ import type { Model } from 'mongoose';
 import { AppModule } from '../app.module.js';
 import { ContentService, type ContentDoc } from '../content/content.service.js';
 import { validateContentFile } from '../content/import.js';
-import { ProfileService } from '../content/profile.service.js';
+import { PROFILE_MODEL, ProfileService, type ProfileDoc } from '../content/profile.service.js';
 import { RESOURCES } from '../content/resources.js';
 
 const USAGE = `Loads real content from a JSON file: the profile and any content kinds it lists
@@ -41,6 +41,25 @@ async function main(): Promise<void> {
         model: app.get<Model<ContentDoc>>(getModelToken(definition.modelName), { strict: false }),
       }),
     );
+    // The DTOs and the database schemas can disagree (an empty string passes a DTO but not a
+    // required schema path), so check every entry against its schema too before writing anything.
+    const failures: string[] = [];
+    const check = async (where: string, doc: { validate(): Promise<void> }) => {
+      try {
+        await doc.validate();
+      } catch (error) {
+        failures.push(`${where}: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    };
+    const profileModel = app.get<Model<ProfileDoc>>(getModelToken(PROFILE_MODEL));
+    if (content.profile) await check('profile', new profileModel(content.profile));
+    for (const { definition, model } of models) {
+      for (const [index, entry] of (content.resources[definition.path] ?? []).entries()) {
+        await check(`${definition.path}[${index}]`, new model({ ...entry, order: index }));
+      }
+    }
+    if (failures.length) throw new Error(`Nothing was written:\n${failures.join('\n')}`);
+
     const profile = app.get(ProfileService);
     if (!replace) {
       if (content.profile && (await profile.get())) {
