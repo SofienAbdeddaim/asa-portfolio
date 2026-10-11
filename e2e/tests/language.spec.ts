@@ -107,6 +107,6 @@ test('reduced motion removes decorative animation but keeps all content', async 
     () => document.getAnimations().filter((a) => (a as CSSAnimation).animationName).length,
   );
   expect(animations).toBe(0);
-  await expect(page.locator('#experience article').first()).toBeVisible();
+  await expect(page.locator('#experience .timeline-item').first()).toBeVisible();
   await context.close();
 });

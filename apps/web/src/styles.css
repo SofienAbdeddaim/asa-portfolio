@@ -749,7 +749,8 @@
   .a-chip[data-state='ok'] {
     border-color: color-mix(in srgb, var(--ok) 40%, transparent);
     background: color-mix(in srgb, var(--ok) 12%, var(--surface));
-    color: var(--ok);
+    /* Darkened toward the text color so it keeps 4.5:1 on its own tint. */
+    color: color-mix(in srgb, var(--ok) 75%, var(--fg));
   }
 
   .a-chip[data-state='warn'] {
