@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.1.1...v1.2.0) (2026-10-11)
+
+
+### Features
+
+* **web:** new ASA circuit-chip favicon and header logo ([#15](https://github.com/SofienAbdeddaim/asa-portfolio/issues/15)) ([3f6be1b](https://github.com/SofienAbdeddaim/asa-portfolio/commit/3f6be1b273de69f441af5f185337606735058d65))
+
 ## [1.1.1](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.1.0...v1.1.1) (2026-10-11)
 
 
