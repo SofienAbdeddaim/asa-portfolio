@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.0.0...v1.1.0) (2026-10-11)
+
+
+### Features
+
+* **api:** add content:import to load real content from a JSON file ([#9](https://github.com/SofienAbdeddaim/asa-portfolio/issues/9)) ([9422fff](https://github.com/SofienAbdeddaim/asa-portfolio/commit/9422fffe5941e4406a9f6a9c4d1ad898b265f4c1))
+
 ## 1.0.0 (2026-10-09)
 
 
