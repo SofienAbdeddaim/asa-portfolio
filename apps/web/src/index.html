@@ -1,24 +1,24 @@
 <!doctype html>
-<html lang="en" dir="ltr" data-theme="light">
+<html lang="en" dir="ltr" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <title>ASA Portfolio</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f1412" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0f1115" />
     <link rel="icon" href="favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <script>
-      // Applies the saved or system theme before first paint to avoid a light/dark flash.
+      // Applies the saved theme (dark by default) before first paint to avoid a light/dark flash.
       (function () {
         try {
           var saved = localStorage.getItem('theme');
           var dark =
-            saved === 'dark' ||
-            (saved !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+            saved === 'system'
+              ? matchMedia('(prefers-color-scheme: dark)').matches
+              : saved !== 'light';
           document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
         } catch (e) {}
       })();

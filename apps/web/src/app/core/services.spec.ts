@@ -25,29 +25,29 @@ describe('ThemeService', () => {
     document.documentElement.removeAttribute('data-theme');
   });
 
-  it('defaults to the system preference and applies it to the root element', () => {
+  it('defaults to dark and applies it to the root element', () => {
     const theme = TestBed.inject(ThemeService);
-    expect(theme.preference()).toBe('system');
-    expect(['light', 'dark']).toContain(document.documentElement.getAttribute('data-theme'));
-  });
-
-  it('cycles light, dark, system and remembers an explicit choice', () => {
-    const theme = TestBed.inject(ThemeService);
-    theme.set('light');
-    theme.cycle();
     expect(theme.preference()).toBe('dark');
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
-    expect(localStorage.getItem('theme')).toBe('dark');
-    theme.cycle();
-    expect(theme.preference()).toBe('system');
-    expect(localStorage.getItem('theme')).toBeNull();
+  });
+
+  it('cycles dark, light, system and remembers every choice', () => {
+    const theme = TestBed.inject(ThemeService);
     theme.cycle();
     expect(theme.preference()).toBe('light');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(localStorage.getItem('theme')).toBe('light');
+    theme.cycle();
+    expect(theme.preference()).toBe('system');
+    expect(localStorage.getItem('theme')).toBe('system');
+    theme.cycle();
+    expect(theme.preference()).toBe('dark');
+    expect(localStorage.getItem('theme')).toBe('dark');
   });
 
   it('restores a saved preference', () => {
-    localStorage.setItem('theme', 'dark');
-    expect(TestBed.inject(ThemeService).resolved()).toBe('dark');
+    localStorage.setItem('theme', 'light');
+    expect(TestBed.inject(ThemeService).resolved()).toBe('light');
   });
 
   it('still works when storage is blocked', () => {
@@ -55,7 +55,7 @@ describe('ThemeService', () => {
       throw new Error('blocked');
     });
     const theme = TestBed.inject(ThemeService);
-    expect(theme.preference()).toBe('system');
+    expect(theme.preference()).toBe('dark');
     spy.mockRestore();
   });
 });

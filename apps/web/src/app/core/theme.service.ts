@@ -5,10 +5,12 @@ export type ThemePreference = 'light' | 'dark' | 'system';
 export type ResolvedTheme = 'light' | 'dark';
 
 const STORAGE_KEY = 'theme';
+const DEFAULT: ThemePreference = 'dark';
 
 /**
- * Light/dark theme. The preference (a per-viewer convenience, never a credential) is remembered
- * in localStorage when available. `index.html` applies it before first paint to avoid a flash.
+ * Light/dark theme, dark by default (the owner's choice; "system" follows the OS on request). The
+ * preference (a per-viewer convenience, never a credential) is remembered in localStorage when
+ * available. `index.html` applies it before first paint to avoid a flash.
  */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
@@ -36,10 +38,10 @@ export class ThemeService {
     this.apply();
   }
 
-  /** Cycles light -> dark -> system. */
+  /** Cycles dark -> light -> system, starting from the dark default. */
   cycle(): void {
-    const order: ThemePreference[] = ['light', 'dark', 'system'];
-    this.set(order[(order.indexOf(this._preference()) + 1) % order.length] ?? 'system');
+    const order: ThemePreference[] = ['dark', 'light', 'system'];
+    this.set(order[(order.indexOf(this._preference()) + 1) % order.length] ?? DEFAULT);
   }
 
   private apply(): void {
@@ -53,20 +55,20 @@ export class ThemeService {
   }
 
   private read(): ThemePreference {
-    if (!this.browser) return 'system';
+    if (!this.browser) return DEFAULT;
     try {
       const value = localStorage.getItem(STORAGE_KEY);
-      return value === 'light' || value === 'dark' ? value : 'system';
+      return value === 'light' || value === 'dark' || value === 'system' ? value : DEFAULT;
     } catch {
-      return 'system';
+      return DEFAULT;
     }
   }
 
   private write(preference: ThemePreference): void {
     if (!this.browser) return;
     try {
-      if (preference === 'system') localStorage.removeItem(STORAGE_KEY);
-      else localStorage.setItem(STORAGE_KEY, preference);
+      // "system" is stored too: an empty key means the dark default.
+      localStorage.setItem(STORAGE_KEY, preference);
     } catch {
       // Storage can be blocked (private mode); the preference then lasts for the session only.
     }
