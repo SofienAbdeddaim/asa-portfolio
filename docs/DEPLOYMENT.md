@@ -143,6 +143,17 @@ pnpm --filter @asa/api backup import <folder>            # into an empty databas
 
 An export holds the profile, every entry (drafts too) and every uploaded image, and never accounts or sessions. Do it before large edits and every few weeks, and keep the folders somewhere private (they are git-ignored for that reason). A restore is rehearsed by the end-to-end tests; to try one for real, point `MONGODB_URI` at a new empty database first.
 
+### Replacing the demo content in one go
+
+The back-office is the everyday editor. To swap the whole demo content for real content at once (for example from a CV), write it as a JSON file shaped like the public snapshot (`profile`, `experiences`, `skills`, `projects`, `education`, `certificates`, `testimonials`, `posts`, each optional) and keep that file out of the repository. Then, with the same `.env`:
+
+```bash
+pnpm --filter @asa/api backup export                           # keep a way back
+pnpm --filter @asa/api content:import <file.json> --replace
+```
+
+Every entry is checked against the back-office rules before anything is written. The profile is overwritten and each kind listed in the file is emptied and refilled in file order; kinds left out, accounts, sessions, two-factor settings and images are not touched. Without `--replace` the import refuses a database that already has that content. Run **deploy** afterwards so the pre-rendered pages pick it up.
+
 The same machine and `.env` run the account recovery tool (lost authenticator, forgotten password, lockout): [BACKOFFICE.md](BACKOFFICE.md#if-something-goes-wrong). Both tools talk straight to the database, so treat that `.env` like the keys to the site and delete the production `MONGODB_URI` from it when you are done.
 
 ## Cold starts

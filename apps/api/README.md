@@ -16,16 +16,17 @@ Everything in Docker: `docker compose up --build` (API on `127.0.0.1:3000`).
 
 ## Scripts
 
-| Command           | What it does                                                                                    |
-| ----------------- | ----------------------------------------------------------------------------------------------- |
-| `pnpm test`       | Vitest with coverage (threshold 70%)                                                            |
-| `pnpm typecheck`  | `tsc --noEmit`                                                                                  |
-| `pnpm build`      | `tsc` to `dist/`                                                                                |
-| `pnpm smoke`      | End-to-end check of a running API (fresh local DB only)                                         |
-| `pnpm seed:admin` | Create the first admin (idempotent)                                                             |
-| `pnpm seed:demo`  | Load fake demo content into empty collections                                                   |
-| `pnpm admin`      | Account recovery: `unlock`, `reset-2fa`, `set-password`, `revoke-sessions` (docs/BACKOFFICE.md) |
-| `pnpm backup`     | `export` / `import` the profile, all content (drafts too) and images (docs/DEPLOYMENT.md)       |
+| Command               | What it does                                                                                              |
+| --------------------- | --------------------------------------------------------------------------------------------------------- |
+| `pnpm test`           | Vitest with coverage (threshold 70%)                                                                      |
+| `pnpm typecheck`      | `tsc --noEmit`                                                                                            |
+| `pnpm build`          | `tsc` to `dist/`                                                                                          |
+| `pnpm smoke`          | End-to-end check of a running API (fresh local DB only)                                                   |
+| `pnpm seed:admin`     | Create the first admin (idempotent)                                                                       |
+| `pnpm seed:demo`      | Load fake demo content into empty collections                                                             |
+| `pnpm content:import` | Replace the profile and content kinds with a JSON file, checked like the back-office (docs/DEPLOYMENT.md) |
+| `pnpm admin`          | Account recovery: `unlock`, `reset-2fa`, `set-password`, `revoke-sessions` (docs/BACKOFFICE.md)           |
+| `pnpm backup`         | `export` / `import` the profile, all content (drafts too) and images (docs/DEPLOYMENT.md)                 |
 
 ## Endpoints
 
