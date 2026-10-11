@@ -11,7 +11,7 @@ Personal portfolio monorepo (FR/EN/AR, true RTL) with a private back-office. Own
 
 - `pnpm install`, `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test`, `pnpm build`
 - Web: `pnpm --filter @asa/web start` (proxies /api to :3000), tests with `pnpm --filter @asa/web test`.
-- API: `docker compose up -d mongo`, `pnpm --filter @asa/api dev|seed:admin|seed:demo` (see `apps/api/README.md`). Recovery and backups: `pnpm --filter @asa/api admin|backup`.
+- API: `docker compose up -d mongo`, `pnpm --filter @asa/api dev|seed:admin|seed:demo` (see `apps/api/README.md`). Recovery and backups: `pnpm --filter @asa/api admin|backup`. Bulk real content: `content:import <file.json>` (the file stays out of the repo).
 - E2E: `pnpm build` then `pnpm e2e` (needs MongoDB; Playwright, real stack, throwaway `*_e2e` DB). Quality budgets: `pnpm lighthouse`. See `docs/TESTING.md`.
 - Content/deploy: `pnpm snapshot` (needs `API_URL`), `pnpm site:url <url>`; deployment is done by GitHub Actions (`docs/DEPLOYMENT.md`), never from a laptop.
 - Workflows pin third-party actions by commit SHA (Dependabot updates them); keep it that way and keep `permissions` minimal.
