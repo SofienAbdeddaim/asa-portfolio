@@ -24,8 +24,15 @@ import { ThemeToggle } from './theme-toggle';
           (click)="brandClick($event)"
         >
           <img
-            class="size-10"
+            class="size-10 dark:hidden"
             src="/logo.svg"
+            [alt]="'app.brand' | transloco"
+            width="40"
+            height="40"
+          />
+          <img
+            class="hidden size-10 dark:block"
+            src="/logo-dark.svg"
             [alt]="'app.brand' | transloco"
             width="40"
             height="40"
