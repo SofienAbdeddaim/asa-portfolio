@@ -9,7 +9,7 @@ import { Icon } from '../shared/ui/icon';
 
 const COLORS = ['mint', 'sun', 'sky', 'pink', 'lilac', 'coral'];
 
-/** A wavy vertical line (viewBox units) that is drawn as the section scrolls into view. */
+/** A wavy vertical line (viewBox units), revealed as the list scrolls past the sticky star. */
 const WAVE = `M16 0 ${Array.from({ length: 16 }, (_, i) => (i === 0 ? 'Q 30 25 16 50' : 'T 16 ' + (50 + i * 50))).join(' ')}`;
 
 @Component({
@@ -32,14 +32,12 @@ const WAVE = `M16 0 ${Array.from({ length: 16 }, (_, i) => (i === 0 ? 'Q 30 25 1
           aria-hidden="true"
         >
           <svg
-            class="h-full w-full overflow-visible"
+            class="scroll-draw absolute inset-0 h-full w-full overflow-visible"
             viewBox="0 0 32 800"
             preserveAspectRatio="none"
           >
             <path
               [attr.d]="wave"
-              pathLength="1"
-              class="scroll-draw"
               fill="none"
               stroke="var(--ink)"
               stroke-width="4"

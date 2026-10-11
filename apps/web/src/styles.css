@@ -393,10 +393,10 @@
 
 @keyframes draw {
   from {
-    stroke-dashoffset: 1;
+    clip-path: inset(0 0 100% 0);
   }
   to {
-    stroke-dashoffset: 0;
+    clip-path: inset(0 0 0 0);
   }
 }
 
@@ -454,13 +454,13 @@
 
   /* Scroll-driven effects: progressive enhancement, absent browsers simply skip them. */
   @supports (animation-timeline: view()) {
+    /* Reveals the element from the top down. A clip (not a stroke dash, whose length on a stretched,
+       non-scaling path does not match the screen) keeps the tip level with the sticky star (45vh,
+       3rem tall) however long the list is: from its top reaching the star to its bottom doing so. */
     .scroll-draw {
-      stroke-dasharray: 1;
       animation: draw linear both;
       animation-timeline: view();
-      /* The tip stays at the middle of the screen, next to the sticky star, however long the list
-         is: drawing starts when the top reaches the middle and ends when the bottom does. */
-      animation-range: cover 50vh cover calc(100% - 50vh);
+      animation-range: cover calc(55vh - 1.5rem) cover calc(100% - 45vh - 1.5rem);
     }
 
     .scroll-spin {
