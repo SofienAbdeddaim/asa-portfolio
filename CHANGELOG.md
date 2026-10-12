@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.3.0...v1.3.1) (2026-10-12)
+
+
+### Bug fixes
+
+* **web:** align timeline dots with the rail and light them as the fill reaches them ([#23](https://github.com/SofienAbdeddaim/asa-portfolio/issues/23)) ([99c8947](https://github.com/SofienAbdeddaim/asa-portfolio/commit/99c894753c95d04730e18e2aaf8671c5be04b228))
+
 ## [1.3.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.2.0...v1.3.0) (2026-10-12)
 
 
