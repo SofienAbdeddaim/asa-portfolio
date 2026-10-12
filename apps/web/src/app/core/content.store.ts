@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import type { ContentSnapshot } from '@asa/shared';
 import { firstValueFrom, timeout } from 'rxjs';
+import { visibleSections } from './sections';
 
 /** `snapshot`: build-time copy only; `live`: refreshed from the API; `stale`: API unreachable. */
 export type ContentSource = 'empty' | 'snapshot' | 'live' | 'stale';
@@ -44,6 +45,10 @@ export class ContentStore {
   readonly profile = computed(() => this._content()?.profile ?? null);
   /** Published posts, newest first (the API already sorts them). */
   readonly posts = computed(() => this._content()?.posts ?? []);
+  /** Home sections that have content: the only ones the menu and the palette offer. */
+  readonly sections = computed(() => visibleSections(this._content()));
+  /** The blog is only linked once a post is published. */
+  readonly hasPosts = computed(() => this.posts().length > 0);
 
   private snapshotLoad?: Promise<void>;
   private started = false;

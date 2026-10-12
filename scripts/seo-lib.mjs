@@ -12,13 +12,19 @@ const escapeXml = (value) =>
 const day = (value) =>
   typeof value === 'string' && value.length >= 10 ? value.slice(0, 10) : undefined;
 
-/** Paths below the language prefix: home, blog, CV and every published post. */
+/**
+ * Paths below the language prefix: home, CV, and the blog with every published post. Without
+ * posts the blog is left out, as it is from the menu (ADR 22).
+ */
 export function pagesFromSnapshot(snapshot) {
+  const posts = snapshot.posts ?? [];
   return [
     { path: '', lastmod: day(snapshot.generatedAt) },
-    { path: '/blog', lastmod: day(snapshot.posts?.[0]?.updatedAt ?? snapshot.generatedAt) },
+    ...(posts.length
+      ? [{ path: '/blog', lastmod: day(posts[0].updatedAt ?? snapshot.generatedAt) }]
+      : []),
     { path: '/cv', lastmod: day(snapshot.generatedAt) },
-    ...(snapshot.posts ?? []).map((post) => ({
+    ...posts.map((post) => ({
       path: `/blog/${post.slug}`,
       lastmod: day(post.updatedAt ?? post.publishedAt),
     })),

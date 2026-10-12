@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { authRefreshInterceptor } from './auth-refresh.interceptor';
 import { CommandService } from './command.service';
 import { ContentStore, LIVE_URL, SNAPSHOT_URL } from './content.store';
+import { visibleSections } from './sections';
 import { ThemeService } from './theme.service';
 
 const snapshot = (generatedAt: string) => ({
@@ -145,6 +146,26 @@ describe('ContentStore', () => {
     expect(store.source()).toBe('empty');
     await store.load();
     http.expectNone(SNAPSHOT_URL);
+  });
+});
+
+describe('visibleSections', () => {
+  const ids = (content: Parameters<typeof visibleSections>[0]) =>
+    visibleSections(content).map((section) => section.id);
+
+  it('keeps about and contact, and list sections only when they have items', () => {
+    expect(ids(snapshot('2026-01-01'))).toEqual(['about', 'contact']);
+    expect(
+      ids({
+        ...snapshot('2026-01-01'),
+        skills: [{} as never],
+        testimonials: [{} as never],
+      }),
+    ).toEqual(['about', 'skills', 'kind', 'contact']);
+  });
+
+  it('offers no list section before any content has loaded', () => {
+    expect(ids(null)).toEqual(['about', 'contact']);
   });
 });
 

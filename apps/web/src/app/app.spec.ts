@@ -27,7 +27,7 @@ beforeAll(() => {
   };
 });
 
-async function setup(url: string, extra: Provider[] = []) {
+async function setup(url: string, extra: Provider[] = [], content = CONTENT_FIXTURE) {
   TestBed.configureTestingModule({
     providers: [
       provideRouter(routes, withComponentInputBinding()),
@@ -38,7 +38,7 @@ async function setup(url: string, extra: Provider[] = []) {
       ...extra,
     ],
   });
-  TestBed.inject(ContentStore).seed(CONTENT_FIXTURE);
+  TestBed.inject(ContentStore).seed(content);
   const fixture = TestBed.createComponent(App);
   const router = TestBed.inject(Router);
   const go = async (target: string) => {
@@ -155,6 +155,26 @@ describe('shell', () => {
     const label = (id: string) => commands.commands().find((c) => c.id === id)?.label;
     expect(label('lang-fr')).toBe('Switch language to Français');
     expect(label('go-experience')).toBe('Go to Experience');
+  });
+
+  it('leaves empty sections and an empty blog out of the menu and the palette', async () => {
+    const empty = { ...CONTENT_FIXTURE, projects: [], testimonials: [], posts: [] };
+    const { el } = await setup('/en', [], empty);
+    const links = [...el.querySelectorAll('nav[aria-label="Main navigation"] a')].map((a) =>
+      a.getAttribute('href'),
+    );
+    expect(links).not.toContain('/en#projects');
+    expect(links).not.toContain('/en#kind');
+    expect(links).not.toContain('/en/blog');
+    expect(links).toContain('/en#experience');
+    expect(links).toContain('/en/cv');
+    const ids = TestBed.inject(CommandService)
+      .commands()
+      .map((c) => c.id);
+    expect(ids).not.toContain('go-projects');
+    expect(ids).not.toContain('go-kind');
+    expect(ids).not.toContain('go-blog');
+    expect(ids).toContain('go-cv');
   });
 
   it('filters, navigates with the keyboard and runs the selected command', async () => {

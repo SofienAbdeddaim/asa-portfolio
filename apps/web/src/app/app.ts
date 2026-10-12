@@ -6,9 +6,10 @@ import { filter, map } from 'rxjs';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LOCALES } from '@asa/shared';
 import { CommandService, type Command } from './core/command.service';
+import { ContentStore } from './core/content.store';
 import { LocaleService } from './core/locale.service';
 import { RouteFocusService } from './core/route-focus.service';
-import { SECTIONS, goToSection } from './core/sections';
+import { goToSection } from './core/sections';
 import { ScrollService } from './core/scroll.service';
 import { ThemeService } from './core/theme.service';
 import { ArabicFonts } from './layout/arabic-fonts';
@@ -86,6 +87,7 @@ export class App {
     { initialValue: this.router.url.startsWith('/admin') },
   );
   private readonly transloco = inject(TranslocoService);
+  private readonly store = inject(ContentStore);
   private readonly theme = inject(ThemeService);
   protected readonly routeFocus = inject(RouteFocusService);
 
@@ -93,7 +95,8 @@ export class App {
     inject(ScrollService).start();
     this.routeFocus.start();
 
-    // Labels are translated, so the shell's commands are rebuilt whenever translations load.
+    // Labels are translated, so the shell's commands are rebuilt whenever translations load. They
+    // also follow the content: empty sections and an empty blog are not offered (ADR 22).
     effect(() => {
       this.locale.revision(); // translations finished loading
       const current = this.locale.locale();
@@ -102,7 +105,7 @@ export class App {
       const navigate = t('commands.group.navigate');
       const languageGroup = t('commands.group.language');
 
-      const sectionCommands: Command[] = SECTIONS.map(({ id }) => ({
+      const sectionCommands: Command[] = this.store.sections().map(({ id }) => ({
         id: `go-${id}`,
         label: t('commands.goTo', { section: t(`nav.${id}`) }),
         keywords: t(`nav.${id}`),
@@ -116,7 +119,8 @@ export class App {
         },
       }));
 
-      const pageCommands: Command[] = (['blog', 'cv'] as const).map((id) => ({
+      const pages = this.store.hasPosts() ? (['blog', 'cv'] as const) : (['cv'] as const);
+      const pageCommands: Command[] = pages.map((id) => ({
         id: `go-${id}`,
         label: t('commands.goTo', { section: t(`nav.${id}`) }),
         keywords: t(`nav.${id}`),
