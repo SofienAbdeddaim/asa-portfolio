@@ -98,7 +98,10 @@ import { RESOURCES } from './resources';
             class="a-btn"
             [class.a-btn-primary]="!request.danger"
             [style.--btn-bg]="request.danger ? 'var(--danger)' : null"
-            [style.--btn-fg]="request.danger ? '#fff' : null"
+            [style.--btn-fg]="request.danger ? 'var(--bg)' : null"
+            [style.--btn-hover]="
+              request.danger ? 'color-mix(in srgb, var(--danger) 86%, var(--ink))' : null
+            "
             (click)="confirmation.answer(true)"
           >
             {{ request.confirmLabel }}
