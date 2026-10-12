@@ -1,20 +1,14 @@
 name: deploy-preview
 
 # A temporary copy of the site for a pull request, at https://pr-<number>--<site>.netlify.app, with
-# the link posted on the pull request. Only for changes that can alter the site. Netlify does not
-# meter non-production deployments on the free plan (docs/DEPLOYMENT.md); add the "no-preview" label
-# to skip one. Setup: docs/DEPLOYMENT.md
+# the link posted on the pull request. By hand only (Actions → deploy-preview → Run workflow, with
+# the pull request's branch selected), to keep Netlify usage under control. Setup:
+# docs/DEPLOYMENT.md
 on:
-  pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
-    paths:
-      - apps/web/**
-      - packages/shared/**
-      - scripts/**
-      - .github/workflows/deploy-preview.yml
+  workflow_dispatch:
 
 concurrency:
-  group: preview-${{ github.event.pull_request.number }}
+  group: preview-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -23,11 +17,6 @@ permissions:
 jobs:
   preview:
     name: Preview
-    # Only pull requests from this repository: a fork's code must never run with these secrets.
-    if: >
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      !github.event.pull_request.draft &&
-      !contains(github.event.pull_request.labels.*.name, 'no-preview')
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
@@ -53,6 +42,23 @@ jobs:
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
+
+      # The run is started on a branch of this repository (a fork's code never runs with these
+      # secrets); the preview belongs to that branch's open pull request.
+      - name: Find the pull request
+        id: pr
+        if: steps.check.outputs.ready == 'true'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const branch = context.ref.replace(/^refs\/heads\//, '');
+            const pulls = await github.rest.pulls.list({ owner, repo, head: `${owner}:${branch}`, state: 'open' });
+            if (!pulls.data.length) {
+              core.setFailed(`No open pull request for the branch "${branch}": start the run from the pull request's branch.`);
+              return;
+            }
+            core.setOutput('number', pulls.data[0].number);
 
       - if: steps.check.outputs.ready == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -83,7 +89,7 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
-          ALIAS: pr-${{ github.event.pull_request.number }}
+          ALIAS: pr-${{ steps.pr.outputs.number }}
         # The repository is a pnpm workspace: the CLI must be told which package the site is.
         run: |
           npx --yes netlify-cli@27.11.2 deploy --no-build --json --filter @asa/web \
@@ -96,12 +102,13 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
         with:
           script: |
             const marker = '<!-- preview-deployment -->';
-            const body = `${marker}\n**Preview:** ${process.env.PREVIEW_URL}\n\nBuilt from ${context.payload.pull_request.head.sha.slice(0, 7)} with the published content. Back-office sign-in is disabled on previews.`;
+            const body = `${marker}\n**Preview:** ${process.env.PREVIEW_URL}\n\nBuilt from ${context.sha.slice(0, 7)} with the published content. Back-office sign-in is disabled on previews.`;
             const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
+            const issue_number = Number(process.env.PR_NUMBER);
             const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number });
             const existing = comments.find((comment) => comment.body?.startsWith(marker));
             if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });

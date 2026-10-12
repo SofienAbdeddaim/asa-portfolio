@@ -1,6 +1,6 @@
 # Branch protection
 
-> **Needs a public repository or GitHub Pro.** On a private repository on the free plan, GitHub does not offer protected branches or rulesets, so this cannot be applied there (see [DEPLOYMENT.md](DEPLOYMENT.md#public-or-private-repository)). Until then the discipline is yours: work on branches and open pull requests so the checks run before the merge. The `ci` workflow runs on every push regardless, and nothing deploys unless it passes.
+> **Needs a public repository or GitHub Pro.** On a private repository on the free plan, GitHub does not offer protected branches or rulesets, so this cannot be applied there (see [DEPLOYMENT.md](DEPLOYMENT.md#public-or-private-repository)). Until then the discipline is yours: work on branches and open pull requests so the checks run before the merge. The `ci` workflow runs on every push regardless; deployments run by hand only, so check it is green first.
 
 `main` is the branch that deploys, so nothing reaches it without passing the checks. The rules are kept in the repository as a ruleset: [.github/rulesets/main.json](../.github/rulesets/main.json).
 

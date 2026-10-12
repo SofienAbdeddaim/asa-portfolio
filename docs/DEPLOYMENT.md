@@ -28,12 +28,12 @@ The site is built from a snapshot of the published content (`pnpm snapshot`), so
 
 Checked in October 2026 against the providers' documentation. Limits change; re-check before relying on them.
 
-| Service              | Free allowance                                                                                                                                                                                                                                                       | Worth knowing                                                                                                                    |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Netlify              | 300 credits a month, with a hard limit and no automatic recharge. A production deploy costs 15 credits, each GB of traffic 20, each 10,000 requests 2. Deploy previews and branch deploys are not metered.                                                           | About 20 production deploys a month. The workflow deploys on every push to `main`, so batch small changes into one pull request. |
-| Render (web service) | 750 instance hours a month. Idle for 15 minutes means it spins down; the next request waits about a minute. Ephemeral filesystem, no shell. Bandwidth and build minutes are included up to a monthly amount; without a payment method, overages suspend the service. | One always-on service uses about 744 of the 750 hours. See "Cold starts".                                                        |
-| MongoDB Atlas (M0)   | 512 MB storage, 500 connections, 100 operations a second, 10 GB transfer a week. Paused after 30 days with no connection.                                                                                                                                            | Any visit, or the keep-warm ping, prevents the pause. Export your data now and then.                                             |
-| GitHub Actions       | Free and unlimited for a public repository. For a private one on the free plan: 2,000 minutes a month, 500 MB of artifacts, and jobs are blocked (not charged) when the minutes run out.                                                                             | See "Public or private repository" below. Scheduled workflows stop after 60 days without repository activity.                    |
+| Service              | Free allowance                                                                                                                                                                                                                                                       | Worth knowing                                                                                                           |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Netlify              | 300 credits a month, with a hard limit and no automatic recharge. A production deploy costs 15 credits, each GB of traffic 20, each 10,000 requests 2. Deploy previews and branch deploys are not metered.                                                           | About 20 production deploys a month. Deploys only run by hand (ADR 21): run `deploy` once a batch of changes is merged. |
+| Render (web service) | 750 instance hours a month. Idle for 15 minutes means it spins down; the next request waits about a minute. Ephemeral filesystem, no shell. Bandwidth and build minutes are included up to a monthly amount; without a payment method, overages suspend the service. | One always-on service uses about 744 of the 750 hours. See "Cold starts".                                               |
+| MongoDB Atlas (M0)   | 512 MB storage, 500 connections, 100 operations a second, 10 GB transfer a week. Paused after 30 days with no connection.                                                                                                                                            | Any visit, or the keep-warm ping, prevents the pause. Export your data now and then.                                    |
+| GitHub Actions       | Free and unlimited for a public repository. For a private one on the free plan: 2,000 minutes a month, 500 MB of artifacts, and jobs are blocked (not charged) when the minutes run out.                                                                             | See "Public or private repository" below. Scheduled workflows stop after 60 days without repository activity.           |
 
 **Credit card.** None of the providers' documentation pages I read says whether signing up needs a card, so I cannot promise it. If one asks for a card, stop there rather than adding one. The pieces are replaceable:
 
@@ -124,12 +124,13 @@ Until these exist, `deploy`, `deploy-preview` and `keepwarm` skip themselves wit
 
 Run **Actions → deploy → Run workflow**. It deploys the API, waits for it to serve the commit, pulls the content, builds and publishes the site, and checks the live site. Then open `SITE_URL/admin`, sign in, set up two-factor authentication, **save the recovery codes**, and replace the demo content.
 
-From now on, every push to `main` that passes CI deploys by itself.
+Nothing deploys by itself (ADR 21): merging to `main` does not change the live site. When a batch of changes is merged and `ci` is green on `main`, run **deploy** again.
 
 ## Day to day
 
 - **Edited content in the back-office.** Visitors see it within moments (the page refreshes from the API). The pre-rendered HTML that search engines read only updates on the next deploy: run **deploy** by hand when you have finished a round of edits.
-- **Preview a change.** A pull request that touches the web app gets a comment with its preview address (`pr-<number>--<site>.netlify.app`). Previews show the real content, are never indexed, and cannot sign in to the back-office (the API only accepts the production origin). Add the `no-preview` label to skip one. Previews are not metered on the free plan according to Netlify's pricing page; if credits drop after opening pull requests, change the workflow to require a label.
+- **Ship merged changes.** Run **Actions → deploy → Run workflow** on `main` once its `ci` run is green. Batch merges: each production deploy costs Netlify credits.
+- **Preview a change.** Run **Actions → deploy-preview → Run workflow** and pick the pull request's branch. The pull request gets a comment with its preview address (`pr-<number>--<site>.netlify.app`). Previews show the real content, are never indexed, and cannot sign in to the back-office (the API only accepts the production origin).
 - **Roll back.** Netlify: **Deploys →** an earlier deploy **→ Publish deploy**. Render: **Events →** an earlier deploy **→ Rollback**. Or revert the commit on `main`.
 
 ## Backups and recovery
@@ -169,7 +170,7 @@ The `release` workflow keeps a release pull request open, built from the Convent
 
 ## Branch protection
 
-[docs/BRANCH_PROTECTION.md](BRANCH_PROTECTION.md) has the ruleset to import: pull requests only, squash merges, the checks below required. It needs a public repository or GitHub Pro. Without it, `main` accepts direct pushes: CI still runs on each one, and `deploy` only follows a green run, so a broken push is caught before it ships, but it is not prevented.
+[docs/BRANCH_PROTECTION.md](BRANCH_PROTECTION.md) has the ruleset to import: pull requests only, squash merges, the checks below required. It needs a public repository or GitHub Pro. Without it, `main` accepts direct pushes: CI still runs on each one, and nothing deploys until someone runs `deploy`, so check that `ci` is green first.
 
 ## The workflows
 
@@ -179,8 +180,8 @@ The `release` workflow keeps a release pull request open, built from the Convent
 | `security`       | push, pull request, weekly                                 | Semgrep static analysis, `pnpm audit`, container image scan, secret scan of the whole history; CodeQL and dependency review where the repository is public                                   |
 | `lighthouse`     | web changes, push to `main`                                | performance, accessibility, best-practice and SEO budgets on mobile                                                                                                                          |
 | `release`        | push to `main`                                             | release pull request, changelog, tag, GitHub release                                                                                                                                         |
-| `deploy`         | after `ci` passes on `main`; manual                        | deploys the API, waits for it, snapshots the content, builds, publishes, smoke-tests                                                                                                         |
-| `deploy-preview` | pull requests touching the web app                         | preview site and a comment with its address                                                                                                                                                  |
+| `deploy`         | manual only, from `main`                                   | deploys the API, waits for it, snapshots the content, builds, publishes, smoke-tests                                                                                                         |
+| `deploy-preview` | manual only, from a pull request's branch                  | preview site and a comment with its address                                                                                                                                                  |
 | `keepwarm`       | every 10 minutes, if enabled                               | pings the API                                                                                                                                                                                |
 
 Third-party actions are pinned to a commit and kept current by Dependabot.

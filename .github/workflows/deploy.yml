@@ -1,13 +1,11 @@
 name: deploy
 
-# After CI passes on main: deploy the API (Render), wait until it serves this commit, pull the
-# published content from it, build the static site and publish it (Netlify). Run it by hand to
-# refresh the pre-rendered pages after editing content in the back-office. Setup: docs/DEPLOYMENT.md
+# Deploys production by hand only (Actions → deploy → Run workflow, from main): the API (Render),
+# wait until it serves this commit, pull the published content from it, build the static site and
+# publish it (Netlify). Each production deploy costs Netlify credits, so nothing triggers it
+# automatically; run it once a batch of merges, or a round of back-office edits, is ready.
+# Setup: docs/DEPLOYMENT.md
 on:
-  workflow_run:
-    workflows: [ci]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
 
 # Deployments are queued, never run side by side or cancelled half way.
@@ -48,20 +46,12 @@ jobs:
   deploy:
     name: Deploy
     needs: config
-    # Only for commits pushed to this repository's main branch whose CI run passed (a fork pull
-    # request from a branch also named "main" reports the same branch name, hence the other checks).
-    if: >
-      needs.config.outputs.ready == 'true' && (
-        github.event_name == 'workflow_dispatch' || (
-          github.event.workflow_run.conclusion == 'success' &&
-          github.event.workflow_run.event == 'push' &&
-          github.event.workflow_run.head_repository.full_name == github.repository
-        )
-      )
+    # Production only ships main, whichever branch the run was started from.
+    if: needs.config.outputs.ready == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     env:
-      SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      SHA: ${{ github.sha }}
       API_URL: ${{ vars.API_URL }}
       SITE_URL: ${{ vars.SITE_URL }}
     steps:

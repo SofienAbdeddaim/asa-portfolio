@@ -1,6 +1,6 @@
 name: ci
 
-# Everything that must pass before a change is trusted, and what the deploy workflow waits for:
+# Everything that must pass before a change is trusted (and before anyone runs deploy):
 # static checks, unit tests and the build, the API container, and the end-to-end tests in a real
 # browser against a real database (docs/TESTING.md). Pushes to main that only touch documentation skip
 # it; pull requests always run it, because the ruleset requires its checks.

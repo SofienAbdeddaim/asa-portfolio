@@ -4,7 +4,7 @@
 
 ## How to check it
 
-<!-- Commands to run or pages to open. A preview site link is posted here for changes to the web app; add the `no-preview` label to skip it. -->
+<!-- Commands to run or pages to open. For a preview site, run the deploy-preview workflow on this branch; it posts the link here. -->
 
 ## Checklist
 
