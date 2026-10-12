@@ -1,6 +1,6 @@
 # 17. CI/CD, deployment and quality gates
 
-Status: accepted
+Status: accepted. Amended by [ADR 21](0021-manual-deployments.md): `deploy` and `deploy-preview` now run by hand only.
 
 ## Context
 

@@ -149,7 +149,7 @@ All API settings are validated at start-up; the process refuses to run with a mi
 
 ## Deploying
 
-Every push to `main` that passes CI deploys by itself; pull requests that touch the web app get a preview site. The one-time setup (about 30 minutes, no card expected) is in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+Deployments run by hand from GitHub Actions (`deploy` for production, `deploy-preview` for a pull request), to stay within Netlify's free credits (ADR 21). The one-time setup (about 30 minutes, no card expected) is in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 Free-tier realities worth knowing up front:
 
