@@ -416,7 +416,11 @@
   }
 
   /* Timeline: a hairline rail at the reading start, filled with the gradient as it scrolls by. */
+  /* Rail, fill and dots are all centered on one axis (--timeline-axis, from the inline start), so
+     they stay aligned whatever their widths. */
   .timeline {
+    --timeline-axis: 0.375rem;
+    --timeline-dot: 0.75rem;
     position: relative;
     padding-inline-start: 1.75rem;
   }
@@ -424,7 +428,7 @@
   .timeline-rail,
   .timeline-fill {
     position: absolute;
-    inset-inline-start: 0.3125rem;
+    inset-inline-start: calc(var(--timeline-axis) - 1px);
     inset-block: 0.5rem 1.25rem;
     width: 2px;
     border-radius: 2px;
@@ -435,7 +439,7 @@
      revealed with a clip (not a scale) so the gradient keeps its colors and the bright tip stays
      round. */
   .timeline-fill {
-    inset-inline-start: 0.1875rem;
+    inset-inline-start: calc(var(--timeline-axis) - 2px);
     width: 4px;
     background: var(--grad-y);
     box-shadow: 0 0 12px 1px color-mix(in srgb, var(--accent) 55%, transparent);
@@ -448,10 +452,10 @@
   .timeline-item::before {
     content: '';
     position: absolute;
-    inset-inline-start: -1.75rem;
+    inset-inline-start: calc(var(--timeline-axis) - var(--timeline-dot) / 2 - 1.75rem);
     top: 1.65rem;
-    width: 0.75rem;
-    height: 0.75rem;
+    width: var(--timeline-dot);
+    height: var(--timeline-dot);
     border: 2px solid var(--accent);
     border-radius: 999px;
     background: var(--accent);
@@ -775,18 +779,22 @@
   /* Scroll-driven effects: progressive enhancement, absent browsers show the final state. */
   @supports (animation-timeline: view()) {
     /* The tip of the fill follows the middle of the screen: it starts when the list's top reaches
-       it and ends when the list's bottom does, so the colored part grows exactly as you read. */
+       it and ends when the list's bottom does, so the colored part grows exactly as you read. The
+       explicit 0 inset keeps the page's scroll-padding (room for the sticky header) out of the
+       range; otherwise the tip runs ahead of the middle as you scroll and passes the dots. */
     .timeline-fill {
       animation: fill-down linear both;
-      animation-timeline: view();
+      animation-timeline: view(0px);
       animation-range: cover 50vh cover calc(100% - 50vh);
     }
 
-    /* Each dot lights up as the fill tip reaches it. */
+    /* Each dot lights up as the fill tip crosses it. The dot is its own view() subject, so the
+       range is measured from the dot itself: it starts lighting when the tip (the middle of the
+       screen) touches its top edge and is fully lit when the tip reaches its center. */
     .timeline-item::before {
       animation: dot-light linear both;
-      animation-timeline: view();
-      animation-range: cover calc(50vh + 1.25rem) cover calc(50vh + 2rem);
+      animation-timeline: view(0px);
+      animation-range: cover 50vh cover calc(50vh + var(--timeline-dot) / 2);
     }
 
     .scroll-progress {
