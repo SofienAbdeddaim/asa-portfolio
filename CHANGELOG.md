@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.3.1...v1.4.0) (2026-10-12)
+
+
+### Features
+
+* **web:** hide empty sections from the menu, palette and sitemaps ([#25](https://github.com/SofienAbdeddaim/asa-portfolio/issues/25)) ([291ad7f](https://github.com/SofienAbdeddaim/asa-portfolio/commit/291ad7f8a5a8cc247966c91cb5681b401203b31a))
+
 ## [1.3.1](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.3.0...v1.3.1) (2026-10-12)
 
 
