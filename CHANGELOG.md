@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.2.0...v1.3.0) (2026-10-12)
+
+
+### Features
+
+* **web:** default to the dark theme and make the timeline fill visible ([#20](https://github.com/SofienAbdeddaim/asa-portfolio/issues/20)) ([f42b507](https://github.com/SofienAbdeddaim/asa-portfolio/commit/f42b507dfbb7f65ab062496902a7b687583929be))
+* **web:** replace the sticker-book look with a quiet editorial identity ([#17](https://github.com/SofienAbdeddaim/asa-portfolio/issues/17)) ([9073864](https://github.com/SofienAbdeddaim/asa-portfolio/commit/90738642f4b1ec6600681687d93229f4a1fc3702))
+* **web:** show skills as an animated editorial index ([#19](https://github.com/SofienAbdeddaim/asa-portfolio/issues/19)) ([cbdf298](https://github.com/SofienAbdeddaim/asa-portfolio/commit/cbdf298b612eac5395f7041efd9931f02ab683f5))
+
 ## [1.2.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.1.1...v1.2.0) (2026-10-11)
 
 
