@@ -431,9 +431,14 @@
     background: var(--line);
   }
 
+  /* The fill is wider than the rail and glows, so its progress reads on both themes. It is
+     revealed with a clip (not a scale) so the gradient keeps its colors and the bright tip stays
+     round. */
   .timeline-fill {
+    inset-inline-start: 0.1875rem;
+    width: 4px;
     background: var(--grad-y);
-    transform-origin: top;
+    box-shadow: 0 0 12px 1px color-mix(in srgb, var(--accent) 55%, transparent);
   }
 
   .timeline-item {
@@ -652,12 +657,13 @@
   }
 }
 
-@keyframes grow-y {
+/* Reveals the timeline fill from the top; the side insets leave room for its glow. */
+@keyframes fill-down {
   from {
-    transform: scaleY(0);
+    clip-path: inset(0 -16px 100% -16px);
   }
   to {
-    transform: scaleY(1);
+    clip-path: inset(0 -16px 0 -16px);
   }
 }
 
@@ -768,16 +774,19 @@
 
   /* Scroll-driven effects: progressive enhancement, absent browsers show the final state. */
   @supports (animation-timeline: view()) {
+    /* The tip of the fill follows the middle of the screen: it starts when the list's top reaches
+       it and ends when the list's bottom does, so the colored part grows exactly as you read. */
     .timeline-fill {
-      animation: grow-y linear both;
+      animation: fill-down linear both;
       animation-timeline: view();
-      animation-range: cover 0% cover 65%;
+      animation-range: cover 50vh cover calc(100% - 50vh);
     }
 
+    /* Each dot lights up as the fill tip reaches it. */
     .timeline-item::before {
       animation: dot-light linear both;
       animation-timeline: view();
-      animation-range: entry 40% cover 35%;
+      animation-range: cover calc(50vh + 1.25rem) cover calc(50vh + 2rem);
     }
 
     .scroll-progress {

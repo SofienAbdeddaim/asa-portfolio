@@ -90,13 +90,13 @@ test('the theme choice sticks across reloads and applies before first paint', as
   await page.goto('/en');
   const toggle = page.getByRole('button', { name: /^Theme:/ });
   const stored = () => page.evaluate(() => localStorage.getItem('theme'));
-  // The cycle (system -> light -> dark) runs inside a view transition, so wait for each step to land.
+  // Dark is the default. The cycle (dark -> light -> system) runs inside a view transition, so wait
+  // for each step to land.
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await toggle.click();
   await expect.poll(stored).toBe('light');
-  await toggle.click();
-  await expect.poll(stored).toBe('dark');
   await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 });
 
 test('reduced motion removes decorative animation but keeps all content', async ({ browser }) => {

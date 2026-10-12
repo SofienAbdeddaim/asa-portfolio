@@ -16,7 +16,10 @@ on:
       - .github/pull_request_template.md
   # No paths-ignore on pull requests: the ruleset requires these checks, and a check that does not run
   # (a documentation-only change) is a check that never reports, so the pull request could not be merged.
+  # `edited` re-runs the checks when the title changes: the title check reads the title from the event,
+  # so a re-run of an older event would keep failing on the old title.
   pull_request:
+    types: [opened, synchronize, reopened, edited]
   workflow_dispatch:
 
 concurrency:
