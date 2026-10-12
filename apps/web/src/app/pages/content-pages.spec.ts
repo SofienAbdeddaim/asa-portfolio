@@ -42,6 +42,18 @@ async function render<T>(component: Type<T>, locale: Locale, inputs: Record<stri
 const meta = (selector: string) => document.head.querySelector(selector)?.getAttribute('content');
 
 describe('BlogListPage', () => {
+  it('shows an empty state and stays out of search engines until a post is published', async () => {
+    configure();
+    TestBed.inject(ContentStore).seed({ ...CONTENT_FIXTURE, posts: [] });
+    await TestBed.inject(LocaleService).activate('en');
+    const fixture = TestBed.createComponent(BlogListPage);
+    await settle(fixture);
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('article')).toBeNull();
+    expect(el.querySelector('.card')?.textContent?.trim()).not.toBe('');
+    expect(meta('meta[name="robots"]')).toBe('noindex, nofollow');
+  });
+
   it('lists published posts with dates, reading time and a link to each', async () => {
     const { el } = await render(BlogListPage, 'en');
     expect(el.querySelector('h1')?.textContent).toBe('Notes and writing');

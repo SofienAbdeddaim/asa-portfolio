@@ -187,6 +187,14 @@ test('lists every page and post for the sitemaps', () => {
   assert.equal(pages[0].lastmod, '2026-03-01');
 });
 
+test('leaves the blog out of the sitemaps until a post is published', () => {
+  const pages = pagesFromSnapshot(snapshot({ posts: [] }));
+  assert.deepEqual(
+    pages.map((p) => p.path),
+    ['', '/cv'],
+  );
+});
+
 test('builds one sitemap per language with hreflang alternates, plus an index', () => {
   const files = buildSitemaps({
     siteUrl: 'https://site.example/',

@@ -20,6 +20,7 @@ Later sign-ins ask for the 6-digit code, or a recovery code ("Use a recovery cod
 
 - **Languages.** Every text has English, French and Arabic boxes. Only English is required. The list marks FR and AR as complete once every field that has English text is also translated. A missing translation falls back to English on the site.
 - **Draft or published.** New entries start as drafts and stay private until you publish them (button on the list, or the checkbox in the editor).
+- **Empty sections are hidden.** A home section (experience, skills, projects, testimonials) or the blog with nothing published is left out of the page, the menu, the palette and the sitemaps; publishing its first entry brings it back after the next deploy (ADR 22).
 - **Order.** The order in the list is the order on the site. Drag a row, or use the arrow buttons.
 - **Images.** "Upload image" accepts JPEG, PNG, WebP, GIF or AVIF up to 5 MB. They are resized (1600px wide at most), converted to WebP, and stripped of camera and location data.
 - **Blog posts and project descriptions use Markdown**: a toolbar for bold, italic, headings, lists, links and code, and a live preview next to the editor. Each language has its own tab.

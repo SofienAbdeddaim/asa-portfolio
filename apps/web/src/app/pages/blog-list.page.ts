@@ -151,6 +151,8 @@ export class BlogListPage {
         title: `${t('blog.title')} · ${this.store.profile()?.fullName ?? t('app.brand')}`,
         description: t('blog.lead'),
         path: '/blog',
+        // Not linked from the menu or the sitemap while empty (ADR 22), so keep it out of search too.
+        noindex: this.store.content() !== null && !this.store.hasPosts(),
         jsonLd: { '@type': 'Blog', name: t('blog.title'), inLanguage: this.locale.locale() },
       });
     });

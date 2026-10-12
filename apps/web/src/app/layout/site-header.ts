@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { CommandService } from '../core/command.service';
 import { ContentStore } from '../core/content.store';
 import { LocaleService } from '../core/locale.service';
-import { SECTIONS, ScrollSpy } from '../core/sections';
+import { ScrollSpy } from '../core/sections';
 import { Icon } from '../shared/ui/icon';
 import { LanguageSwitcher } from './language-switcher';
 import { ThemeToggle } from './theme-toggle';
@@ -28,7 +28,7 @@ import { ThemeToggle } from './theme-toggle';
 
         <nav class="ms-auto hidden xl:block" [attr.aria-label]="'nav.label' | transloco">
           <ul class="flex items-center gap-5 text-sm">
-            @for (section of sections; track section.id) {
+            @for (section of sections(); track section.id) {
               <li>
                 <a
                   [routerLink]="['/', locale.locale()]"
@@ -39,16 +39,18 @@ import { ThemeToggle } from './theme-toggle';
                 >
               </li>
             }
-            <li>
-              <a
-                [routerLink]="['/', locale.locale(), 'blog']"
-                routerLinkActive
-                #blog="routerLinkActive"
-                [attr.aria-current]="blog.isActive ? 'page' : null"
-                class="nav-link inline-flex min-h-11 items-center"
-                >{{ 'nav.blog' | transloco }}</a
-              >
-            </li>
+            @if (store.hasPosts()) {
+              <li>
+                <a
+                  [routerLink]="['/', locale.locale(), 'blog']"
+                  routerLinkActive
+                  #blog="routerLinkActive"
+                  [attr.aria-current]="blog.isActive ? 'page' : null"
+                  class="nav-link inline-flex min-h-11 items-center"
+                  >{{ 'nav.blog' | transloco }}</a
+                >
+              </li>
+            }
           </ul>
         </nav>
 
@@ -91,7 +93,7 @@ import { ThemeToggle } from './theme-toggle';
       >
         <nav [attr.aria-label]="'nav.label' | transloco">
           <ul class="grid">
-            @for (section of sections; track section.id) {
+            @for (section of sections(); track section.id) {
               <li>
                 <a
                   [routerLink]="['/', locale.locale()]"
@@ -102,7 +104,7 @@ import { ThemeToggle } from './theme-toggle';
                 >
               </li>
             }
-            @for (page of pages; track page) {
+            @for (page of pages(); track page) {
               <li>
                 <a
                   [routerLink]="['/', locale.locale(), page]"
@@ -124,6 +126,9 @@ export class SiteHeader {
   protected readonly commands = inject(CommandService);
   protected readonly store = inject(ContentStore);
   protected readonly spy = inject(ScrollSpy);
-  protected readonly sections = SECTIONS;
-  protected readonly pages = ['blog', 'cv'] as const;
+  /** Empty sections and an empty blog stay out of the menu (ADR 22). */
+  protected readonly sections = this.store.sections;
+  protected readonly pages = computed(() =>
+    this.store.hasPosts() ? (['blog', 'cv'] as const) : (['cv'] as const),
+  );
 }

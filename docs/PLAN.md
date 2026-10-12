@@ -11,6 +11,10 @@ Status legend: [x] done, [~] in progress, [ ] todo.
 - [x] **Phase 6** – CI/CD: pinned-action workflows (ci, e2e, security, lighthouse, release, deploy, previews, keep-warm), Playwright suite against the real stack, Lighthouse budgets, Netlify + Render + Atlas deployment, branch-protection ruleset, README with architecture diagram and screenshots (ADR 17, docs/DEPLOYMENT.md, docs/TESTING.md)
 - [x] **Phase 7** – hardening: Lighthouse mobile 85–97 (incremental hydration, lazy Arabic fonts, no Markdown parser on the home page), axe-core accessibility audit of every page plus keyboard, reflow and focus tests (route focus, language announcement), security review of the API with fixes (second-factor lockout, keyed recovery codes, session limit, no-store, snapshot cache), account recovery and backup tools, container image hardened and scanned, black-box security probes, docs/SECURITY.md (ADR 18)
 
+## After the phases
+
+- [x] Sections with no published content (and the blog without posts) are hidden from the menu, the palette and the sitemaps (ADR 22)
+
 ## Decisions pending
 
 - ~~Creative concept~~ chosen: B, Living Timeline (ADR 6).
