@@ -301,7 +301,7 @@ export class CommandPalette {
       const index = this.historyIndex < 0 ? last : this.historyIndex;
       this.historyIndex =
         event.key === 'ArrowUp' ? Math.max(0, index - 1) : Math.min(last, index + 1);
-      this.query.set(this.history[this.historyIndex] ?? '');
+      this.setQuery(this.history[this.historyIndex] ?? '');
     } else if (event.key === 'Tab') {
       this.complete(event);
     }
@@ -312,7 +312,7 @@ export class CommandPalette {
     const completed = completeCommand(this.query());
     if (completed === this.query()) return;
     event.preventDefault();
-    this.query.set(completed);
+    this.setQuery(completed);
   }
 
   private execute(input: string): void {
@@ -327,7 +327,7 @@ export class CommandPalette {
     });
     this.history.push(typed);
     this.historyIndex = -1;
-    this.query.set('');
+    this.setQuery('');
     this.terminal.set(true);
     this.focusField();
 
@@ -380,7 +380,7 @@ export class CommandPalette {
 
   private reset(): void {
     this.stopTimers();
-    this.query.set('');
+    this.setQuery('');
     this.active.set(0);
     this.terminal.set(false);
     this.log.set([]);
@@ -391,6 +391,17 @@ export class CommandPalette {
   private stopTimers(): void {
     clearInterval(this.timer);
     clearTimeout(this.contactTimer);
+  }
+
+  /**
+   * Replaces the text in the field. The DOM value is written directly too: when keys arrive faster
+   * than rendering, the binding may still hold the value from before, see no change, and leave the
+   * typed text in place.
+   */
+  private setQuery(value: string): void {
+    this.query.set(value);
+    const field = this.field()?.nativeElement;
+    if (field && field.value !== value) field.value = value;
   }
 
   private focusField(): void {
