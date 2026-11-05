@@ -16,6 +16,6 @@
     "chrome-launcher": "^1.2.2",
     "lighthouse": "^13.5.0",
     "mongodb": "^7.7.0",
-    "otpauth": "^9.5.2"
+    "otpauth": "^9.6.0"
   }
 }
