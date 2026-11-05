@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.4.0...v1.5.0) (2026-11-05)
+
+
+### Features
+
+* **web:** add a hidden terminal to the palette and a living hero name ([#32](https://github.com/SofienAbdeddaim/asa-portfolio/issues/32)) ([987738d](https://github.com/SofienAbdeddaim/asa-portfolio/commit/987738ddef352015bef8afdda1554210650c0b03))
+
 ## [1.4.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.3.1...v1.4.0) (2026-10-12)
 
 
