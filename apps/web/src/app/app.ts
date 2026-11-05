@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
@@ -94,6 +94,7 @@ export class App {
   constructor() {
     inject(ScrollService).start();
     this.routeFocus.start();
+    if (isPlatformBrowser(inject(PLATFORM_ID))) this.greetConsole();
 
     // Labels are translated, so the shell's commands are rebuilt whenever translations load. They
     // also follow the content: empty sections and an empty blog are not offered (ADR 22).
@@ -153,6 +154,25 @@ export class App {
           run: () => this.theme.cycle(),
         },
       ]);
+    });
+  }
+
+  /** A signed note for visitors who open the browser console, pointing at the hidden terminal. */
+  private greetConsole(): void {
+    let greeted = false;
+    effect(() => {
+      this.locale.revision();
+      const name = this.store.profile()?.fullName;
+      if (greeted || !name || this.admin()) return;
+      const t = (key: string) => this.transloco.translate(key, {}, this.locale.locale());
+      if (t('console.hello') === 'console.hello') return; // translations still loading
+      greeted = true;
+      // The console note is the feature (ADR 23).
+      console.info(
+        `%c${name}%c\n${t('console.hello')}\n${t('console.hint')}`,
+        'font: 700 18px system-ui; color: #2f6bf0',
+        'font: 13px ui-monospace, monospace',
+      );
     });
   }
 
