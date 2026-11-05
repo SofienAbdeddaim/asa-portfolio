@@ -99,7 +99,9 @@ jobs:
     timeout-minutes: 25
     services:
       mongo:
-        image: mongo:8
+        # MongoDB 8.x refuses to start on the runners' Linux 6.19+ kernel (SERVER-121912, a
+        # TCMalloc/rseq incompatibility); 7.0 is not affected. Back to 8 once an image starts there.
+        image: mongo:7.0
         ports:
           - 27017:27017
         options: >-
