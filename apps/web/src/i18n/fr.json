@@ -40,7 +40,10 @@
     "placeholder": "Saisissez une commande ou recherchez…",
     "empty": "Aucune commande correspondante",
     "hint": "↑ ↓ pour naviguer, Entrée pour choisir, Échap pour fermer",
-    "results": "{{count}} résultats"
+    "results": "{{count}} résultats",
+    "tip": "Astuce : tapez help",
+    "terminal": "Terminal",
+    "terminalLabel": "Sortie du terminal"
   },
   "commands": {
     "group": {
@@ -164,5 +167,38 @@
     "projects": "Projets choisis",
     "contact": "Contact",
     "present": "Aujourd’hui"
+  },
+  "terminal": {
+    "group": "Terminal",
+    "help": {
+      "help": "liste des commandes",
+      "whoami": "qui est derrière ce site",
+      "stack": "ce que je maîtrise le mieux",
+      "gitLog": "mon parcours, en commits",
+      "uptime": "depuis quand je code",
+      "projects": "mes projets perso",
+      "hire": "la bonne commande",
+      "clear": "vider l'écran",
+      "exit": "fermer le terminal"
+    },
+    "hiddenHint": "…et quelques commandes cachées.",
+    "notFound": "commande introuvable : {{command}}. Essayez",
+    "empty": "(rien de publié pour le moment)",
+    "stackMore": "→ la liste complète est dans la section Compétences",
+    "hire": {
+      "password": "[sudo] mot de passe pour recruteur : ********",
+      "granted": "accès accordé.",
+      "next": "Direction le formulaire de contact…"
+    },
+    "eggs": {
+      "rm": "Bien essayé. main n'accepte que des pull requests.",
+      "coffee": "418 : je suis une théière.",
+      "vim": "Pour quitter : :q (on compatit).",
+      "ngServe": "✔ Compilé. Ce site tourne déjà, vous êtes dessus."
+    }
+  },
+  "console": {
+    "hello": "Vous lisez la console ? On devrait se parler.",
+    "hint": "Ouvrez la palette (Ctrl+K ou ⌘K) et tapez help."
   }
 }

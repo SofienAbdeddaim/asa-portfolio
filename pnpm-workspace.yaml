@@ -20,3 +20,11 @@ minimumReleaseAgeExclude:
   - '@angular/cli@22.2.2'
   - '@angular/ssr@22.2.2'
   - '@schematics/angular@22.2.2'
+
+# Security floors for transitive dependencies, until their parents require these versions:
+# body-parser and multer (via @nestjs/platform-express; GHSA-27r3-jxmh-p828, GHSA-q7qp-rjg7-q26m)
+# and zod 4 (via @angular/forms; GHSA-mrhx-c7xc-m3w5). Remove each once the parent ships it.
+overrides:
+  body-parser: ^2.4.0
+  multer: ^2.5.0
+  'zod@>=4 <4.6.6': ^4.6.7

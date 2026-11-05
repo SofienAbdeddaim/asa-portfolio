@@ -37,6 +37,12 @@ test('open overlays are accessible: the command palette and the mobile menu', as
   await page.keyboard.press('Control+k');
   await expect(page.getByRole('dialog', { name: 'Command palette' })).toBeVisible();
   await expectAccessible(page, 'command palette');
+
+  // The hidden terminal (ADR 23): the same dialog, with a text box and a live log.
+  await page.keyboard.type('help');
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('log', { name: 'Terminal output' })).toContainText('whoami');
+  await expectAccessible(page, 'command palette terminal');
   await page.keyboard.press('Escape');
 
   await page.setViewportSize({ width: 390, height: 844 });

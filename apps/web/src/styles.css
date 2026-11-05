@@ -704,6 +704,12 @@
   }
 }
 
+/* Each word of the hero name sits on its own line, with or without the entrance animation
+   (inline, the words ran together under reduced motion). */
+.anim-mask {
+  display: block;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .status-dot {
     animation: dot-pulse 2.4s ease-out infinite;
@@ -720,6 +726,11 @@
     display: block;
     animation: rise 1s var(--ease) both;
     animation-delay: var(--delay, 0s);
+  }
+
+  /* Living name (ADR 23): the hero sets each letter's weight from the pointer distance. */
+  .name-letter {
+    transition: font-weight 0.35s var(--ease);
   }
 
   .anim-up {

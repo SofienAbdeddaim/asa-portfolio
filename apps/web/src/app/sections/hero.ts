@@ -3,11 +3,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
   afterNextRender,
   computed,
   inject,
   input,
   signal,
+  viewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -24,6 +26,10 @@ const ARABIC_SCRIPT = /[\u0600-\u06FF]/;
 const YEAR_MS = 365.25 * 24 * 3600 * 1000;
 const COUNT_DELAY = 600;
 const COUNT_DURATION = 1400;
+/** Living name: how far (px) the pointer reaches, and the weight range it sweeps. */
+const NAME_REACH = 170;
+const NAME_LIGHT = 480;
+const NAME_HEAVY = 850;
 
 interface Fact {
   key: string;
@@ -35,7 +41,12 @@ interface Fact {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TranslocoPipe, LocalizedPipe, Button, Icon],
   template: `
-    <section class="container-page pt-12 pb-16 sm:pt-20 sm:pb-24" aria-labelledby="hero-title">
+    <section
+      class="container-page pt-12 pb-16 sm:pt-20 sm:pb-24"
+      aria-labelledby="hero-title"
+      (pointermove)="liveName($event)"
+      (pointerleave)="restName()"
+    >
       @if (profile(); as p) {
         <div class="grid items-end gap-12 lg:grid-cols-[1.35fr_1fr] lg:gap-16">
           <div class="min-w-0">
@@ -45,15 +56,22 @@ interface Fact {
             </p>
 
             <h1
+              #name
               id="hero-title"
               class="mt-5 mb-5 text-[clamp(2.5rem,7.5vw,5.25rem)] wrap-anywhere leading-none font-bold tracking-[-0.035em]"
             >
               <span class="sr-only">{{ p.fullName }}</span>
               @for (word of words(); track $index) {
                 <span class="anim-mask" aria-hidden="true">
-                  <span [attr.dir]="word.dir" [style.--delay]="$index * 0.1 + 's'">{{
-                    word.text
-                  }}</span>
+                  <span [attr.dir]="word.dir" [style.--delay]="$index * 0.1 + 's'">
+                    @if (word.letters) {
+                      @for (letter of word.letters; track $index) {
+                        <span class="name-letter">{{ letter }}</span>
+                      }
+                    } @else {
+                      {{ word.text }}
+                    }
+                  </span>
                 </span>
               }
             </h1>
@@ -115,6 +133,12 @@ export class Hero {
   readonly locale = input.required<Locale>();
 
   private readonly document = inject(DOCUMENT);
+  private readonly nameRef = viewChild<ElementRef<HTMLElement>>('name');
+
+  /** Set in the browser when the pointer can hover and motion is allowed. */
+  private livingName = false;
+  private nameFrame = 0;
+  private pointer = { x: 0, y: 0 };
 
   /** 0 → 1 while the figures count up; 1 on the server and when motion is reduced. */
   private readonly progress = signal(1);
@@ -124,7 +148,12 @@ export class Hero {
     (this.profile()?.fullName ?? '')
       .split(/\s+/)
       .filter(Boolean)
-      .map((text) => ({ text, dir: ARABIC_SCRIPT.test(text) ? 'rtl' : 'ltr' })),
+      .map((text) => {
+        const arabic = ARABIC_SCRIPT.test(text);
+        // Latin words are split into letters for the living name (ADR 23); Arabic letters join, so
+        // their words stay whole.
+        return { text, dir: arabic ? 'rtl' : 'ltr', letters: arabic ? null : [...text] };
+      }),
   );
 
   /** The first sentence of the bio, as a one-line pitch under the headline. */
@@ -174,6 +203,10 @@ export class Hero {
     const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
       if (prefersReducedMotion() || typeof requestAnimationFrame !== 'function') return;
+      this.livingName =
+        typeof matchMedia === 'function' &&
+        matchMedia('(hover: hover) and (pointer: fine)').matches;
+      destroyRef.onDestroy(() => cancelAnimationFrame(this.nameFrame));
       let frame = 0;
       const start = performance.now() + COUNT_DELAY;
       this.progress.set(0);
@@ -198,6 +231,48 @@ export class Hero {
     const box = card.getBoundingClientRect();
     card.style.setProperty('--mx', `${event.clientX - box.left}px`);
     card.style.setProperty('--my', `${event.clientY - box.top}px`);
+  }
+
+  /**
+   * Living name: each letter of the name gets heavier as the pointer comes near it, using the
+   * weight axis of the variable display font. Only with a fine hovering pointer and full motion.
+   */
+  protected liveName(event: PointerEvent): void {
+    if (!this.livingName || event.pointerType !== 'mouse') return;
+    this.pointer = { x: event.clientX, y: event.clientY };
+    this.nameFrame ||= requestAnimationFrame(() => {
+      this.nameFrame = 0;
+      const name = this.nameRef()?.nativeElement;
+      if (!name) return;
+      const box = name.getBoundingClientRect();
+      const { x, y } = this.pointer;
+      const near =
+        x > box.left - NAME_REACH &&
+        x < box.right + NAME_REACH &&
+        y > box.top - NAME_REACH &&
+        y < box.bottom + NAME_REACH;
+      for (const letter of name.querySelectorAll<HTMLElement>('.name-letter')) {
+        if (!near) {
+          letter.style.removeProperty('font-weight');
+          continue;
+        }
+        const r = letter.getBoundingClientRect();
+        const distance = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2));
+        const t = Math.max(0, 1 - distance / NAME_REACH);
+        const eased = t * t * (3 - 2 * t);
+        letter.style.fontWeight = String(
+          Math.round(NAME_LIGHT + (NAME_HEAVY - NAME_LIGHT) * eased),
+        );
+      }
+    });
+  }
+
+  protected restName(): void {
+    for (const letter of this.nameRef()?.nativeElement.querySelectorAll<HTMLElement>(
+      '.name-letter',
+    ) ?? []) {
+      letter.style.removeProperty('font-weight');
+    }
   }
 
   protected jump(): void {

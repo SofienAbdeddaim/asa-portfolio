@@ -1,6 +1,6 @@
 # 20. Visual identity: "Quiet editorial" with one orchestrated entrance
 
-Status: accepted (supersedes the look, fonts and motion of ADR 12, and ADR 13, whose playground is removed; the RTL, accessibility and logical-property rules of ADR 11 and 12 still apply)
+Status: accepted, motion budget extended by ADR 23 (supersedes the look, fonts and motion of ADR 12, and ADR 13, whose playground is removed; the RTL, accessibility and logical-property rules of ADR 11 and 12 still apply)
 
 ## Context
 

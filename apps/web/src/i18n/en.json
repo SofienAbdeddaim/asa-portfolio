@@ -40,7 +40,10 @@
     "placeholder": "Type a command or search…",
     "empty": "No matching command",
     "hint": "↑ ↓ to navigate, Enter to select, Esc to close",
-    "results": "{{count}} results"
+    "results": "{{count}} results",
+    "tip": "Tip: type help",
+    "terminal": "Terminal",
+    "terminalLabel": "Terminal output"
   },
   "commands": {
     "group": {
@@ -164,5 +167,38 @@
     "projects": "Selected projects",
     "contact": "Contact",
     "present": "Present"
+  },
+  "terminal": {
+    "group": "Terminal",
+    "help": {
+      "help": "list the commands",
+      "whoami": "who's behind this site",
+      "stack": "what I know best",
+      "gitLog": "my career, as commits",
+      "uptime": "how long I've been coding",
+      "projects": "my side projects",
+      "hire": "the right command",
+      "clear": "clear the screen",
+      "exit": "close the terminal"
+    },
+    "hiddenHint": "…and a few hidden ones.",
+    "notFound": "command not found: {{command}}. Try",
+    "empty": "(nothing published yet)",
+    "stackMore": "→ the full list is in the Skills section",
+    "hire": {
+      "password": "[sudo] password for recruiter: ********",
+      "granted": "access granted.",
+      "next": "Heading to the contact form…"
+    },
+    "eggs": {
+      "rm": "Nice try. main only accepts pull requests.",
+      "coffee": "418: I'm a teapot.",
+      "vim": "To quit: :q (we feel you).",
+      "ngServe": "✔ Compiled. This site is already running, you're on it."
+    }
+  },
+  "console": {
+    "hello": "Reading the console? We should talk.",
+    "hint": "Open the palette (Ctrl+K or ⌘K) and type help."
   }
 }

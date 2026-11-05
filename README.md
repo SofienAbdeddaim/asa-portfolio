@@ -32,7 +32,7 @@ The screenshots show the clearly fake demo content that ships with the repositor
 ## Features
 
 - **Three languages, one design.** Every text exists in French, English and Arabic (English is the fallback). Arabic is not a translation of the layout: it mirrors it, including drawn lines, arrows and icons, through logical CSS properties only (a lint rule forbids `left` and `right`).
-- **A calm, editorial identity** (neutral paper, one accent, hairlines) with one orchestrated entrance and quiet scroll and hover details that respect `prefers-reduced-motion`, a Ctrl+K command palette, and a light and dark theme.
+- **A calm, editorial identity** (neutral paper, one accent, hairlines) with one orchestrated entrance and quiet scroll and hover details that respect `prefers-reduced-motion`, a Ctrl+K command palette with a hidden terminal, and a light and dark theme.
 - **Private back-office** at `/admin`: mandatory two-factor sign-in, a generic editor for every kind of content with per-language fields and translation-completeness hints, drafts, drag or keyboard reordering, secure image upload, and a Markdown editor with sanitized preview.
 - **Blog and CV.** Markdown posts, and a print-ready CV per language (browser print-to-PDF), all pre-rendered.
 - **Works while the API sleeps.** The site is static and built from a snapshot of the published content, then refreshes itself from the API when it is awake.

@@ -14,6 +14,7 @@ Status legend: [x] done, [~] in progress, [ ] todo.
 ## After the phases
 
 - [x] Sections with no published content (and the blog without posts) are hidden from the menu, the palette and the sitemaps (ADR 22)
+- [x] A hidden terminal in the command palette (answers computed from the content) and a hero name that reacts to the pointer (ADR 23)
 
 ## Decisions pending
 

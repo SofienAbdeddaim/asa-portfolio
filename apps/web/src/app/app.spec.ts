@@ -245,6 +245,103 @@ describe('shell', () => {
     expect(commands.open()).toBe(false);
   });
 
+  it('turns into a terminal for developer commands, with history and completion', async () => {
+    vi.useFakeTimers();
+    try {
+      const { fixture, el } = await setup('/en');
+      TestBed.inject(CommandService).show();
+      fixture.detectChanges();
+      const input = el.querySelector<HTMLInputElement>('dialog input')!;
+      const type = (value: string) => {
+        input.value = value;
+        input.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+      };
+      const press = (key: string) => {
+        input.dispatchEvent(new KeyboardEvent('keydown', { key, cancelable: true }));
+        fixture.detectChanges();
+      };
+
+      // Typing a command offers it in the list; a full command puts the prompt in front.
+      type('who');
+      expect(el.querySelector('#command-shell-whoami')?.textContent).toContain('whoami');
+      type('whoami');
+      expect(el.querySelector('dialog')?.textContent).toContain('alex@asa:~$');
+
+      press('Enter');
+      vi.runAllTimers();
+      fixture.detectChanges();
+      const log = el.querySelector('#palette-log')!;
+      expect(log.getAttribute('role')).toBe('log');
+      expect(log.textContent).toContain('Alex Placeholder');
+      expect(el.querySelector('#palette-list')).toBeNull();
+      expect(input.getAttribute('role')).toBeNull();
+
+      type('git');
+      press('Tab');
+      expect(input.value).toBe('git log --oneline');
+      press('Enter');
+      vi.runAllTimers();
+      fixture.detectChanges();
+      expect(log.textContent).toContain('feat(example-corp): Lead Engineer');
+
+      press('ArrowUp');
+      expect(input.value).toBe('git log --oneline');
+      press('ArrowUp');
+      expect(input.value).toBe('whoami');
+
+      type('clear');
+      press('Enter');
+      expect(el.querySelector('#palette-log')?.textContent?.trim()).toBe('');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('runs sudo hire straight from the search and lands on the contact section', async () => {
+    vi.useFakeTimers();
+    try {
+      const { fixture, el } = await setup('/en');
+      const commands = TestBed.inject(CommandService);
+      const contact = document.getElementById('contact')!;
+      const spy = vi.spyOn(contact, 'scrollIntoView');
+      commands.show();
+      fixture.detectChanges();
+      const input = el.querySelector<HTMLInputElement>('dialog input')!;
+      input.value = 'sudo hire alex';
+      input.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', cancelable: true }));
+      fixture.detectChanges();
+      vi.advanceTimersByTime(200);
+      fixture.detectChanges();
+      expect(el.querySelector('#palette-log')?.textContent).toContain('access granted.');
+      expect(commands.open()).toBe(true);
+      vi.runAllTimers();
+      fixture.detectChanges();
+      expect(commands.open()).toBe(false);
+      expect(spy).toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('closes from the exit command and starts fresh next time', async () => {
+    const { fixture, el } = await setup('/en');
+    const commands = TestBed.inject(CommandService);
+    commands.show();
+    fixture.detectChanges();
+    const input = el.querySelector<HTMLInputElement>('dialog input')!;
+    input.value = 'exit';
+    input.dispatchEvent(new Event('input'));
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', cancelable: true }));
+    fixture.detectChanges();
+    expect(commands.open()).toBe(false);
+    commands.show();
+    fixture.detectChanges();
+    expect(el.querySelector('#palette-list')).not.toBeNull();
+  });
+
   it('cycles the theme from the toggle', async () => {
     const { fixture, el } = await setup('/en');
     const button = el.querySelector<HTMLButtonElement>('app-theme-toggle button')!;
