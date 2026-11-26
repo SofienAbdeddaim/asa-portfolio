@@ -20,7 +20,9 @@ export type IconName =
   | 'star'
   | 'quote'
   | 'code'
-  | 'pin';
+  | 'pin'
+  | 'pause'
+  | 'play';
 
 /**
  * Decorative inline icons (24px grid, stroke follows `currentColor`). Pass `mirror` for icons
@@ -54,6 +56,12 @@ export type IconName =
           <path
             d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
           />
+        }
+        @case ('pause') {
+          <path d="M9 5v14M15 5v14" />
+        }
+        @case ('play') {
+          <path d="M7 5v14l11-7Z" />
         }
         @case ('moon') {
           <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />

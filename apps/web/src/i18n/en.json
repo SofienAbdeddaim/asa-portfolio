@@ -118,6 +118,12 @@
       "live": "Live",
       "in-development": "In development",
       "pre-alpha": "Pre-alpha"
+    },
+    "gallery": {
+      "label": "Screenshots of {{name}}",
+      "pause": "Pause the slideshow",
+      "play": "Play the slideshow",
+      "show": "Screenshot {{index}} of {{total}}"
     }
   },
   "kind": {
