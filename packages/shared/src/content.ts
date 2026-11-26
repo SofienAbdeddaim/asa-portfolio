@@ -44,6 +44,9 @@ export interface Skill extends Entry {
   items: { name: string; level: 1 | 2 | 3 | 4 | 5 }[];
 }
 
+/** Where a project stands, shown as a badge. */
+export type ProjectStatus = 'live' | 'in-development' | 'pre-alpha';
+
 export interface Project extends Entry {
   slug: string;
   title: LocalizedString;
@@ -54,6 +57,9 @@ export interface Project extends Entry {
   demoUrl?: string;
   images: { url: string; alt?: LocalizedString }[];
   featured: boolean;
+  status?: ProjectStatus;
+  /** Work done for a client or an employer, shown apart from personal projects. */
+  professional: boolean;
 }
 
 export interface Education extends Entry {

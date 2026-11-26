@@ -96,6 +96,8 @@ export const projectSchema = build({
   demoUrl: String,
   images: [new Schema({ url: { type: String, required: true }, alt: localized() }, { _id: false })],
   featured: { type: Boolean, default: false },
+  status: String,
+  professional: { type: Boolean, default: false },
 });
 
 export const educationSchema = build({

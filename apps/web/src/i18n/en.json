@@ -109,9 +109,16 @@
     "title": "Projects",
     "featured": "Featured",
     "code": "Code",
-    "demo": "Live demo",
+    "demo": "Visit the site",
     "codeFor": "Source code of {{name}}",
-    "demoFor": "Live demo of {{name}}"
+    "demoFor": "Website of {{name}}",
+    "professional": "Professional project",
+    "privateCode": "Client project: code not public",
+    "status": {
+      "live": "Live",
+      "in-development": "In development",
+      "pre-alpha": "Pre-alpha"
+    }
   },
   "kind": {
     "title": "Recommendations"

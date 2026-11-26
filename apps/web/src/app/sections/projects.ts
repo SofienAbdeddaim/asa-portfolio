@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { Locale, Project } from '@asa/shared';
 import { LocalizedPipe } from '../core/localized.pipe';
@@ -17,7 +17,7 @@ import { Icon } from '../shared/ui/icon';
         </h2>
 
         <div class="grid gap-6 md:grid-cols-2">
-          @for (project of projects(); track project.id; let i = $index) {
+          @for (project of ordered(); track project.id; let i = $index) {
             <article
               [appReveal]="(i % 2) * 100"
               class="card card-hover flex flex-col overflow-hidden"
@@ -34,8 +34,20 @@ import { Icon } from '../shared/ui/icon';
               }
 
               <div class="flex flex-1 flex-col p-6 sm:p-8">
-                @if (project.featured) {
-                  <p class="eyebrow mb-3 text-accent">{{ 'projects.featured' | transloco }}</p>
+                @if (project.featured || project.professional || project.status) {
+                  <div class="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                    @if (project.featured) {
+                      <p class="eyebrow text-accent">{{ 'projects.featured' | transloco }}</p>
+                    }
+                    @if (project.professional) {
+                      <p class="eyebrow">{{ 'projects.professional' | transloco }}</p>
+                    }
+                    @if (project.status; as status) {
+                      <span class="chip" [class.text-accent]="status === 'live'">
+                        {{ 'projects.status.' + status | transloco }}
+                      </span>
+                    }
+                  </div>
                 }
                 <h3 class="text-2xl">{{ project.title | localized: locale() }}</h3>
                 <p class="mt-3 text-muted">{{ project.summary | localized: locale() }}</p>
@@ -48,7 +60,7 @@ import { Icon } from '../shared/ui/icon';
                   </ul>
                 }
 
-                <div class="mt-auto flex flex-wrap gap-3 pt-6">
+                <div class="mt-auto flex flex-wrap items-center gap-3 pt-6">
                   @if (project.repoUrl; as url) {
                     <a
                       class="btn min-h-11 text-sm"
@@ -85,6 +97,9 @@ import { Icon } from '../shared/ui/icon';
                       <app-icon name="external" />
                     </a>
                   }
+                  @if (project.professional && !project.repoUrl) {
+                    <p class="text-sm text-muted">{{ 'projects.privateCode' | transloco }}</p>
+                  }
                 </div>
               </div>
             </article>
@@ -97,4 +112,10 @@ import { Icon } from '../shared/ui/icon';
 export class Projects {
   readonly projects = input.required<readonly Project[]>();
   readonly locale = input.required<Locale>();
+
+  /** Personal projects first, then professional ones, each in the back-office order. */
+  protected readonly ordered = computed(() => [
+    ...this.projects().filter((p) => !p.professional),
+    ...this.projects().filter((p) => p.professional),
+  ]);
 }
