@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.6.0...v1.7.0) (2026-11-26)
+
+
+### Features
+
+* **web:** auto-playing screenshot gallery on project cards ([#40](https://github.com/SofienAbdeddaim/asa-portfolio/issues/40)) ([93ada94](https://github.com/SofienAbdeddaim/asa-portfolio/commit/93ada948f529657763431299ebf47fe2326b8981))
+
 ## [1.6.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.5.0...v1.6.0) (2026-11-26)
 
 
