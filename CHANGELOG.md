@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.5.0...v1.6.0) (2026-11-26)
+
+
+### Features
+
+* **projects:** status badge, professional label and per-language screenshots ([#38](https://github.com/SofienAbdeddaim/asa-portfolio/issues/38)) ([53c9a49](https://github.com/SofienAbdeddaim/asa-portfolio/commit/53c9a49a74ae9ffde70a2a36cce4ea39739435b9))
+
 ## [1.5.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.4.0...v1.5.0) (2026-11-06)
 
 
