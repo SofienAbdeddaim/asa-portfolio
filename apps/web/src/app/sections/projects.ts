@@ -23,7 +23,7 @@ import { Icon } from '../shared/ui/icon';
               class="card card-hover flex flex-col overflow-hidden"
               [class.md:col-span-2]="project.featured && i === 0"
             >
-              @if (project.images[0]; as image) {
+              @if (imageFor(project); as image) {
                 <img
                   class="aspect-video w-full border-b border-line object-cover"
                   [src]="image.url"
@@ -112,6 +112,16 @@ import { Icon } from '../shared/ui/icon';
 export class Projects {
   readonly projects = input.required<readonly Project[]>();
   readonly locale = input.required<Locale>();
+
+  /** The screenshot made for this language, else one meant for every language, else the first. */
+  protected imageFor(project: Project): Project['images'][number] | undefined {
+    const locale = this.locale();
+    return (
+      project.images.find((image) => image.locale === locale) ??
+      project.images.find((image) => !image.locale) ??
+      project.images[0]
+    );
+  }
 
   /** Personal projects first, then professional ones, each in the back-office order. */
   protected readonly ordered = computed(() => [

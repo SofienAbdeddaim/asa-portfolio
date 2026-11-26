@@ -11,6 +11,7 @@ The Projects section was meant for personal projects only, so it would not repea
 - **`status` (optional): `live`, `in-development` or `pre-alpha`.** Shown as a chip on the card (the live one in the accent color, no new colors). Left empty, no badge is shown.
 - **`professional` (boolean, default `false`).** A professional project gets a "Professional project" label and is listed after every personal project, whatever its back-office order; personal and professional projects keep the back-office order among themselves. Without a code link it says the code is not public, so a missing link does not read as an omission.
 - **The live link reads "Visit the site".** `demoUrl` now points to real sites more than to demos, so the button and its accessible name say so in the three languages.
+- **A screenshot can belong to one language.** An image with a `locale` is shown on that language's page; the card otherwise shows an image meant for every language (or the first one). This lets a bilingual product show its English screens on the French and English pages and its Arabic screens on the Arabic page.
 - **Screenshots of personal projects ship as static files** in `apps/web/public/projects/` (WebP, 1280×720) and are referenced by path from the project entry. Uploads through the back-office (GridFS) still work for images that should not live in the public repository.
 
 ## Consequences

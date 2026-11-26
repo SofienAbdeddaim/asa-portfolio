@@ -125,6 +125,16 @@ describe('content controllers', () => {
       .send({ ...valid, status: 'abandoned' })
       .expect(400);
     await http()
+      .post('/api/admin/projects')
+      .set('Cookie', adminCookie)
+      .send({ ...valid, images: [{ url: '/a.webp', locale: 'ar' }] })
+      .expect(201);
+    await http()
+      .post('/api/admin/projects')
+      .set('Cookie', adminCookie)
+      .send({ ...valid, images: [{ url: '/a.webp', locale: 'de' }] })
+      .expect(400);
+    await http()
       .patch(`/api/admin/projects/${ID}`)
       .set('Cookie', adminCookie)
       .send({ status: null })

@@ -94,7 +94,12 @@ export const projectSchema = build({
   technologies: [String],
   repoUrl: String,
   demoUrl: String,
-  images: [new Schema({ url: { type: String, required: true }, alt: localized() }, { _id: false })],
+  images: [
+    new Schema(
+      { url: { type: String, required: true }, alt: localized(), locale: String },
+      { _id: false },
+    ),
+  ],
   featured: { type: Boolean, default: false },
   status: String,
   professional: { type: Boolean, default: false },

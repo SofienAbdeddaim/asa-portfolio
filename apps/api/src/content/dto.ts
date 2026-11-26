@@ -18,6 +18,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { LOCALES } from '@asa/shared';
 import { IsLocalized, MAX_LONG, MAX_MARKDOWN, MAX_SHORT } from '../common/localized.js';
 
 const URL_OPTIONS = { protocols: ['http', 'https'], require_protocol: true };
@@ -188,6 +189,9 @@ export class ProjectImageDto {
 
   @OptionalLocalized()
   alt?: Record<string, string>;
+
+  @apply(ApiPropertyOptional({ enum: LOCALES, type: String }), IsOptional(), IsEnum(LOCALES))
+  locale?: (typeof LOCALES)[number];
 }
 
 export class ProjectDto {
