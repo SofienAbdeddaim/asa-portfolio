@@ -112,6 +112,35 @@ describe('content controllers', () => {
       .expect(400);
   });
 
+  it('accepts a known project status and the professional flag, and rejects other statuses', async () => {
+    const valid = { slug: 'p', title: { en: 'T' }, summary: { en: 'S' } };
+    await http()
+      .post('/api/admin/projects')
+      .set('Cookie', adminCookie)
+      .send({ ...valid, status: 'in-development', professional: true })
+      .expect(201);
+    await http()
+      .post('/api/admin/projects')
+      .set('Cookie', adminCookie)
+      .send({ ...valid, status: 'abandoned' })
+      .expect(400);
+    await http()
+      .post('/api/admin/projects')
+      .set('Cookie', adminCookie)
+      .send({ ...valid, images: [{ url: '/a.webp', locale: 'ar' }] })
+      .expect(201);
+    await http()
+      .post('/api/admin/projects')
+      .set('Cookie', adminCookie)
+      .send({ ...valid, images: [{ url: '/a.webp', locale: 'de' }] })
+      .expect(400);
+    await http()
+      .patch(`/api/admin/projects/${ID}`)
+      .set('Cookie', adminCookie)
+      .send({ status: null })
+      .expect(200);
+  });
+
   it('allows partial updates but still validates what is sent', async () => {
     await http()
       .patch(`/api/admin/projects/${ID}`)

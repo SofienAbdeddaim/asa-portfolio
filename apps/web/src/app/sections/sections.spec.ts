@@ -147,6 +147,84 @@ describe('home page sections', () => {
     }
     expect(el.querySelector('#projects img')?.getAttribute('alt')).toBe('A screenshot');
     expect(el.querySelector('#projects')?.textContent).toContain('Featured');
+    expect(el.querySelector('#projects .chip.text-accent')?.textContent?.trim()).toBe('Live');
+    expect(links[1]?.textContent).toContain('Visit the site');
+  });
+
+  it('projects: professional projects come last, labelled, with a note when the code is private', async () => {
+    const [first, second] = CONTENT_FIXTURE.projects;
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(routes),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideI18n(),
+      ],
+    });
+    TestBed.inject(ContentStore).seed({
+      ...CONTENT_FIXTURE,
+      projects: [
+        {
+          ...first!,
+          id: 'pro',
+          slug: 'pro',
+          title: { en: 'Client platform' },
+          repoUrl: undefined,
+          demoUrl: undefined,
+          featured: false,
+          status: 'in-development',
+          professional: true,
+        },
+        second!,
+      ],
+    });
+    await TestBed.inject(LocaleService).activate('en');
+    const fixture = TestBed.createComponent(HomePage);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    const cards = [...el.querySelectorAll('#projects article')];
+    expect(cards.map((c) => c.querySelector('h3')?.textContent?.trim())).toEqual([
+      'Second project',
+      'Client platform',
+    ]);
+    expect(cards[1]?.textContent).toContain('Professional project');
+    expect(cards[1]?.textContent).toContain('In development');
+    expect(cards[1]?.textContent).toContain('Client project: code not public');
+    expect(cards[0]?.textContent).not.toContain('Professional project');
+  });
+
+  it('projects: each language shows its own screenshot when there is one', async () => {
+    const shots = [
+      { url: '/en.webp', alt: { en: 'English version' } },
+      { url: '/ar.webp', alt: { en: 'Arabic version' }, locale: 'ar' as const },
+    ];
+    const pages: Record<string, string | null | undefined> = {};
+    for (const locale of ['en', 'ar'] as const) {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(routes),
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          provideI18n(),
+        ],
+      });
+      TestBed.inject(ContentStore).seed({
+        ...CONTENT_FIXTURE,
+        projects: [{ ...CONTENT_FIXTURE.projects[0]!, images: shots }],
+      });
+      await TestBed.inject(LocaleService).activate(locale);
+      const fixture = TestBed.createComponent(HomePage);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      pages[locale] = (fixture.nativeElement as HTMLElement)
+        .querySelector('#projects img')
+        ?.getAttribute('src');
+    }
+    expect(pages).toEqual({ en: '/en.webp', ar: '/ar.webp' });
   });
 
   it('contact: mailto link, social links and copy-to-clipboard feedback', async () => {

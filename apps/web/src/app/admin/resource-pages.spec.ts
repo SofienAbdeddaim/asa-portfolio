@@ -267,6 +267,7 @@ describe('ResourceEditPage', () => {
       technologies: ['Angular', 'NestJS'],
       images: [],
       featured: false,
+      professional: false,
       published: false,
     });
     expect(navigate).toHaveBeenCalledWith(['/admin', 'projects']);

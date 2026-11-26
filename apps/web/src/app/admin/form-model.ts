@@ -61,6 +61,7 @@ export const newImage = (): FormGroup =>
       validators: [Validators.required, Validators.maxLength(500)],
     }),
     alt: localizedGroup({ maxLength: 500 }),
+    locale: new FormControl('', { nonNullable: true }),
   });
 
 export const newSocial = (): FormGroup =>
@@ -156,7 +157,11 @@ export function patchForm(form: FormGroup, fields: readonly FieldDef[], entity: 
           control.push(group);
         } else if (field.type === 'images') {
           const group = newImage();
-          group.patchValue({ url: asString(row['url']), alt: localizedValue(row['alt']) });
+          group.patchValue({
+            url: asString(row['url']),
+            alt: localizedValue(row['alt']),
+            locale: asString(row['locale']),
+          });
           control.push(group);
         } else {
           const group = newSocial();
@@ -244,7 +249,12 @@ export function toPayload(
     } else if (field.type === 'images') {
       value = (raw as Entity[]).map((row) => {
         const alt = cleanLocalized(asRecord(row['alt']));
-        return { url: asString(row['url']).trim(), ...(alt ? { alt } : {}) };
+        const locale = asString(row['locale']);
+        return {
+          url: asString(row['url']).trim(),
+          ...(alt ? { alt } : {}),
+          ...(locale ? { locale } : {}),
+        };
       });
     } else if (field.type === 'socials') {
       value = (raw as Entity[]).map((row) => ({

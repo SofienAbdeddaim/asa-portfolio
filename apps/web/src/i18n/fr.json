@@ -109,9 +109,16 @@
     "title": "Projets",
     "featured": "À la une",
     "code": "Code",
-    "demo": "Démo en ligne",
+    "demo": "Voir le site",
     "codeFor": "Code source de {{name}}",
-    "demoFor": "Démo en ligne de {{name}}"
+    "demoFor": "Site de {{name}}",
+    "professional": "Projet professionnel",
+    "privateCode": "Projet client : code non public",
+    "status": {
+      "live": "En ligne",
+      "in-development": "En développement",
+      "pre-alpha": "Pré-alpha"
+    }
   },
   "kind": {
     "title": "Recommandations"

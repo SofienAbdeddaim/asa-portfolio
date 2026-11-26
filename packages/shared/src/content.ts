@@ -1,3 +1,4 @@
+import type { Locale } from './locales.js';
 import type { LocalizedString } from './localized.js';
 
 /** Shapes returned by the public API. Dates are ISO strings. */
@@ -44,6 +45,9 @@ export interface Skill extends Entry {
   items: { name: string; level: 1 | 2 | 3 | 4 | 5 }[];
 }
 
+/** Where a project stands, shown as a badge. */
+export type ProjectStatus = 'live' | 'in-development' | 'pre-alpha';
+
 export interface Project extends Entry {
   slug: string;
   title: LocalizedString;
@@ -52,8 +56,12 @@ export interface Project extends Entry {
   technologies: string[];
   repoUrl?: string;
   demoUrl?: string;
-  images: { url: string; alt?: LocalizedString }[];
+  /** An image with a `locale` is shown on that language's page; others are shown everywhere. */
+  images: { url: string; alt?: LocalizedString; locale?: Locale }[];
   featured: boolean;
+  status?: ProjectStatus;
+  /** Work done for a client or an employer, shown apart from personal projects. */
+  professional: boolean;
 }
 
 export interface Education extends Entry {

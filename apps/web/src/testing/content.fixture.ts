@@ -67,6 +67,8 @@ export const CONTENT_FIXTURE: ContentSnapshot = {
       demoUrl: 'https://example.com/demo',
       images: [],
       featured: true,
+      status: 'live',
+      professional: false,
     },
     {
       ...meta('proj-2', 1),
@@ -76,6 +78,7 @@ export const CONTENT_FIXTURE: ContentSnapshot = {
       technologies: [],
       images: [{ url: '/shot.png', alt: { en: 'A screenshot' } }],
       featured: false,
+      professional: false,
     },
   ],
   education: [

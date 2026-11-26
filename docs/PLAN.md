@@ -15,6 +15,7 @@ Status legend: [x] done, [~] in progress, [ ] todo.
 
 - [x] Sections with no published content (and the blog without posts) are hidden from the menu, the palette and the sitemaps (ADR 22)
 - [x] A hidden terminal in the command palette (answers computed from the content) and a hero name that reacts to the pointer (ADR 23)
+- [x] Projects get a status badge (live, in development, pre-alpha) and an optional professional label; professional projects are listed last (ADR 24)
 
 ## Decisions pending
 

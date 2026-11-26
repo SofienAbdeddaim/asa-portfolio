@@ -153,6 +153,20 @@ export class ItemsField extends RowsBase {
               [field]="altField"
               [idPrefix]="'shot-' + i + '-'"
             />
+            <div>
+              <label class="a-help mt-0! block font-semibold" [for]="'shot-' + i + '-locale'"
+                >Shown on</label
+              >
+              <select
+                class="a-input"
+                [id]="'shot-' + i + '-locale'"
+                [formControl]="controlAt(row, 'locale')"
+              >
+                @for (option of localeOptions; track option[0]) {
+                  <option [value]="option[0]">{{ option[1] }}</option>
+                }
+              </select>
+            </div>
             <div class="flex flex-wrap gap-2">
               <button
                 type="button"
@@ -197,6 +211,12 @@ export class ImagesField extends RowsBase {
     type: 'localized',
     maxLength: 500,
   };
+  protected readonly localeOptions: readonly (readonly [string, string])[] = [
+    ['', 'Every language'],
+    ['fr', 'French page only'],
+    ['en', 'English page only'],
+    ['ar', 'Arabic page only'],
+  ];
   protected override newRow(): FormGroup {
     return newImage();
   }

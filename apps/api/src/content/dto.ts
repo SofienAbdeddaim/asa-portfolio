@@ -18,6 +18,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { LOCALES } from '@asa/shared';
 import { IsLocalized, MAX_LONG, MAX_MARKDOWN, MAX_SHORT } from '../common/localized.js';
 
 const URL_OPTIONS = { protocols: ['http', 'https'], require_protocol: true };
@@ -65,6 +66,7 @@ const Published = (): Decorator =>
 
 export const AVAILABILITY = ['open', 'limited', 'closed'] as const;
 export const SOCIAL_KINDS = ['github', 'linkedin', 'x', 'website', 'other'] as const;
+export const PROJECT_STATUSES = ['live', 'in-development', 'pre-alpha'] as const;
 
 export class AvailabilityDto {
   @ApiProperty({ enum: AVAILABILITY, type: String })
@@ -187,6 +189,9 @@ export class ProjectImageDto {
 
   @OptionalLocalized()
   alt?: Record<string, string>;
+
+  @apply(ApiPropertyOptional({ enum: LOCALES, type: String }), IsOptional(), IsEnum(LOCALES))
+  locale?: (typeof LOCALES)[number];
 }
 
 export class ProjectDto {
@@ -224,6 +229,16 @@ export class ProjectDto {
 
   @apply(ApiPropertyOptional({ type: Boolean }), IsOptional(), IsBoolean())
   featured?: boolean;
+
+  @apply(
+    ApiPropertyOptional({ enum: PROJECT_STATUSES, type: String }),
+    IsOptional(),
+    IsEnum(PROJECT_STATUSES),
+  )
+  status?: (typeof PROJECT_STATUSES)[number];
+
+  @apply(ApiPropertyOptional({ type: Boolean }), IsOptional(), IsBoolean())
+  professional?: boolean;
 
   @Published()
   published?: boolean;
