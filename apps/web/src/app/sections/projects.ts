@@ -4,11 +4,12 @@ import type { Locale, Project } from '@asa/shared';
 import { LocalizedPipe } from '../core/localized.pipe';
 import { Reveal } from '../core/reveal.directive';
 import { Icon } from '../shared/ui/icon';
+import { ProjectGallery } from './project-gallery';
 
 @Component({
   selector: 'app-projects',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslocoPipe, LocalizedPipe, Reveal, Icon],
+  imports: [TranslocoPipe, LocalizedPipe, Reveal, Icon, ProjectGallery],
   template: `
     <section id="projects" class="section" aria-labelledby="projects-title">
       <div class="container-page section-grid">
@@ -23,14 +24,17 @@ import { Icon } from '../shared/ui/icon';
               class="card card-hover flex flex-col overflow-hidden"
               [class.md:col-span-2]="project.featured && i === 0"
             >
-              @if (imageFor(project); as image) {
-                <img
-                  class="aspect-video w-full border-b border-line object-cover"
-                  [src]="image.url"
-                  [alt]="image.alt | localized: locale()"
-                  loading="lazy"
-                  decoding="async"
-                />
+              @if (imagesFor(project); as images) {
+                @if (images.length) {
+                  <app-project-gallery
+                    [images]="images"
+                    [locale]="locale()"
+                    [label]="
+                      'projects.gallery.label'
+                        | transloco: { name: (project.title | localized: locale()) }
+                    "
+                  />
+                }
               }
 
               <div class="flex flex-1 flex-col p-6 sm:p-8">
@@ -113,14 +117,16 @@ export class Projects {
   readonly projects = input.required<readonly Project[]>();
   readonly locale = input.required<Locale>();
 
-  /** The screenshot made for this language, else one meant for every language, else the first. */
-  protected imageFor(project: Project): Project['images'][number] | undefined {
+  /**
+   * Screenshots for this language: the ones made for it first, then the ones meant for every
+   * language. Screenshots made for another language are left out, unless nothing else exists.
+   */
+  protected imagesFor(project: Project): Project['images'] {
     const locale = this.locale();
-    return (
-      project.images.find((image) => image.locale === locale) ??
-      project.images.find((image) => !image.locale) ??
-      project.images[0]
-    );
+    const own = project.images.filter((image) => image.locale === locale);
+    const shared = project.images.filter((image) => !image.locale);
+    const chosen = [...own, ...shared];
+    return chosen.length ? chosen : project.images;
   }
 
   /** Personal projects first, then professional ones, each in the back-office order. */

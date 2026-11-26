@@ -212,6 +212,65 @@
       box-shadow 0.3s var(--ease);
   }
 
+  /* Project screenshots: stacked, the active one shown. Without JS the first one shows. */
+  .gallery-slide {
+    opacity: 0;
+  }
+
+  .gallery-slide.is-active {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .gallery-slide {
+      transition: opacity 0.6s var(--ease);
+    }
+  }
+
+  .gallery-controls {
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    border: 1px solid var(--line);
+    color: var(--fg);
+  }
+
+  .gallery-control {
+    display: inline-flex;
+    width: 1.75rem;
+    height: 1.75rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+  }
+
+  .gallery-dot {
+    position: relative;
+    width: 1.5rem;
+    height: 1.75rem;
+  }
+
+  .gallery-dot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin: auto;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--fg) 35%, transparent);
+    transition: width 0.3s var(--ease);
+  }
+
+  .gallery-dot[aria-current='true']::after {
+    width: 1rem;
+    background: var(--accent);
+  }
+
+  .gallery-control:focus-visible,
+  .gallery-dot:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
   .card-hover:hover,
   .card-hover:focus-within {
     border-color: color-mix(in srgb, var(--ink) 35%, var(--line));

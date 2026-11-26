@@ -118,6 +118,12 @@
       "live": "En ligne",
       "in-development": "En développement",
       "pre-alpha": "Pré-alpha"
+    },
+    "gallery": {
+      "label": "Captures de {{name}}",
+      "pause": "Mettre le défilement en pause",
+      "play": "Reprendre le défilement",
+      "show": "Capture {{index}} sur {{total}}"
     }
   },
   "kind": {
