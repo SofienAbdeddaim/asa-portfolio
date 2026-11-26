@@ -17,12 +17,11 @@ import { ProjectGallery } from './project-gallery';
           {{ 'projects.title' | transloco }}
         </h2>
 
-        <div class="grid gap-6 md:grid-cols-2">
+        <div class="grid gap-6">
           @for (project of ordered(); track project.id; let i = $index) {
             <article
               [appReveal]="(i % 2) * 100"
               class="card card-hover flex flex-col overflow-hidden"
-              [class.md:col-span-2]="project.featured && i === 0"
             >
               @if (imagesFor(project); as images) {
                 @if (images.length) {

@@ -223,7 +223,7 @@
 
   @media (prefers-reduced-motion: no-preference) {
     .gallery-slide {
-      transition: opacity 0.6s var(--ease);
+      transition: opacity 0.3s var(--ease);
     }
   }
 

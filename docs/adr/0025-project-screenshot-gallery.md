@@ -8,7 +8,7 @@ Each project card showed one screenshot. The owner wants several per project, sh
 
 ## Decisions
 
-- **One `app-project-gallery` per card.** The screenshots for the page's language (its own ones first, then the ones meant for every language) are stacked in the 16:9 frame and cross-fade every 4.5 seconds.
+- **One `app-project-gallery` per card.** The screenshots for the page's language (its own ones first, then the ones meant for every language) are stacked in the 16:9 frame and cross-fade every second (first 4.5 seconds; the owner asked for a faster pace on 2026-11-26).
 - **It only moves when it should.** It plays while it is on screen (IntersectionObserver) and the tab is visible, and stops while the pointer or the keyboard focus is on it. A pause button stops it for good, as do the dots (they jump to a screenshot). Under `prefers-reduced-motion` it never moves by itself and the slides switch without a fade. Without IntersectionObserver or JavaScript it stays on the first screenshot.
 - **Accessible as a carousel.** The frame is a labelled group (`aria-roledescription="carousel"`), the hidden slides are `aria-hidden`, the dots say "Screenshot n of total" and mark the current one, and the position is announced only once the viewer has taken control.
 - **One timer at a time**, armed only while playing, so nothing ticks off screen and tests with fake timers stay finite.
@@ -18,3 +18,7 @@ Each project card showed one screenshot. The owner wants several per project, sh
 
 - A project with one screenshot looks as before, with no controls.
 - Code links stay optional: leaving `repoUrl` empty removes the "Code" button, which the owner chose for every project.
+
+## Update (2026-11-26)
+
+Every project card now spans the full width, like the featured one, so each gallery shows large screenshots. The interval dropped to 1 second and the cross-fade to 0.3 seconds. The pause button, hover/focus stop and reduced-motion rule are unchanged, so the faster pace stays controllable.

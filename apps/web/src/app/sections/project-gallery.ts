@@ -24,7 +24,7 @@ export interface GalleryImage {
 }
 
 /** Time each screenshot stays on screen while the gallery plays. */
-export const GALLERY_INTERVAL_MS = 4500;
+export const GALLERY_INTERVAL_MS = 1000;
 
 /**
  * Screenshots of one project, one at a time. With several images it moves on by itself while it
