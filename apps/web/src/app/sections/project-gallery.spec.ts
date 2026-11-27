@@ -53,17 +53,16 @@ describe('ProjectGallery', () => {
     expect(el.querySelectorAll('.gallery-dot')).toHaveLength(3);
   });
 
-  it('moves on by itself, and stops while hovered or paused', async () => {
+  it('moves on by itself, even under the pointer, and stops when paused', async () => {
     const { fixture, el, active } = await render();
     vi.advanceTimersByTime(GALLERY_INTERVAL_MS);
     fixture.detectChanges();
     expect(active()).toBe('/two.webp');
 
     el.dispatchEvent(new Event('mouseenter'));
-    vi.advanceTimersByTime(GALLERY_INTERVAL_MS * 2);
+    vi.advanceTimersByTime(GALLERY_INTERVAL_MS);
     fixture.detectChanges();
-    expect(active()).toBe('/two.webp');
-    el.dispatchEvent(new Event('mouseleave'));
+    expect(active()).toBe('/three.webp');
 
     const pause = el.querySelector<HTMLButtonElement>('.gallery-control')!;
     expect(pause.getAttribute('aria-label')).toBe('Pause the slideshow');
@@ -71,8 +70,40 @@ describe('ProjectGallery', () => {
     fixture.detectChanges();
     vi.advanceTimersByTime(GALLERY_INTERVAL_MS * 2);
     fixture.detectChanges();
-    expect(active()).toBe('/two.webp');
+    expect(active()).toBe('/three.webp');
     expect(pause.getAttribute('aria-label')).toBe('Play the slideshow');
+  });
+
+  it('resumes from the play button even though the click left focus on it', async () => {
+    const { fixture, el, active } = await render();
+    const control = el.querySelector<HTMLButtonElement>('.gallery-control')!;
+    vi.spyOn(control, 'matches').mockReturnValue(false); // focus from a mouse click
+    control.click(); // pause
+    control.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    control.click(); // play
+    fixture.detectChanges();
+    vi.advanceTimersByTime(GALLERY_INTERVAL_MS);
+    fixture.detectChanges();
+    expect(active()).toBe('/two.webp');
+    expect(control.getAttribute('aria-label')).toBe('Pause the slideshow');
+  });
+
+  it('pauses when keyboard focus enters it, until the play button is pressed', async () => {
+    const { fixture, el, active } = await render();
+    const control = el.querySelector<HTMLButtonElement>('.gallery-control')!;
+    vi.spyOn(control, 'matches').mockReturnValue(true); // focus from the Tab key
+    control.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    fixture.detectChanges();
+    vi.advanceTimersByTime(GALLERY_INTERVAL_MS * 2);
+    fixture.detectChanges();
+    expect(active()).toBe('/one.webp');
+    expect(control.getAttribute('aria-label')).toBe('Play the slideshow');
+
+    control.click();
+    fixture.detectChanges();
+    vi.advanceTimersByTime(GALLERY_INTERVAL_MS);
+    fixture.detectChanges();
+    expect(active()).toBe('/two.webp');
   });
 
   it('jumps to a screenshot from its dot and stays there', async () => {
