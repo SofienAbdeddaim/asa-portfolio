@@ -28,9 +28,10 @@ export const GALLERY_INTERVAL_MS = 1000;
 
 /**
  * Screenshots of one project, one at a time. With several images it moves on by itself while it
- * is on screen, and stops while the pointer or the keyboard focus is on it, when the viewer
- * pauses it, or for good under `prefers-reduced-motion`. Dots pick a screenshot directly. On the
- * server and without JavaScript the first screenshot shows, and the others stay hidden.
+ * is on screen, including under the pointer. It pauses when the viewer presses pause or picks a
+ * screenshot from its dot, when keyboard focus enters it, and for good under
+ * `prefers-reduced-motion`; the play button resumes it. On the server and without JavaScript the
+ * first screenshot shows, and the others stay hidden.
  */
 @Component({
   selector: 'app-project-gallery',
@@ -41,10 +42,7 @@ export const GALLERY_INTERVAL_MS = 1000;
     role: 'group',
     'aria-roledescription': 'carousel',
     '[attr.aria-label]': 'label()',
-    '(mouseenter)': 'hovered.set(true)',
-    '(mouseleave)': 'hovered.set(false)',
-    '(focusin)': 'focused.set(true)',
-    '(focusout)': 'focused.set(false)',
+    '(focusin)': 'pauseOnKeyboardFocus($event)',
   },
   template: `
     @for (image of images(); track image.url; let i = $index) {
@@ -86,7 +84,7 @@ export const GALLERY_INTERVAL_MS = 1000;
         }
       </div>
       <p class="sr-only" aria-live="polite">
-        @if (paused() || focused()) {
+        @if (paused()) {
           {{ 'projects.gallery.show' | transloco: { index: index() + 1, total: images().length } }}
         }
       </p>
@@ -100,21 +98,12 @@ export class ProjectGallery {
 
   protected readonly index = signal(0);
   protected readonly paused = signal(false);
-  protected readonly hovered = signal(false);
-  protected readonly focused = signal(false);
   private readonly visible = signal(false);
   /** Re-arms the timer when a turn was skipped (tab in the background). */
   private readonly tick = signal(0);
 
   /** True while the gallery should move on by itself. */
-  readonly playing = computed(
-    () =>
-      this.images().length > 1 &&
-      this.visible() &&
-      !this.paused() &&
-      !this.hovered() &&
-      !this.focused(),
-  );
+  readonly playing = computed(() => this.images().length > 1 && this.visible() && !this.paused());
 
   private readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
@@ -153,7 +142,26 @@ export class ProjectGallery {
     this.paused.set(true);
   }
 
+  /**
+   * Keyboard users get a still gallery as soon as they tab into it (WAI-ARIA carousel pattern);
+   * it resumes only from the play button. A mouse click also focuses the button it hits, so focus
+   * alone must not pause, or the play button could never restart the gallery.
+   */
+  protected pauseOnKeyboardFocus(event: FocusEvent): void {
+    if (isKeyboardFocus(event.target)) this.paused.set(true);
+  }
+
   private next(): void {
     this.index.update((current) => (current + 1) % this.images().length);
+  }
+}
+
+/** Focus that came from the keyboard. Browsers without `:focus-visible` count every focus. */
+function isKeyboardFocus(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  try {
+    return target.matches(':focus-visible');
+  } catch {
+    return true;
   }
 }
