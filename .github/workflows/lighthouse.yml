@@ -1,18 +1,11 @@
-name: lighthouse
+name: 'Lighthouse · performance and accessibility'
+run-name: "Lighthouse · performance and accessibility · ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || github.event_name == 'schedule' && 'weekly' || github.ref_name }}"
 
 # Performance, accessibility, best-practice and SEO budgets (e2e/lighthouse-budgets.json),
 # measured on the built site served with production headers and compression.
+# Pull requests only: main receives nothing that was not measured on its pull request.
 on:
   pull_request:
-    paths:
-      - apps/web/**
-      - packages/shared/**
-      - e2e/lighthouse*
-      - e2e/serve.mjs
-      - scripts/**
-      - .github/workflows/lighthouse.yml
-  push:
-    branches: [main]
     paths:
       - apps/web/**
       - packages/shared/**

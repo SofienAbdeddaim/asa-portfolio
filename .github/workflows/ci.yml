@@ -1,4 +1,5 @@
-name: ci
+name: 'CI · lint, tests, build'
+run-name: "CI · lint, tests, build · ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || github.event_name == 'schedule' && 'weekly' || github.ref_name }}"
 
 # Everything that must pass before a change is trusted (and before anyone runs deploy):
 # static checks, unit tests and the build, the API container, and the end-to-end tests in a real

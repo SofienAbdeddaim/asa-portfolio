@@ -1,4 +1,5 @@
-name: release
+name: 'Release · version and changelog'
+run-name: 'Release · version and changelog'
 
 # Keeps a release pull request up to date from the Conventional Commits merged into main. Merging it
 # bumps the version, updates CHANGELOG.md, tags the commit and publishes a GitHub release.

@@ -1,4 +1,5 @@
-name: deploy
+name: 'Deploy · production (manual)'
+run-name: 'Deploy · production · started by ${{ github.actor }}'
 
 # Deploys production by hand only (Actions → deploy → Run workflow, from main): the API (Render),
 # wait until it serves this commit, pull the published content from it, build the static site and
