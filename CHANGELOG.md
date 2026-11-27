@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.7.0...v1.8.0) (2026-11-26)
+
+
+### Features
+
+* **web:** full-width project cards and faster gallery ([#42](https://github.com/SofienAbdeddaim/asa-portfolio/issues/42)) ([73d4fbf](https://github.com/SofienAbdeddaim/asa-portfolio/commit/73d4fbf34cf6f8c7b314b02350a0f197ef156ee1))
+
 ## [1.7.0](https://github.com/SofienAbdeddaim/asa-portfolio/compare/v1.6.0...v1.7.0) (2026-11-26)
 
 
