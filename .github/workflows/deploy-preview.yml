@@ -1,4 +1,5 @@
-name: deploy-preview
+name: 'Deploy preview · pull request site (manual)'
+run-name: 'Deploy preview · ${{ github.ref_name }}'
 
 # A temporary copy of the site for a pull request, at https://pr-<number>--<site>.netlify.app, with
 # the link posted on the pull request. By hand only (Actions → deploy-preview → Run workflow, with

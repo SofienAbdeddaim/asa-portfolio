@@ -1,6 +1,6 @@
 # 17. CI/CD, deployment and quality gates
 
-Status: accepted. Amended by [ADR 21](0021-manual-deployments.md): `deploy` and `deploy-preview` now run by hand only.
+Status: accepted. Amended by [ADR 21](0021-manual-deployments.md): `deploy` and `deploy-preview` now run by hand only. Since 2026-11-27, `security` and `lighthouse` no longer run on pushes to `main` (pull requests and the weekly scan only), and every workflow is named by its purpose (see docs/DEPLOYMENT.md, The workflows).
 
 ## Context
 

@@ -1,15 +1,9 @@
-name: security
+name: 'Security · code and dependency scans'
+run-name: "Security · code and dependency scans · ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || github.event_name == 'schedule' && 'weekly' || github.ref_name }}"
 
+# Pull requests and weekly on main: every change is scanned on its pull request, and the weekly run
+# keeps main's baseline current and catches new advisories when nothing is merged.
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-      - '.claude/**'
-      - LICENSE
-      - .github/CODEOWNERS
-      - .github/pull_request_template.md
   # No paths-ignore on pull requests: the ruleset requires these checks, and a check that does not run
   # (a documentation-only change) is a check that never reports, so the pull request could not be merged.
   pull_request:

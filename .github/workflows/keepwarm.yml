@@ -1,4 +1,5 @@
-name: keepwarm
+name: 'Keep API awake'
+run-name: 'Keep API awake'
 
 # Optional. Render's free web services sleep after 15 minutes without traffic, and the first request
 # afterwards waits about a minute. Set the repository variable KEEP_WARM to "true" to ping the API
